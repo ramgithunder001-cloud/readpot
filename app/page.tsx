@@ -70,7 +70,7 @@ export default function Home() {
         'id, rating, status, content, created_at, books(title, author, cover_url), quotes(id, content, created_at)'
       )
       .order('created_at', { ascending: false });
-
+    if (error) console.error('fetchReviews 에러:', error.message, error.details);
     if (!error && data) {
       const normalized = (data as any[]).map((r) => ({
         ...r,
@@ -168,6 +168,8 @@ if (dup) {
   setActiveId(dup.id);
   return;
 }
+      // 이미 내 서재에 있는 책이면 그 글로 이동
+      const existing = reviews.find((r) => (r as any).book_isbn === primaryIsbn);
       const { error: bookError } = await supabase.from('books').upsert({
         isbn: primaryIsbn,
         title: selectedBook.title,
