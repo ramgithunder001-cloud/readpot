@@ -21,6 +21,8 @@ interface QuoteItem {
 
 interface Review {
   id: string;
+  user_id: string;
+  book_isbn: string;
   rating: number;
   content: string;
   status: 'reading' | 'completed';
@@ -32,6 +34,8 @@ interface Review {
   };
   quotes?: QuoteItem[];
 }
+
+type Tab = 'mine' | 'community';
 
 /* ---------- 공통 UI 조각 ---------- */
 
@@ -157,6 +161,63 @@ function Toggle({
   );
 }
 
+// 댓글(답글) 표시용 화살표 아이콘
+function ReplyIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={14}
+      height={14}
+      className="mt-1 shrink-0 text-gray-300"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 4v7a3 3 0 0 0 3 3h11" />
+      <path d="M15 10l4 4-4 4" />
+    </svg>
+  );
+}
+
+// 인용문 + 아래에 댓글처럼 달리는 코멘트
+function QuoteList({
+  quotes,
+  onDelete,
+}: {
+  quotes: QuoteItem[];
+  onDelete?: (id: string) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      {quotes.map((q) => (
+        <div key={q.id} className="flex justify-between items-start gap-3">
+          <div className="min-w-0">
+            <p className="text-sm text-gray-900 leading-relaxed whitespace-pre-line">
+              &quot;{q.content}&quot;
+            </p>
+            {q.comment_text && (
+              <div className="mt-1.5 ml-2 flex items-start gap-1.5 text-sm text-gray-500">
+                <ReplyIcon />
+                <p className="leading-relaxed whitespace-pre-line">{q.comment_text}</p>
+              </div>
+            )}
+          </div>
+          {onDelete && (
+            <button
+              onClick={() => onDelete(q.id)}
+              className="text-gray-400 hover:text-red-500 text-xs shrink-0"
+            >
+              삭제
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ---------- 메인 ---------- */
 
 export default function Home() {
@@ -177,55 +238,96 @@ export default function Home() {
   const [initialComment, setInitialComment] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
 
-  // 게시판 / 상세 화면
-  const [reviews, setReviews] = useState<Review[]>([]);
+  // 데이터 (모든 유저의 글 + 닉네임)
+  const [allReviews, setAllReviews] = useState<Review[]>([]);
+  const [profiles, setProfiles] = useState<Record<string, string>>({});
+
+  // 화면 상태
+  const [tab, setTab] = useState<Tab>('mine');
   const [activeId, setActiveId] = useState<string | null>(null);
   const [boardFilter, setBoardFilter] = useState('');
+  const [showOthers, setShowOthers] = useState(true); // 같은 책 다른 사람 기록 함께 보기
   const [newQuoteInput, setNewQuoteInput] = useState('');
   const [newCommentInput, setNewCommentInput] = useState('');
   const [isEditingContent, setIsEditingContent] = useState(false);
   const [editContentText, setEditContentText] = useState('');
 
-  const activeReview = reviews.find((r) => r.id === activeId) ?? null;
+  const nameOf = (userId: string) => {
+    if (profiles[userId]) return profiles[userId];
+    if (user && userId === user.id) return (user.email || '나').split('@')[0];
+    return '알 수 없음';
+  };
 
-  const fetchReviews = useCallback(async () => {
-    const { data, error } = await supabase
-      .from('reviews')
-      .select(
-        'id, rating, status, content, created_at, books(title, author, cover_url), quotes(id, content, comment_text, created_at)'
-      )
-      .order('created_at', { ascending: false });
+  const myReviews = allReviews.filter((r) => r.user_id === user?.id);
+  const activeReview = allReviews.find((r) => r.id === activeId) ?? null;
+  const isOwner = !!activeReview && activeReview.user_id === user?.id;
+  const otherReviews = activeReview
+    ? allReviews.filter((r) => r.book_isbn === activeReview.book_isbn && r.id !== activeReview.id)
+    : [];
 
-    if (error) console.error('fetchReviews 에러:', error.message, error.details);
+  const loadData = useCallback(async (u: User) => {
+    const [reviewsRes, profilesRes] = await Promise.all([
+      supabase
+        .from('reviews')
+        .select(
+          'id, user_id, book_isbn, rating, status, content, created_at, books(title, author, cover_url), quotes(id, content, comment_text, created_at)'
+        )
+        .order('created_at', { ascending: false }),
+      supabase.from('profiles').select('id, nickname'),
+    ]);
 
-    if (!error && data) {
-      const normalized = (data as any[]).map((r) => ({
-        ...r,
-        rating: Number(r.rating) || 0,
-        quotes: (r.quotes || []).sort(
-          (a: QuoteItem, b: QuoteItem) =>
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        ),
-      }));
-      setReviews(normalized as Review[]);
+    if (reviewsRes.error) console.error('reviews 에러:', reviewsRes.error.message);
+    if (profilesRes.error) console.error('profiles 에러:', profilesRes.error.message);
+
+    const map: Record<string, string> = {};
+    (profilesRes.data || []).forEach((p: any) => {
+      map[p.id] = p.nickname;
+    });
+
+    // 내 프로필이 없으면 이메일 앞부분으로 자동 생성
+    if (!profilesRes.error && !map[u.id]) {
+      const nick = (u.email || '사용자').split('@')[0];
+      await supabase
+        .from('profiles')
+        .upsert({ id: u.id, nickname: nick }, { onConflict: 'id', ignoreDuplicates: true });
+      map[u.id] = nick;
+    }
+    setProfiles(map);
+
+    if (!reviewsRes.error && reviewsRes.data) {
+      const normalized = (reviewsRes.data as any[])
+        .filter((r) => r.books)
+        .map((r) => ({
+          ...r,
+          rating: Number(r.rating) || 0,
+          quotes: (r.quotes || []).sort(
+            (a: QuoteItem, b: QuoteItem) =>
+              new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          ),
+        }));
+      setAllReviews(normalized as Review[]);
     }
   }, []);
+
+  const refresh = useCallback(async () => {
+    if (user) await loadData(user);
+  }, [user, loadData]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-      if (session?.user) fetchReviews();
+      if (session?.user) loadData(session.user);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      if (session?.user) fetchReviews();
+      if (session?.user) loadData(session.user);
     });
 
     return () => subscription.unsubscribe();
-  }, [fetchReviews]);
+  }, [loadData]);
 
   // ---------- 인증 ----------
   const handleAuth = async (e: React.FormEvent) => {
@@ -252,8 +354,23 @@ export default function Home() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    setReviews([]);
+    setAllReviews([]);
     setActiveId(null);
+  };
+
+  const handleChangeNickname = async () => {
+    if (!user) return;
+    const next = window.prompt('새 닉네임을 입력해 주세요 (20자 이내)', nameOf(user.id));
+    if (next === null) return;
+    const trimmed = next.trim();
+    if (!trimmed) return alert('닉네임을 입력해 주세요.');
+    if (trimmed.length > 20) return alert('닉네임은 20자 이내로 입력해 주세요.');
+
+    const { error } = await supabase
+      .from('profiles')
+      .upsert({ id: user.id, nickname: trimmed }, { onConflict: 'id' });
+    if (error) return alert(`닉네임 변경 실패: ${error.message}`);
+    refresh();
   };
 
   // ---------- 책 검색 / 등록 ----------
@@ -335,9 +452,10 @@ export default function Home() {
       setIsReading(false);
       setSearchResults([]);
       setQuery('');
-      await fetchReviews();
+      await loadData(user);
 
       // 등록하자마자 해당 글 상세 화면으로 이동
+      setTab('mine');
       setActiveId(reviewData.id);
       setIsEditingContent(false);
       setEditContentText('');
@@ -348,12 +466,12 @@ export default function Home() {
 
   // ---------- 상태 / 별점 수정 ----------
   const handleUpdateStatus = async (nextReading: boolean, nextRating: number) => {
-    if (!activeReview) return;
+    if (!activeReview || !isOwner) return;
     const nextStatus = nextReading ? 'reading' : 'completed';
     const savedRating = nextReading ? 0 : nextRating;
 
     // 화면 먼저 반영
-    setReviews((prev) =>
+    setAllReviews((prev) =>
       prev.map((r) =>
         r.id === activeReview.id ? { ...r, status: nextStatus, rating: savedRating } : r
       )
@@ -366,14 +484,14 @@ export default function Home() {
 
     if (error) {
       alert(`저장 실패: ${error.message}`);
-      fetchReviews();
+      refresh();
     }
   };
 
   // ---------- 인용문 ----------
   const handleAddQuote = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!activeReview || !user || !newQuoteInput.trim()) return;
+    if (!activeReview || !user || !isOwner || !newQuoteInput.trim()) return;
 
     try {
       const { error } = await supabase.from('quotes').insert({
@@ -385,7 +503,7 @@ export default function Home() {
       if (error) throw error;
       setNewQuoteInput('');
       setNewCommentInput('');
-      fetchReviews();
+      refresh();
     } catch (err: any) {
       alert(`인용문 추가 실패: ${err.message}`);
     }
@@ -396,7 +514,7 @@ export default function Home() {
     try {
       const { error } = await supabase.from('quotes').delete().eq('id', quoteId);
       if (error) throw error;
-      fetchReviews();
+      refresh();
     } catch (err: any) {
       alert(`삭제 실패: ${err.message}`);
     }
@@ -404,7 +522,7 @@ export default function Home() {
 
   // ---------- 독후감 ----------
   const handleSaveContentEdit = async () => {
-    if (!activeReview) return;
+    if (!activeReview || !isOwner) return;
     try {
       const { error } = await supabase
         .from('reviews')
@@ -412,7 +530,7 @@ export default function Home() {
         .eq('id', activeReview.id);
       if (error) throw error;
       setIsEditingContent(false);
-      fetchReviews();
+      refresh();
     } catch (err: any) {
       alert(`독후감 저장 실패: ${err.message}`);
     }
@@ -424,12 +542,13 @@ export default function Home() {
       const { error } = await supabase.from('reviews').delete().eq('id', reviewId);
       if (error) throw error;
       setActiveId(null);
-      fetchReviews();
+      refresh();
     } catch (err: any) {
       alert(`삭제 실패: ${err.message}`);
     }
   };
 
+  // ---------- 화면 이동 ----------
   const openReview = (rev: Review) => {
     setActiveId(rev.id);
     setIsEditingContent(false);
@@ -439,11 +558,21 @@ export default function Home() {
     window.scrollTo({ top: 0 });
   };
 
-  const filteredReviews = reviews.filter((r) => {
+  const goTab = (t: Tab) => {
+    setTab(t);
+    setActiveId(null);
+    setBoardFilter('');
+  };
+
+  const matchesFilter = (r: Review) => {
     const q = boardFilter.trim().toLowerCase();
     if (!q) return true;
-    return r.books.title.toLowerCase().includes(q) || r.books.author.toLowerCase().includes(q);
-  });
+    return (
+      r.books.title.toLowerCase().includes(q) ||
+      r.books.author.toLowerCase().includes(q) ||
+      nameOf(r.user_id).toLowerCase().includes(q)
+    );
+  };
 
   // ---------- 로그인 화면 ----------
   if (!user) {
@@ -454,7 +583,7 @@ export default function Home() {
           <div className="text-center mb-8">
             <h1 className="text-4xl font-black mb-2 tracking-tight">ReadPot</h1>
             <p className="text-sm text-gray-500">
-              {isSignUp ? '새로운 계정 생성하기' : '나만의 독후감과 인용구를 기록하세요'}
+              {isSignUp ? '새로운 계정 생성하기' : '함께 읽고, 인용하고, 기록하세요'}
             </p>
           </div>
 
@@ -508,12 +637,38 @@ export default function Home() {
   // ---------- 공통 헤더 ----------
   const header = (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-      <div className="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
-        <button onClick={() => setActiveId(null)}>
-          <h1 className="text-2xl font-black tracking-tight">ReadPot</h1>
-        </button>
-        <div className="flex items-center gap-4">
-          <span className="hidden sm:inline text-sm font-medium text-gray-600">{user.email}</span>
+      <div className="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center gap-4">
+        <div className="flex items-center gap-5">
+          <button onClick={() => goTab('mine')}>
+            <h1 className="text-2xl font-black tracking-tight">ReadPot</h1>
+          </button>
+          <nav className="flex gap-1">
+            {(
+              [
+                ['mine', '내 서재'],
+                ['community', '전체 서재'],
+              ] as [Tab, string][]
+            ).map(([t, label]) => (
+              <button
+                key={t}
+                onClick={() => goTab(t)}
+                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition ${
+                  tab === t ? 'bg-black text-white' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleChangeNickname}
+            title="닉네임 변경"
+            className="hidden sm:inline text-sm font-medium text-gray-600 hover:text-black"
+          >
+            {nameOf(user.id)}
+          </button>
           <button
             onClick={handleLogout}
             className="px-3.5 py-1.5 text-xs bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition"
@@ -525,15 +680,84 @@ export default function Home() {
     </header>
   );
 
+  // ---------- 게시판 표 ----------
+  const renderBoard = (list: Review[], showAuthor: boolean) => {
+    const col = showAuthor
+      ? { title: 'sm:col-span-4', author: 'sm:col-span-2', nick: 'sm:col-span-2', status: 'sm:col-span-2', quotes: 'sm:col-span-1', date: 'sm:col-span-1' }
+      : { title: 'sm:col-span-5', author: 'sm:col-span-2', nick: '', status: 'sm:col-span-2', quotes: 'sm:col-span-2', date: 'sm:col-span-1' };
+
+    return (
+      <>
+        <div className="hidden sm:grid grid-cols-12 gap-3 px-6 py-2.5 bg-gray-50 text-[11px] font-semibold text-gray-500 border-b border-gray-100">
+          <span className={col.title}>책 제목</span>
+          <span className={col.author}>저자</span>
+          {showAuthor && <span className={col.nick}>작성자</span>}
+          <span className={`${col.status} text-center`}>상태 / 별점</span>
+          <span className={`${col.quotes} text-center`}>인용문</span>
+          <span className={`${col.date} text-right`}>날짜</span>
+        </div>
+
+        <ul className="divide-y divide-gray-100">
+          {list.map((rev) => (
+            <li
+              key={rev.id}
+              onClick={() => openReview(rev)}
+              className="grid grid-cols-12 gap-3 items-center px-6 py-4 hover:bg-gray-50 cursor-pointer transition group"
+            >
+              <div className={`col-span-12 ${col.title} flex items-center gap-3 min-w-0`}>
+                <img
+                  src={rev.books.cover_url || undefined}
+                  alt={rev.books.title}
+                  className="w-9 h-12 object-cover rounded shadow-sm shrink-0 bg-gray-200"
+                />
+                <span className="font-semibold text-sm truncate group-hover:underline">
+                  {rev.books.title}
+                </span>
+              </div>
+              <span className={`col-span-6 ${col.author} text-xs text-gray-500 truncate`}>
+                {rev.books.author}
+              </span>
+              {showAuthor && (
+                <span className={`col-span-6 ${col.nick} text-xs font-medium text-gray-700 truncate`}>
+                  {nameOf(rev.user_id)}
+                </span>
+              )}
+              <div className={`col-span-6 ${col.status} flex sm:justify-center`}>
+                {rev.status === 'reading' ? (
+                  <span className="inline-block px-2 py-0.5 text-[11px] font-semibold bg-amber-100 text-amber-800 rounded-full">
+                    읽는 중
+                  </span>
+                ) : (
+                  <RatingDisplay value={rev.rating} size={13} />
+                )}
+              </div>
+              <span className={`col-span-6 ${col.quotes} sm:text-center text-xs text-gray-500`}>
+                인용문 {rev.quotes?.length || 0}
+              </span>
+              <span className={`hidden sm:block ${col.date} text-right text-[11px] text-gray-400`}>
+                {new Date(rev.created_at).toLocaleDateString('ko-KR', {
+                  month: 'numeric',
+                  day: 'numeric',
+                })}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </>
+    );
+  };
+
   // ---------- 상세 화면 ----------
   if (activeReview) {
+    const hasQuotes = (activeReview.quotes?.length || 0) > 0;
+
     return (
       <div className="min-h-screen bg-gray-100 text-gray-800">
         <FontStyle />
         {header}
         <main className="max-w-4xl mx-auto px-6 py-8 space-y-6">
           <button onClick={() => setActiveId(null)} className="text-sm text-gray-500 hover:text-black">
-            &larr; 게시판으로 돌아가기
+            &larr; 목록으로 돌아가기
           </button>
 
           {/* 책 정보 */}
@@ -545,153 +769,197 @@ export default function Home() {
             />
             <div className="space-y-2 min-w-0">
               <span className="text-xs text-gray-400">
-                등록일: {new Date(activeReview.created_at).toLocaleDateString('ko-KR')}
+                {nameOf(activeReview.user_id)} &middot;{' '}
+                {new Date(activeReview.created_at).toLocaleDateString('ko-KR')}
               </span>
               <h2 className="text-2xl font-bold">{activeReview.books.title}</h2>
               <p className="text-sm text-gray-500">{activeReview.books.author}</p>
 
-              <div className="pt-2 space-y-3">
-                <Toggle
-                  checked={activeReview.status === 'reading'}
-                  onChange={(v) => handleUpdateStatus(v, activeReview.rating)}
-                  label="읽는 중"
-                />
-                {activeReview.status !== 'reading' && (
-                  <RatingInput
-                    value={activeReview.rating}
-                    onChange={(v) => handleUpdateStatus(false, v)}
-                    size={26}
-                  />
+              <div className="pt-2 flex flex-wrap items-center gap-x-5 gap-y-2">
+                {isOwner ? (
+                  <>
+                    <Toggle
+                      checked={activeReview.status === 'reading'}
+                      onChange={(v) => handleUpdateStatus(v, activeReview.rating)}
+                      label="읽는 중"
+                    />
+                    {activeReview.status !== 'reading' && (
+                      <RatingInput
+                        value={activeReview.rating}
+                        onChange={(v) => handleUpdateStatus(false, v)}
+                        size={26}
+                      />
+                    )}
+                  </>
+                ) : activeReview.status === 'reading' ? (
+                  <span className="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full">
+                    읽는 중
+                  </span>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <RatingDisplay value={activeReview.rating} size={22} />
+                    <span className="text-sm font-semibold text-gray-600">{activeReview.rating}점</span>
+                  </div>
                 )}
               </div>
             </div>
           </section>
 
           {/* 인용문 */}
-          <section className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-4">
-            <h3 className="text-base font-bold">인용문 ({activeReview.quotes?.length || 0})</h3>
+          {(isOwner || hasQuotes) && (
+            <section className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+              <h3 className="text-base font-bold">인용문 ({activeReview.quotes?.length || 0})</h3>
 
-            <form onSubmit={handleAddQuote} className="space-y-2">
-              <textarea
-                rows={2}
-                value={newQuoteInput}
-                onChange={(e) => setNewQuoteInput(e.target.value)}
-                placeholder="마음에 남은 문장을 적어 보세요"
-                className="w-full p-3 border border-gray-300 rounded-xl text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-black"
-              />
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newCommentInput}
-                  onChange={(e) => setNewCommentInput(e.target.value)}
-                  placeholder="코멘트 (선택)"
-                  className="flex-1 p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                />
-                <button
-                  type="submit"
-                  className="px-5 py-3 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 shrink-0"
-                >
-                  추가
-                </button>
-              </div>
-            </form>
-
-            <div className="space-y-2 pt-1">
-              {activeReview.quotes && activeReview.quotes.length > 0 ? (
-                activeReview.quotes.map((q) => (
-                  <div
-                    key={q.id}
-                    className="p-4 bg-gray-50 border-l-4 border-black rounded-r-xl flex justify-between items-start gap-3"
-                  >
-                    <div className="min-w-0 space-y-2">
-                      <p className="text-sm text-gray-900 leading-relaxed whitespace-pre-line">
-                        &ldquo;{q.content}&rdquo;
-                      </p>
-                      {q.comment_text && (
-                        <p className="text-xs text-gray-500 leading-relaxed whitespace-pre-line">
-                          {q.comment_text}
-                        </p>
-                      )}
-                    </div>
+              {isOwner && (
+                <form onSubmit={handleAddQuote} className="space-y-2">
+                  <textarea
+                    rows={2}
+                    value={newQuoteInput}
+                    onChange={(e) => setNewQuoteInput(e.target.value)}
+                    placeholder="마음에 남은 문장을 적어 보세요"
+                    className="w-full p-3 border border-gray-300 rounded-xl text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-black"
+                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newCommentInput}
+                      onChange={(e) => setNewCommentInput(e.target.value)}
+                      placeholder="코멘트 (선택)"
+                      className="flex-1 p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                    />
                     <button
-                      onClick={() => handleDeleteQuote(q.id)}
-                      className="text-gray-400 hover:text-red-500 text-xs shrink-0"
+                      type="submit"
+                      className="px-5 py-3 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 shrink-0"
                     >
-                      삭제
+                      추가
                     </button>
                   </div>
-                ))
-              ) : (
-                <p className="text-sm text-gray-400 py-2">아직 추가된 인용문이 없습니다.</p>
+                </form>
               )}
-            </div>
-          </section>
 
-          {/* 독후감 */}
-          <section className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-3">
-            <div className="flex justify-between items-center">
-              <h3 className="text-base font-bold">독후감</h3>
-              {!isEditingContent && activeReview.content && (
-                <button
-                  onClick={() => {
-                    setEditContentText(activeReview.content || '');
-                    setIsEditingContent(true);
-                  }}
-                  className="text-xs text-gray-500 hover:text-black underline"
-                >
-                  수정하기
-                </button>
-              )}
-            </div>
-
-            {isEditingContent ? (
-              <div className="space-y-2">
-                <textarea
-                  rows={10}
-                  value={editContentText}
-                  onChange={(e) => setEditContentText(e.target.value)}
-                  placeholder="이 책을 읽고 느낀 점을 자유롭게 적어 보세요."
-                  className="w-full p-4 border border-gray-300 rounded-xl text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-black"
-                />
-                <div className="flex justify-end gap-2">
-                  <button
-                    onClick={() => setIsEditingContent(false)}
-                    className="px-3 py-2 text-xs text-gray-500 hover:bg-gray-100 rounded-lg"
-                  >
-                    취소
-                  </button>
-                  <button
-                    onClick={handleSaveContentEdit}
-                    className="px-5 py-2 text-xs bg-black text-white font-medium rounded-lg"
-                  >
-                    저장
-                  </button>
-                </div>
+              <div className="pt-2">
+                {hasQuotes ? (
+                  <QuoteList
+                    quotes={activeReview.quotes!}
+                    onDelete={isOwner ? handleDeleteQuote : undefined}
+                  />
+                ) : (
+                  <p className="text-sm text-gray-400 py-2">아직 추가된 인용문이 없습니다.</p>
+                )}
               </div>
-            ) : activeReview.content ? (
-              <div className="bg-gray-50 p-5 rounded-xl text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+            </section>
+          )}
+
+          {/* 독후감: 내용이 있거나 작성 중일 때만 항목이 보이고, 비어 있으면 버튼만 보임 */}
+          {isEditingContent && isOwner ? (
+            <section className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-3">
+              <h3 className="text-base font-bold">독후감</h3>
+              <textarea
+                rows={10}
+                value={editContentText}
+                onChange={(e) => setEditContentText(e.target.value)}
+                placeholder="이 책을 읽고 느낀 점을 자유롭게 적어 보세요."
+                className="w-full p-4 border border-gray-300 rounded-xl text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-black"
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setIsEditingContent(false)}
+                  className="px-3 py-2 text-xs text-gray-500 hover:bg-gray-100 rounded-lg"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleSaveContentEdit}
+                  className="px-5 py-2 text-xs bg-black text-white font-medium rounded-lg"
+                >
+                  저장
+                </button>
+              </div>
+            </section>
+          ) : activeReview.content ? (
+            <section className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-3">
+              <div className="flex justify-between items-center">
+                <h3 className="text-base font-bold">독후감</h3>
+                {isOwner && (
+                  <button
+                    onClick={() => {
+                      setEditContentText(activeReview.content || '');
+                      setIsEditingContent(true);
+                    }}
+                    className="text-xs text-gray-500 hover:text-black underline"
+                  >
+                    수정하기
+                  </button>
+                )}
+              </div>
+              <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
                 {activeReview.content}
               </div>
-            ) : (
-              <button
-                onClick={() => {
-                  setEditContentText('');
-                  setIsEditingContent(true);
-                }}
-                className="w-full py-6 border border-dashed border-gray-300 rounded-xl text-sm text-gray-500 hover:border-black hover:text-black transition"
-              >
-                독후감 추가
-              </button>
-            )}
-          </section>
+            </section>
+          ) : isOwner ? (
+            <button
+              onClick={() => {
+                setEditContentText('');
+                setIsEditingContent(true);
+              }}
+              className="w-full py-3.5 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:border-black hover:text-black transition"
+            >
+              독후감 추가
+            </button>
+          ) : null}
+
+          {/* 같은 책을 읽은 다른 사람의 기록 (켜고 끌 수 있음) */}
+          {otherReviews.length > 0 && (
+            <section className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-5">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-base font-bold">같은 책을 읽은 사람 ({otherReviews.length})</h3>
+                <Toggle checked={showOthers} onChange={setShowOthers} label="함께 보기" />
+              </div>
+
+              {showOthers &&
+                otherReviews.map((o) => (
+                  <div key={o.id} className="border-t border-gray-100 pt-5 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <span className="font-semibold text-sm">{nameOf(o.user_id)}</span>
+                      {o.status === 'reading' ? (
+                        <span className="px-2 py-0.5 text-[11px] font-semibold bg-amber-100 text-amber-800 rounded-full">
+                          읽는 중
+                        </span>
+                      ) : (
+                        <RatingDisplay value={o.rating} size={14} />
+                      )}
+                    </div>
+
+                    {o.quotes && o.quotes.length > 0 && <QuoteList quotes={o.quotes} />}
+
+                    {o.content && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-semibold text-gray-400">독후감</p>
+                        <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                          {o.content}
+                        </p>
+                      </div>
+                    )}
+
+                    {(!o.quotes || o.quotes.length === 0) && !o.content && (
+                      <p className="text-xs text-gray-400">아직 남긴 기록이 없어요.</p>
+                    )}
+                  </div>
+                ))}
+            </section>
+          )}
 
           <div className="flex justify-between items-center text-xs pb-8">
-            <button
-              onClick={() => handleDeleteReview(activeReview.id)}
-              className="text-red-500 hover:underline"
-            >
-              이 책 서재에서 삭제
-            </button>
+            {isOwner ? (
+              <button
+                onClick={() => handleDeleteReview(activeReview.id)}
+                className="text-red-500 hover:underline"
+              >
+                이 책 서재에서 삭제
+              </button>
+            ) : (
+              <span />
+            )}
             <button
               onClick={() => setActiveId(null)}
               className="px-4 py-2 bg-white border border-gray-300 font-semibold text-gray-700 rounded-xl hover:bg-gray-100"
@@ -704,7 +972,48 @@ export default function Home() {
     );
   }
 
-  // ---------- 게시판 화면 ----------
+  // ---------- 전체 서재 (모든 유저의 글) ----------
+  if (tab === 'community') {
+    const list = allReviews.filter(matchesFilter);
+
+    return (
+      <div className="min-h-screen bg-gray-100 text-gray-800">
+        <FontStyle />
+        {header}
+        <main className="max-w-4xl mx-auto px-6 py-8">
+          <section className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="flex flex-wrap justify-between items-center gap-3 px-6 py-5 border-b border-gray-100">
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                전체 서재
+                <span className="text-xs font-semibold text-gray-400">총 {allReviews.length}개의 기록</span>
+              </h2>
+              <input
+                type="text"
+                value={boardFilter}
+                onChange={(e) => setBoardFilter(e.target.value)}
+                placeholder="책, 저자, 작성자 찾기..."
+                className="w-full sm:w-56 p-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-black"
+              />
+            </div>
+
+            {list.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-24 text-gray-400">
+                <p className="text-sm">
+                  {allReviews.length === 0 ? '아직 올라온 글이 없습니다.' : '검색 결과가 없습니다.'}
+                </p>
+              </div>
+            ) : (
+              renderBoard(list, true)
+            )}
+          </section>
+        </main>
+      </div>
+    );
+  }
+
+  // ---------- 내 서재 ----------
+  const myList = myReviews.filter(matchesFilter);
+
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800">
       <FontStyle />
@@ -782,14 +1091,10 @@ export default function Home() {
               </div>
 
               <form onSubmit={handleSubmitReview} className="space-y-5">
-                <Toggle checked={isReading} onChange={setIsReading} label="읽는 중" />
-
-                {!isReading && (
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">별점 평가</label>
-                    <RatingInput value={rating} onChange={setRating} />
-                  </div>
-                )}
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                  <Toggle checked={isReading} onChange={setIsReading} label="읽는 중" />
+                  {!isReading && <RatingInput value={rating} onChange={setRating} />}
+                </div>
 
                 <div className="space-y-2">
                   <label className="block text-xs font-semibold text-gray-600">첫 번째 인용문 (선택)</label>
@@ -820,12 +1125,12 @@ export default function Home() {
           )}
         </section>
 
-        {/* 게시판 목록 */}
+        {/* 내 서재 게시판 */}
         <section className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="flex flex-wrap justify-between items-center gap-3 px-6 py-5 border-b border-gray-100">
             <h2 className="text-lg font-bold flex items-center gap-2">
-              내 서재 게시판
-              <span className="text-xs font-semibold text-gray-400">총 {reviews.length}권</span>
+              내 서재
+              <span className="text-xs font-semibold text-gray-400">총 {myReviews.length}권</span>
             </h2>
             <input
               type="text"
@@ -836,64 +1141,16 @@ export default function Home() {
             />
           </div>
 
-          <div className="hidden sm:grid grid-cols-12 gap-3 px-6 py-2.5 bg-gray-50 text-[11px] font-semibold text-gray-500 border-b border-gray-100">
-            <span className="col-span-5">책 제목</span>
-            <span className="col-span-2">저자</span>
-            <span className="col-span-2 text-center">상태 / 별점</span>
-            <span className="col-span-2 text-center">인용문</span>
-            <span className="col-span-1 text-right">날짜</span>
-          </div>
-
-          {filteredReviews.length === 0 ? (
+          {myList.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-gray-400">
               <p className="text-sm">
-                {reviews.length === 0
+                {myReviews.length === 0
                   ? '등록된 책이 없습니다. 위에서 책을 검색해 첫 글을 만들어 보세요.'
                   : '검색 결과가 없습니다.'}
               </p>
             </div>
           ) : (
-            <ul className="divide-y divide-gray-100">
-              {filteredReviews.map((rev) => (
-                <li
-                  key={rev.id}
-                  onClick={() => openReview(rev)}
-                  className="grid grid-cols-12 gap-3 items-center px-6 py-4 hover:bg-gray-50 cursor-pointer transition group"
-                >
-                  <div className="col-span-12 sm:col-span-5 flex items-center gap-3 min-w-0">
-                    <img
-                      src={rev.books.cover_url || undefined}
-                      alt={rev.books.title}
-                      className="w-9 h-12 object-cover rounded shadow-sm shrink-0 bg-gray-200"
-                    />
-                    <span className="font-semibold text-sm truncate group-hover:underline">
-                      {rev.books.title}
-                    </span>
-                  </div>
-                  <span className="col-span-5 sm:col-span-2 text-xs text-gray-500 truncate">
-                    {rev.books.author}
-                  </span>
-                  <div className="col-span-4 sm:col-span-2 flex justify-center">
-                    {rev.status === 'reading' ? (
-                      <span className="inline-block px-2 py-0.5 text-[11px] font-semibold bg-amber-100 text-amber-800 rounded-full">
-                        읽는 중
-                      </span>
-                    ) : (
-                      <RatingDisplay value={rev.rating} size={13} />
-                    )}
-                  </div>
-                  <span className="col-span-3 sm:col-span-2 text-center text-xs text-gray-500">
-                    인용문 {rev.quotes?.length || 0}
-                  </span>
-                  <span className="hidden sm:block col-span-1 text-right text-[11px] text-gray-400">
-                    {new Date(rev.created_at).toLocaleDateString('ko-KR', {
-                      month: 'numeric',
-                      day: 'numeric',
-                    })}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            renderBoard(myList, false)
           )}
         </section>
       </main>
