@@ -154,6 +154,20 @@ export default function Home() {
     const primaryIsbn = isbnList[isbnList.length - 1] || selectedBook.isbn;
 
     try {
+      const { data: dup } = await supabase
+  .from('reviews')
+  .select('id')
+  .eq('user_id', user.id)
+  .eq('book_isbn', primaryIsbn)
+  .maybeSingle();
+
+if (dup) {
+  alert('이미 서재에 있는 책이에요. 해당 글로 이동할게요.');
+  setSelectedBook(null);
+  setShowAddPanel(false);
+  setActiveId(dup.id);
+  return;
+}
       const { error: bookError } = await supabase.from('books').upsert({
         isbn: primaryIsbn,
         title: selectedBook.title,
