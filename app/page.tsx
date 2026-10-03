@@ -12,11 +12,17 @@ interface Book {
   thumbnail: string;
 }
 
+interface QuoteComment {
+  id: string;
+  content: string;
+  created_at: string;
+}
+
 interface QuoteItem {
   id: string;
   content: string;
-  comment_text: string | null;
   created_at: string;
+  quote_comments: QuoteComment[];
 }
 
 interface Review {
@@ -36,6 +42,9 @@ interface Review {
 }
 
 type Tab = 'mine' | 'community';
+
+const byCreated = (a: { created_at: string }, b: { created_at: string }) =>
+  new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
 
 /* ---------- 공통 UI 조각 ---------- */
 
@@ -181,36 +190,96 @@ function ReplyIcon() {
   );
 }
 
-// 인용문 + 아래에 댓글처럼 달리는 코멘트
+// 인용문(굵게 + 기울임) + 아래에 댓글처럼 달리는 여러 개의 코멘트
+// 작성자 본인은 인용문을 탭하면 코멘트 입력창이 열리고, 코멘트만 따로 삭제할 수 있음
 function QuoteList({
   quotes,
-  onDelete,
+  isOwner = false,
+  onDeleteQuote,
+  onAddComment,
+  onDeleteComment,
 }: {
   quotes: QuoteItem[];
-  onDelete?: (id: string) => void;
+  isOwner?: boolean;
+  onDeleteQuote?: (id: string) => void;
+  onAddComment?: (quoteId: string, text: string) => Promise<boolean>;
+  onDeleteComment?: (commentId: string) => void;
 }) {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [draft, setDraft] = useState('');
+
+  const toggle = (id: string) => {
+    setDraft('');
+    setOpenId((prev) => (prev === id ? null : id));
+  };
+
+  const submit = async (e: React.FormEvent, quoteId: string) => {
+    e.preventDefault();
+    const text = draft.trim();
+    if (!text || !onAddComment) return;
+    const ok = await onAddComment(quoteId, text);
+    if (ok) setDraft('');
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {quotes.map((q) => (
-        <div key={q.id} className="flex justify-between items-start gap-3">
-          <div className="min-w-0">
-            <p className="text-sm text-gray-900 leading-relaxed whitespace-pre-line">
+        <div key={q.id}>
+          <div className="flex justify-between items-start gap-3">
+            <p
+              onClick={isOwner ? () => toggle(q.id) : undefined}
+              className={`text-sm font-bold italic text-gray-900 leading-relaxed whitespace-pre-line ${
+                isOwner ? 'cursor-pointer hover:text-gray-600' : ''
+              }`}
+            >
               &quot;{q.content}&quot;
             </p>
-            {q.comment_text && (
-              <div className="mt-1.5 ml-2 flex items-start gap-1.5 text-sm text-gray-500">
-                <ReplyIcon />
-                <p className="leading-relaxed whitespace-pre-line">{q.comment_text}</p>
-              </div>
+            {onDeleteQuote && (
+              <button
+                onClick={() => onDeleteQuote(q.id)}
+                className="text-gray-400 hover:text-red-500 text-xs shrink-0"
+              >
+                인용문 삭제
+              </button>
             )}
           </div>
-          {onDelete && (
-            <button
-              onClick={() => onDelete(q.id)}
-              className="text-gray-400 hover:text-red-500 text-xs shrink-0"
-            >
-              삭제
-            </button>
+
+          {q.quote_comments.length > 0 && (
+            <div className="mt-2 ml-2 space-y-1.5">
+              {q.quote_comments.map((c) => (
+                <div key={c.id} className="flex items-start gap-1.5 text-sm text-gray-500">
+                  <ReplyIcon />
+                  <p className="flex-1 min-w-0 leading-relaxed whitespace-pre-line">{c.content}</p>
+                  {isOwner && onDeleteComment && (
+                    <button
+                      onClick={() => onDeleteComment(c.id)}
+                      className="text-gray-300 hover:text-red-500 text-xs shrink-0"
+                    >
+                      삭제
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {isOwner && openId === q.id && (
+            <form onSubmit={(e) => submit(e, q.id)} className="mt-2 ml-2 flex gap-2">
+              <input
+                type="text"
+                autoFocus
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                placeholder="코멘트를 입력하세요"
+                className="flex-1 p-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2.5 bg-black text-white text-xs font-semibold rounded-lg hover:bg-gray-800 shrink-0"
+              >
+                등록
+              </button>
+            </form>
           )}
         </div>
       ))}
@@ -235,7 +304,6 @@ export default function Home() {
   const [isReading, setIsReading] = useState(false);
   const [rating, setRating] = useState<number>(0);
   const [initialQuote, setInitialQuote] = useState('');
-  const [initialComment, setInitialComment] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
 
   // 데이터 (모든 유저의 글 + 닉네임)
@@ -248,7 +316,6 @@ export default function Home() {
   const [boardFilter, setBoardFilter] = useState('');
   const [showOthers, setShowOthers] = useState(true); // 같은 책 다른 사람 기록 함께 보기
   const [newQuoteInput, setNewQuoteInput] = useState('');
-  const [newCommentInput, setNewCommentInput] = useState('');
   const [isEditingContent, setIsEditingContent] = useState(false);
   const [editContentText, setEditContentText] = useState('');
 
@@ -270,7 +337,7 @@ export default function Home() {
       supabase
         .from('reviews')
         .select(
-          'id, user_id, book_isbn, rating, status, content, created_at, books(title, author, cover_url), quotes(id, content, comment_text, created_at)'
+          'id, user_id, book_isbn, rating, status, content, created_at, books(title, author, cover_url), quotes(id, content, created_at, quote_comments(id, content, created_at))'
         )
         .order('created_at', { ascending: false }),
       supabase.from('profiles').select('id, nickname'),
@@ -300,10 +367,12 @@ export default function Home() {
         .map((r) => ({
           ...r,
           rating: Number(r.rating) || 0,
-          quotes: (r.quotes || []).sort(
-            (a: QuoteItem, b: QuoteItem) =>
-              new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-          ),
+          quotes: (r.quotes || [])
+            .map((q: any) => ({
+              ...q,
+              quote_comments: (q.quote_comments || []).sort(byCreated),
+            }))
+            .sort(byCreated),
         }));
       setAllReviews(normalized as Review[]);
     }
@@ -440,14 +509,12 @@ export default function Home() {
           review_id: reviewData.id,
           user_id: user.id,
           content: initialQuote.trim(),
-          comment_text: initialComment.trim() || null,
         });
         if (quoteError) throw quoteError;
       }
 
       setSelectedBook(null);
       setInitialQuote('');
-      setInitialComment('');
       setRating(0);
       setIsReading(false);
       setSearchResults([]);
@@ -498,11 +565,9 @@ export default function Home() {
         review_id: activeReview.id,
         user_id: user.id,
         content: newQuoteInput.trim(),
-        comment_text: newCommentInput.trim() || null,
       });
       if (error) throw error;
       setNewQuoteInput('');
-      setNewCommentInput('');
       refresh();
     } catch (err: any) {
       alert(`인용문 추가 실패: ${err.message}`);
@@ -518,6 +583,27 @@ export default function Home() {
     } catch (err: any) {
       alert(`삭제 실패: ${err.message}`);
     }
+  };
+
+  // ---------- 코멘트 (인용문 하나에 여러 개 가능) ----------
+  const handleAddComment = async (quoteId: string, text: string): Promise<boolean> => {
+    if (!user) return false;
+    const { error } = await supabase
+      .from('quote_comments')
+      .insert({ quote_id: quoteId, user_id: user.id, content: text });
+    if (error) {
+      alert(`코멘트 추가 실패: ${error.message}`);
+      return false;
+    }
+    await refresh();
+    return true;
+  };
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (!confirm('이 코멘트를 삭제하시겠습니까?')) return;
+    const { error } = await supabase.from('quote_comments').delete().eq('id', commentId);
+    if (error) return alert(`코멘트 삭제 실패: ${error.message}`);
+    refresh();
   };
 
   // ---------- 독후감 ----------
@@ -554,7 +640,6 @@ export default function Home() {
     setIsEditingContent(false);
     setEditContentText(rev.content || '');
     setNewQuoteInput('');
-    setNewCommentInput('');
     window.scrollTo({ top: 0 });
   };
 
@@ -809,31 +894,25 @@ export default function Home() {
           {(isOwner || hasQuotes) && (
             <section className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-4">
               <h3 className="text-base font-bold">인용문 ({activeReview.quotes?.length || 0})</h3>
+              {isOwner && hasQuotes && (
+                <p className="text-xs text-gray-400 -mt-2">인용문을 누르면 코멘트를 달 수 있어요.</p>
+              )}
 
               {isOwner && (
-                <form onSubmit={handleAddQuote} className="space-y-2">
+                <form onSubmit={handleAddQuote} className="flex gap-2 items-end">
                   <textarea
                     rows={2}
                     value={newQuoteInput}
                     onChange={(e) => setNewQuoteInput(e.target.value)}
                     placeholder="마음에 남은 문장을 적어 보세요"
-                    className="w-full p-3 border border-gray-300 rounded-xl text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-black"
+                    className="flex-1 p-3 border border-gray-300 rounded-xl text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-black"
                   />
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={newCommentInput}
-                      onChange={(e) => setNewCommentInput(e.target.value)}
-                      placeholder="코멘트 (선택)"
-                      className="flex-1 p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                    />
-                    <button
-                      type="submit"
-                      className="px-5 py-3 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 shrink-0"
-                    >
-                      추가
-                    </button>
-                  </div>
+                  <button
+                    type="submit"
+                    className="px-5 py-3 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 shrink-0"
+                  >
+                    추가
+                  </button>
                 </form>
               )}
 
@@ -841,7 +920,10 @@ export default function Home() {
                 {hasQuotes ? (
                   <QuoteList
                     quotes={activeReview.quotes!}
-                    onDelete={isOwner ? handleDeleteQuote : undefined}
+                    isOwner={isOwner}
+                    onDeleteQuote={isOwner ? handleDeleteQuote : undefined}
+                    onAddComment={isOwner ? handleAddComment : undefined}
+                    onDeleteComment={isOwner ? handleDeleteComment : undefined}
                   />
                 ) : (
                   <p className="text-sm text-gray-400 py-2">아직 추가된 인용문이 없습니다.</p>
@@ -1103,13 +1185,6 @@ export default function Home() {
                     value={initialQuote}
                     onChange={(e) => setInitialQuote(e.target.value)}
                     placeholder="인상 깊었던 문장을 입력해 보세요"
-                    className="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                  />
-                  <input
-                    type="text"
-                    value={initialComment}
-                    onChange={(e) => setInitialComment(e.target.value)}
-                    placeholder="코멘트 (선택)"
                     className="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
