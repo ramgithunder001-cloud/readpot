@@ -34,11 +34,12 @@ export default function Home() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
 
-  // 2. 독후감 작성 관련 상태
+  // 2. 독후감 작성/수정 관련 상태
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Book[]>([]);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   
+  const [editingReviewId, setEditingReviewId] = useState<string | null>(null); // 수정 중인 리뷰 ID
   const [rating, setRating] = useState<number>(5);
   const [hoverRating, setHoverRating] = useState<number>(0);
   const [status, setStatus] = useState<'completed' | 'reading'>('completed');
@@ -89,7 +90,7 @@ export default function Home() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setReviews([]);
-    setSelectedBook(null);
+    resetForm();
   };
 
   // 책 검색
@@ -109,7 +110,19 @@ export default function Home() {
     }
   };
 
-  // 독후감 저장
+  // 폼 초기화
+  const resetForm = () => {
+    setSelectedBook(null);
+    setEditingReviewId(null);
+    setQuote('');
+    setContent('');
+    setRating(5);
+    setStatus('completed');
+    setSearchResults([]);
+    setQuery('');
+  };
+
+  // 독후감 신규 생성 또는 수정 저장
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedBook || !user) return;
@@ -129,34 +142,43 @@ export default function Home() {
 
       if (bookError) throw bookError;
 
-      // 2. 독후감 DB 저장
-      const { error: reviewError } = await supabase.from('reviews').insert({
-        user_id: user.id,
-        book_isbn: primaryIsbn,
-        rating: status === 'reading' ? 0 : rating,
-        status: status,
-        quote: quote.trim() || null,
-        content: content.trim(),
-      });
+      if (editingReviewId) {
+        // [UPDATE] 독후감 수정
+        const { error: updateError } = await supabase
+          .from('reviews')
+          .update({
+            rating: status === 'reading' ? 0 : rating,
+            status: status,
+            quote: quote.trim() || null,
+            content: content.trim(),
+          })
+          .eq('id', editingReviewId);
 
-      if (reviewError) throw reviewError;
+        if (updateError) throw updateError;
+        alert('기록이 수정되었습니다! ✏️️');
+      } else {
+        // [CREATE] 독후감 신규 생성
+        const { error: reviewError } = await supabase.from('reviews').insert({
+          user_id: user.id,
+          book_isbn: primaryIsbn,
+          rating: status === 'reading' ? 0 : rating,
+          status: status,
+          quote: quote.trim() || null,
+          content: content.trim(),
+        });
 
-      alert('독후감이 성공적으로 기록되었습니다! 📚');
-      // 폼 초기화
-      setSelectedBook(null);
-      setQuote('');
-      setContent('');
-      setRating(5);
-      setStatus('completed');
-      setSearchResults([]);
-      setQuery('');
+        if (reviewError) throw reviewError;
+        alert('독후감이 성공적으로 기록되었습니다! 📚');
+      }
+
+      resetForm();
       fetchReviews();
     } catch (err: any) {
       alert(`저장 실패: ${err.message}`);
     }
   };
 
-  // 저장된 독후감 불러오기
+  // [READ] 저장된 독후감 불러오기
   const fetchReviews = async () => {
     const { data, error } = await supabase
       .from('reviews')
@@ -165,6 +187,39 @@ export default function Home() {
 
     if (!error && data) {
       setReviews(data as any);
+    }
+  };
+
+  // [EDIT START] 수정 모드 진입
+  const handleStartEdit = (rev: Review) => {
+    setEditingReviewId(rev.id);
+    setSelectedBook({
+      title: rev.books.title,
+      authors: [rev.books.author],
+      publisher: '',
+      isbn: '', // 기존에 등록된 책 정보 사용
+      thumbnail: rev.books.cover_url,
+    });
+    setRating(rev.rating || 5);
+    setStatus(rev.status || 'completed');
+    setQuote(rev.quote || '');
+    setContent(rev.content || '');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // [DELETE] 독후감 삭제
+  const handleDeleteReview = async (id: string) => {
+    if (!confirm('정말 이 독서를 삭제하시겠습니까?')) return;
+
+    try {
+      const { error } = await supabase.from('reviews').delete().eq('id', id);
+      if (error) throw error;
+
+      alert('삭제되었습니다.');
+      if (editingReviewId === id) resetForm();
+      fetchReviews();
+    } catch (err: any) {
+      alert(`삭제 실패: ${err.message}`);
     }
   };
 
@@ -292,7 +347,10 @@ export default function Home() {
                       </div>
                     </div>
                     <button
-                      onClick={() => setSelectedBook(book)}
+                      onClick={() => {
+                        setEditingReviewId(null);
+                        setSelectedBook(book);
+                      }}
                       className="px-3 py-1.5 text-xs font-medium bg-gray-100 text-black border border-gray-300 rounded-lg hover:bg-black hover:text-white transition shrink-0"
                     >
                       선택
@@ -303,14 +361,16 @@ export default function Home() {
             )}
           </div>
 
-          {/* 2. 독후감 및 인용구 작성 폼 */}
+          {/* 2. 독후감 및 인용구 작성/수정 폼 */}
           {selectedBook ? (
             <div className="bg-white p-6 rounded-2xl border-2 border-black shadow-md space-y-5">
               <div className="flex items-center justify-between border-b pb-3 border-gray-100">
-                <h2 className="text-base font-bold">✍️ 기록 작성하기</h2>
+                <h2 className="text-base font-bold">
+                  {editingReviewId ? '✏️ 기록 수정하기' : '✍️️ 기록 작성하기'}
+                </h2>
                 <button
-                  onClick={() => setSelectedBook(null)}
-                  className="text-xs text-gray-400 hover:text-gray-700"
+                  onClick={resetForm}
+                  className="text-xs text-gray-400 hover:text-gray-700 underline"
                 >
                   취소
                 </button>
@@ -411,13 +471,13 @@ export default function Home() {
                   type="submit"
                   className="w-full py-3.5 bg-black text-white font-semibold text-sm rounded-xl hover:bg-gray-800 transition"
                 >
-                  기록 저장하기
+                  {editingReviewId ? '수정사항 저장하기' : '기록 저장하기'}
                 </button>
               </form>
             </div>
           ) : (
             <div className="bg-white p-8 rounded-2xl border border-dashed border-gray-300 text-center text-gray-400 text-sm">
-              위 검색창에서 책을 검색하고 선택하면<br />독후감 및 인용구를 작성할 수 있습니다.
+              위 검색창에서 책을 검색하거나,<br />우측 내 서재 카드에서 ✏️ 버튼을 눌러 수정할 수 있습니다.
             </div>
           )}
         </section>
@@ -442,7 +502,14 @@ export default function Home() {
             ) : (
               <div className="space-y-4">
                 {reviews.map((rev) => (
-                  <div key={rev.id} className="p-4 border border-gray-100 rounded-2xl bg-gray-50 hover:border-gray-300 transition flex gap-4">
+                  <div
+                    key={rev.id}
+                    className={`p-4 border rounded-2xl transition flex gap-4 ${
+                      editingReviewId === rev.id
+                        ? 'border-black bg-amber-50/50 shadow-sm'
+                        : 'border-gray-100 bg-gray-50 hover:border-gray-300'
+                    }`}
+                  >
                     <img
                       src={rev.books.cover_url}
                       alt={rev.books.title}
@@ -454,16 +521,36 @@ export default function Home() {
                           <h3 className="font-bold text-base truncate">{rev.books.title}</h3>
                           <p className="text-xs text-gray-500">{rev.books.author}</p>
                         </div>
-                        {rev.status === 'reading' ? (
-                          <span className="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full shrink-0">
-                            📖 읽는 중
-                          </span>
-                        ) : (
-                          <div className="flex items-center text-amber-400 text-sm shrink-0">
-                            {'★'.repeat(rev.rating)}
-                            <span className="text-gray-300">{'★'.repeat(5 - rev.rating)}</span>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {rev.status === 'reading' ? (
+                            <span className="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full">
+                              📖 읽는 중
+                            </span>
+                          ) : (
+                            <div className="flex items-center text-amber-400 text-sm">
+                              {'★'.repeat(rev.rating)}
+                              <span className="text-gray-300">{'★'.repeat(5 - rev.rating)}</span>
+                            </div>
+                          )}
+
+                          {/* 수정 / 삭제 버튼 */}
+                          <div className="flex items-center gap-1 border-l pl-2 border-gray-200">
+                            <button
+                              onClick={() => handleStartEdit(rev)}
+                              className="p-1 text-xs text-gray-500 hover:text-black transition"
+                              title="수정"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              onClick={() => handleDeleteReview(rev.id)}
+                              className="p-1 text-xs text-gray-400 hover:text-red-500 transition"
+                              title="삭제"
+                            >
+                              🗑️
+                            </button>
                           </div>
-                        )}
+                        </div>
                       </div>
 
                       {/* 인용구 영역 */}
