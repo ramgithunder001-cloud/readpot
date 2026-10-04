@@ -31,7 +31,7 @@ interface Review {
   book_isbn: string;
   rating: number;
   content: string;
-  status: 'reading' | 'completed';
+  status: Status;
   created_at: string;
   books: {
     title: string;
@@ -41,7 +41,15 @@ interface Review {
   quotes?: QuoteItem[];
 }
 
-type Tab = 'mine' | 'community';
+type Tab = 'mine' | 'community' | 'profile';
+type Status = 'wishlist' | 'reading' | 'completed';
+
+interface Profile {
+  nickname: string;
+  seal_text: string | null;
+  seal_color: string | null;
+  seal_style: string | null;
+}
 
 const byCreated = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
@@ -633,6 +641,88 @@ function QuoteList({
   );
 }
 
+/* ---------- 인장(도장) ---------- */
+
+const SEAL_COLORS: Record<string, { label: string; hex: string }> = {
+  ink: { label: '먹색', hex: '#111111' },
+  red: { label: '붉은색', hex: '#CC0000' },
+  grey: { label: '회색', hex: '#525252' },
+};
+
+const SEAL_STYLES: [string, string][] = [
+  ['solid', '채움'],
+  ['outline', '테두리'],
+  ['double', '겹테두리'],
+];
+
+// 닉네임 옆에 찍히는 네모난 도장. 1~2글자, 색 3종, 모양 3종
+function Seal({
+  text,
+  color = 'ink',
+  styleType = 'solid',
+  size = 20,
+}: {
+  text: string;
+  color?: string;
+  styleType?: string;
+  size?: number;
+}) {
+  const hex = (SEAL_COLORS[color] ?? SEAL_COLORS.ink).hex;
+  const w = Math.max(1, Math.round(size / 14));
+  const chars = Array.from(text || '').slice(0, 2).join('');
+  const len = Array.from(chars).length;
+
+  const common: React.CSSProperties = {
+    width: size,
+    height: size,
+    fontSize: len > 1 ? size * 0.42 : size * 0.6,
+    lineHeight: 1,
+    fontWeight: 900,
+    letterSpacing: len > 1 ? '-0.04em' : '0',
+    transform: 'rotate(-4deg)',
+  };
+
+  let extra: React.CSSProperties;
+  if (styleType === 'outline') {
+    extra = { color: hex, border: `${w}px solid ${hex}`, background: 'transparent' };
+  } else if (styleType === 'double') {
+    extra = {
+      color: hex,
+      border: `${w}px solid ${hex}`,
+      background: 'transparent',
+      boxShadow: `inset 0 0 0 ${w}px #F9F9F7, inset 0 0 0 ${w * 2}px ${hex}`,
+    };
+  } else {
+    extra = { color: '#F9F9F7', background: hex, border: `${w}px solid ${hex}` };
+  }
+
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-flex shrink-0 items-center justify-center select-none"
+      style={{ ...common, ...extra }}
+    >
+      {chars}
+    </span>
+  );
+}
+
+// 읽고 싶은 책 배지
+function WishBadge() {
+  return (
+    <span className="inline-block border border-[#111111] px-2 py-0.5 text-[11px] font-semibold tracking-widest">
+      읽고 싶음
+    </span>
+  );
+}
+
+// 상태에 따라 배지 또는 별점을 보여줌
+function StatusCell({ review, size = 13 }: { review: Review; size?: number }) {
+  if (review.status === 'reading') return <ReadingBadge />;
+  if (review.status === 'wishlist') return <WishBadge />;
+  return <RatingDisplay value={review.rating} size={size} />;
+}
+
 function Footer() {
   return (
     <footer className="mt-12 border-t-4 border-[#111111]">
@@ -658,14 +748,13 @@ export default function Home() {
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Book[]>([]);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
-  const [isReading, setIsReading] = useState(false);
+  const [regStatus, setRegStatus] = useState<Status>('completed');
   const [rating, setRating] = useState<number>(0);
-  const [initialQuote, setInitialQuote] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
 
   // 데이터 (모든 유저의 글 + 닉네임)
   const [allReviews, setAllReviews] = useState<Review[]>([]);
-  const [profiles, setProfiles] = useState<Record<string, string>>({});
+  const [profiles, setProfiles] = useState<Record<string, Profile>>({});
 
   // 화면 상태
   const [tab, setTab] = useState<Tab>('mine');
@@ -676,6 +765,11 @@ export default function Home() {
   const [isEditingContent, setIsEditingContent] = useState(false);
   const [editContentText, setEditContentText] = useState('');
   const [today, setToday] = useState('');
+
+  // 프로필 편집
+  const [draft, setDraft] = useState({ nickname: '', sealText: '', sealColor: 'ink', sealStyle: 'solid' });
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileMsg, setProfileMsg] = useState('');
 
   // 날짜는 브라우저에서만 계산 (서버/브라우저 시간 차이로 인한 오류 방지)
   useEffect(() => {
@@ -689,11 +783,19 @@ export default function Home() {
     );
   }, []);
 
-  const nameOf = (userId: string) => {
-    if (profiles[userId]) return profiles[userId];
-    if (user && userId === user.id) return (user.email || '나').split('@')[0];
-    return '알 수 없음';
+  // 닉네임/인장 정보 (없으면 기본값: 닉네임 첫 글자, 먹색, 채움)
+  const profileOf = (userId: string) => {
+    const p = profiles[userId];
+    const nickname =
+      p?.nickname || (user && userId === user.id ? (user.email || '나').split('@')[0] : '알 수 없음');
+    return {
+      nickname,
+      seal_text: p?.seal_text || Array.from(nickname)[0] || '?',
+      seal_color: p?.seal_color || 'ink',
+      seal_style: p?.seal_style || 'solid',
+    };
   };
+  const nameOf = (userId: string) => profileOf(userId).nickname;
 
   const myReviews = allReviews.filter((r) => r.user_id === user?.id);
   const activeReview = allReviews.find((r) => r.id === activeId) ?? null;
@@ -703,22 +805,32 @@ export default function Home() {
     : [];
 
   const loadData = useCallback(async (u: User) => {
-    const [reviewsRes, profilesRes] = await Promise.all([
-      supabase
-        .from('reviews')
-        .select(
-          'id, user_id, book_isbn, rating, status, content, created_at, books(title, author, cover_url), quotes(id, content, created_at, quote_comments(id, content, created_at))'
-        )
-        .order('created_at', { ascending: false }),
-      supabase.from('profiles').select('id, nickname'),
-    ]);
+    const reviewsRes = await supabase
+      .from('reviews')
+      .select(
+        'id, user_id, book_isbn, rating, status, content, created_at, books(title, author, cover_url), quotes(id, content, created_at, quote_comments(id, content, created_at))'
+      )
+      .order('created_at', { ascending: false });
+
+    // 인장 컬럼이 아직 없으면 닉네임만 불러옴
+    let profilesRes: any = await supabase
+      .from('profiles')
+      .select('id, nickname, seal_text, seal_color, seal_style');
+    if (profilesRes.error) {
+      profilesRes = await supabase.from('profiles').select('id, nickname');
+    }
 
     if (reviewsRes.error) console.error('reviews 에러:', reviewsRes.error.message);
     if (profilesRes.error) console.error('profiles 에러:', profilesRes.error.message);
 
-    const map: Record<string, string> = {};
+    const map: Record<string, Profile> = {};
     (profilesRes.data || []).forEach((p: any) => {
-      map[p.id] = p.nickname;
+      map[p.id] = {
+        nickname: p.nickname,
+        seal_text: p.seal_text ?? null,
+        seal_color: p.seal_color ?? null,
+        seal_style: p.seal_style ?? null,
+      };
     });
 
     // 내 프로필이 없으면 이메일 앞부분으로 자동 생성
@@ -727,7 +839,7 @@ export default function Home() {
       await supabase
         .from('profiles')
         .upsert({ id: u.id, nickname: nick }, { onConflict: 'id', ignoreDuplicates: true });
-      map[u.id] = nick;
+      map[u.id] = { nickname: nick, seal_text: null, seal_color: null, seal_style: null };
     }
     setProfiles(map);
 
@@ -797,19 +909,42 @@ export default function Home() {
     setActiveId(null);
   };
 
-  const handleChangeNickname = async () => {
+  const handleSaveProfile = async () => {
     if (!user) return;
-    const next = window.prompt('새 닉네임을 입력해 주세요 (20자 이내)', nameOf(user.id));
-    if (next === null) return;
-    const trimmed = next.trim();
-    if (!trimmed) return alert('닉네임을 입력해 주세요.');
-    if (trimmed.length > 20) return alert('닉네임은 20자 이내로 입력해 주세요.');
+    setProfileMsg('');
 
-    const { error } = await supabase
-      .from('profiles')
-      .upsert({ id: user.id, nickname: trimmed }, { onConflict: 'id' });
-    if (error) return alert(`닉네임 변경 실패: ${error.message}`);
-    refresh();
+    const nick = draft.nickname.trim();
+    if (!nick) return alert('닉네임을 입력해 주세요.');
+    if (Array.from(nick).length > 16) return alert('닉네임은 16자 이내로 입력해 주세요.');
+
+    const taken = Object.entries(profiles).some(
+      ([id, p]) => id !== user.id && p.nickname.toLowerCase() === nick.toLowerCase()
+    );
+    if (taken) return alert('이미 사용 중인 닉네임이에요.');
+
+    const sealText = Array.from(draft.sealText.trim()).slice(0, 2).join('');
+
+    setProfileSaving(true);
+    const { error } = await supabase.from('profiles').upsert(
+      {
+        id: user.id,
+        nickname: nick,
+        seal_text: sealText || null,
+        seal_color: draft.sealColor,
+        seal_style: draft.sealStyle,
+      },
+      { onConflict: 'id' }
+    );
+    setProfileSaving(false);
+
+    if (error) {
+      if (error.message.includes('seal_')) {
+        return alert('인장 저장에 필요한 컬럼이 아직 없어요. Supabase에서 안내드린 SQL을 먼저 실행해 주세요.');
+      }
+      return alert(`프로필 저장 실패: ${error.message}`);
+    }
+    await refresh();
+    setProfileMsg('저장했어요.');
   };
 
   // ---------- 책 검색 / 등록 ----------
@@ -866,27 +1001,17 @@ export default function Home() {
         .insert({
           user_id: user.id,
           book_isbn: primaryIsbn,
-          rating: isReading ? 0 : rating,
-          status: isReading ? 'reading' : 'completed',
+          rating: regStatus === 'completed' ? rating : 0,
+          status: regStatus,
           content: '',
         })
         .select()
         .single();
       if (reviewError) throw reviewError;
 
-      if (initialQuote.trim() && reviewData) {
-        const { error: quoteError } = await supabase.from('quotes').insert({
-          review_id: reviewData.id,
-          user_id: user.id,
-          content: initialQuote.trim(),
-        });
-        if (quoteError) throw quoteError;
-      }
-
       setSelectedBook(null);
-      setInitialQuote('');
       setRating(0);
-      setIsReading(false);
+      setRegStatus('completed');
       setSearchResults([]);
       setQuery('');
       await loadData(user);
@@ -902,10 +1027,9 @@ export default function Home() {
   };
 
   // ---------- 상태 / 별점 수정 ----------
-  const handleUpdateStatus = async (nextReading: boolean, nextRating: number) => {
+  const handleUpdateStatus = async (nextStatus: Status, nextRating: number) => {
     if (!activeReview || !isOwner) return;
-    const nextStatus = nextReading ? 'reading' : 'completed';
-    const savedRating = nextReading ? 0 : nextRating;
+    const savedRating = nextStatus === 'completed' ? nextRating : 0;
 
     // 화면 먼저 반영
     setAllReviews((prev) =>
@@ -1025,6 +1149,16 @@ export default function Home() {
     setTab(t);
     setActiveId(null);
     setBoardFilter('');
+    if (t === 'profile' && user) {
+      const p = profiles[user.id];
+      setDraft({
+        nickname: profileOf(user.id).nickname,
+        sealText: p?.seal_text ?? '',
+        sealColor: p?.seal_color || 'ink',
+        sealStyle: p?.seal_style || 'solid',
+      });
+      setProfileMsg('');
+    }
   };
 
   const matchesFilter = (r: Review) => {
@@ -1094,6 +1228,19 @@ export default function Home() {
   }
 
   // ---------- 공통 헤더 (신문 제호) ----------
+  const mySeal = profileOf(user.id);
+
+  // 인장 + 닉네임
+  const renderByline = (userId: string, size = 18, className = '') => {
+    const p = profileOf(userId);
+    return (
+      <span className={`inline-flex items-center gap-1.5 min-w-0 ${className}`}>
+        <Seal text={p.seal_text} color={p.seal_color} styleType={p.seal_style} size={size} />
+        <span className="truncate">{p.nickname}</span>
+      </span>
+    );
+  };
+
   const header = (
     <header className="sticky top-0 z-40 bg-[#F9F9F7] border-b-4 border-[#111111]">
       <div className="bg-[#111111] text-[#F9F9F7]">
@@ -1128,11 +1275,14 @@ export default function Home() {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={handleChangeNickname}
-            title="닉네임 변경"
-            className={`hidden sm:inline-flex items-center min-h-[44px] text-xs font-semibold tracking-widest hover:text-[#CC0000] transition-colors duration-200 ${FOCUS}`}
+            onClick={() => goTab('profile')}
+            title="프로필 편집"
+            className={`inline-flex items-center gap-2 min-h-[44px] px-2 text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
+              tab === 'profile' ? 'underline decoration-2 decoration-[#CC0000] underline-offset-8' : 'hover:text-[#CC0000]'
+            }`}
           >
-            {nameOf(user.id)}
+            <Seal text={mySeal.seal_text} color={mySeal.seal_color} styleType={mySeal.seal_style} size={26} />
+            <span className="hidden sm:inline">{mySeal.nickname}</span>
           </button>
           <button onClick={handleLogout} className={BTN_OUTLINE}>
             로그아웃
@@ -1145,8 +1295,8 @@ export default function Home() {
   // ---------- 게시판 표 ----------
   const renderBoard = (list: Review[], showAuthor: boolean) => {
     const col = showAuthor
-      ? { title: 'sm:col-span-4', author: 'sm:col-span-2', nick: 'sm:col-span-2', status: 'sm:col-span-2', quotes: 'sm:col-span-1', date: 'sm:col-span-1' }
-      : { title: 'sm:col-span-5', author: 'sm:col-span-2', nick: '', status: 'sm:col-span-2', quotes: 'sm:col-span-2', date: 'sm:col-span-1' };
+      ? { title: 'sm:col-span-4', author: 'sm:col-span-2', nick: 'sm:col-span-3', status: 'sm:col-span-2', date: 'sm:col-span-1' }
+      : { title: 'sm:col-span-6', author: 'sm:col-span-3', nick: '', status: 'sm:col-span-2', date: 'sm:col-span-1' };
 
     return (
       <>
@@ -1156,7 +1306,6 @@ export default function Home() {
           <span className={col.author}>저자</span>
           {showAuthor && <span className={col.nick}>작성자</span>}
           <span className={`${col.status} text-center`}>상태 / 별점</span>
-          <span className={`${col.quotes} text-center`}>인용문</span>
           <span className={`${col.date} text-right`}>날짜</span>
         </div>
 
@@ -1181,20 +1330,13 @@ export default function Home() {
                 {rev.books.author}
               </span>
               {showAuthor && (
-                <span className={`col-span-6 ${col.nick} text-xs font-semibold truncate`}>
-                  {nameOf(rev.user_id)}
+                <span className={`col-span-6 ${col.nick} text-xs font-semibold min-w-0`}>
+                  {renderByline(rev.user_id, 18)}
                 </span>
               )}
               <div className={`col-span-6 ${col.status} flex sm:justify-center`}>
-                {rev.status === 'reading' ? (
-                  <ReadingBadge />
-                ) : (
-                  <RatingDisplay value={rev.rating} size={13} />
-                )}
+                <StatusCell review={rev} size={13} />
               </div>
-              <span className={`col-span-6 ${col.quotes} sm:text-center text-xs text-[#525252]`}>
-                인용문 {rev.quotes?.length || 0}
-              </span>
               <span className={`hidden sm:block ${col.date} text-right text-[11px] text-[#737373]`}>
                 {new Date(rev.created_at).toLocaleDateString('ko-KR', {
                   month: 'numeric',
@@ -1213,7 +1355,9 @@ export default function Home() {
     const hasQuotes = (activeReview.quotes?.length || 0) > 0;
     const showReview = (isEditingContent && isOwner) || !!activeReview.content;
     const showQuotes = isOwner || hasQuotes;
-    const hasSidebar = otherReviews.length > 0;
+    // 읽고 싶은 책으로만 담아 둔 사람은 '읽은 사람'에 넣지 않음
+    const readers = otherReviews.filter((r) => r.status !== 'wishlist');
+    const hasSidebar = readers.length > 0;
 
     return (
       <div className="min-h-screen text-[#111111]">
@@ -1225,7 +1369,7 @@ export default function Home() {
           </button>
 
           <article className="border border-[#111111] bg-[#F9F9F7]">
-            {/* 책 정보 블록: 우측 상단에 읽는 중 / 독후감 추가 버튼 */}
+            {/* 책 정보 블록: 우측 상단에 읽고 싶은 책 / 읽는 중 / 독후감 추가 버튼 */}
             <section className="p-5 md:p-6 border-b-4 border-[#111111]">
               <div className="flex gap-5">
                 <img
@@ -1236,9 +1380,9 @@ export default function Home() {
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-[11px] uppercase tracking-widest text-[#737373]">
-                        {nameOf(activeReview.user_id)} &middot;{' '}
-                        {new Date(activeReview.created_at).toLocaleDateString('ko-KR')}
+                      <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-[#737373]">
+                        {renderByline(activeReview.user_id, 20, 'font-semibold text-[#111111]')}
+                        <span>&middot; {new Date(activeReview.created_at).toLocaleDateString('ko-KR')}</span>
                       </p>
                       <h2 className="mt-1 text-3xl md:text-4xl font-black tracking-tight leading-tight">
                         {activeReview.books.title}
@@ -1249,9 +1393,23 @@ export default function Home() {
                     {isOwner && (
                       <div className="flex flex-wrap gap-2 shrink-0">
                         <ToggleButton
+                          pressed={activeReview.status === 'wishlist'}
+                          onClick={() =>
+                            handleUpdateStatus(
+                              activeReview.status === 'wishlist' ? 'completed' : 'wishlist',
+                              activeReview.rating
+                            )
+                          }
+                        >
+                          읽고 싶은 책
+                        </ToggleButton>
+                        <ToggleButton
                           pressed={activeReview.status === 'reading'}
                           onClick={() =>
-                            handleUpdateStatus(activeReview.status !== 'reading', activeReview.rating)
+                            handleUpdateStatus(
+                              activeReview.status === 'reading' ? 'completed' : 'reading',
+                              activeReview.rating
+                            )
                           }
                         >
                           읽는 중
@@ -1267,20 +1425,20 @@ export default function Home() {
 
                   <div className="mt-4">
                     {isOwner ? (
-                      activeReview.status !== 'reading' && (
+                      activeReview.status === 'completed' && (
                         <RatingInput
                           value={activeReview.rating}
-                          onChange={(v) => handleUpdateStatus(false, v)}
+                          onChange={(v) => handleUpdateStatus('completed', v)}
                           size={26}
                         />
                       )
-                    ) : activeReview.status === 'reading' ? (
-                      <ReadingBadge />
-                    ) : (
+                    ) : activeReview.status === 'completed' ? (
                       <div className="flex items-center gap-2">
                         <RatingDisplay value={activeReview.rating} size={22} />
                         <span className="text-sm font-semibold">{activeReview.rating}점</span>
                       </div>
+                    ) : (
+                      <StatusCell review={activeReview} />
                     )}
                   </div>
                 </div>
@@ -1394,7 +1552,7 @@ export default function Home() {
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-xl font-black tracking-tight">
                       같은 책을 읽은 사람{' '}
-                      <span className="text-sm font-semibold text-[#737373]">({otherReviews.length})</span>
+                      <span className="text-sm font-semibold text-[#737373]">({readers.length})</span>
                     </h3>
                     <ToggleButton pressed={showOthers} onClick={() => setShowOthers(!showOthers)}>
                       함께 보기
@@ -1402,15 +1560,11 @@ export default function Home() {
                   </div>
 
                   {showOthers &&
-                    otherReviews.map((o) => (
+                    readers.map((o) => (
                       <div key={o.id} className="border-t border-[#111111] pt-4 space-y-3">
                         <div className="flex items-center gap-3">
-                          <span className="font-bold text-sm">{nameOf(o.user_id)}</span>
-                          {o.status === 'reading' ? (
-                            <ReadingBadge />
-                          ) : (
-                            <RatingDisplay value={o.rating} size={14} />
-                          )}
+                          <span className="font-bold text-sm min-w-0">{renderByline(o.user_id, 22)}</span>
+                          <StatusCell review={o} size={14} />
                         </div>
 
                         {o.quotes && o.quotes.length > 0 && <QuoteList quotes={o.quotes} />}
@@ -1453,9 +1607,172 @@ export default function Home() {
     );
   }
 
-  // ---------- 전체 서재 (모든 유저의 글) ----------
+  // ---------- 프로필 (닉네임 + 인장) ----------
+  if (tab === 'profile') {
+    const completedCount = myReviews.filter((r) => r.status === 'completed').length;
+    const readingCount = myReviews.filter((r) => r.status === 'reading').length;
+    const wishCount = myReviews.filter((r) => r.status === 'wishlist').length;
+    const quoteCount = myReviews.reduce((sum, r) => sum + (r.quotes?.length || 0), 0);
+
+    const previewNick = draft.nickname.trim() || '닉네임';
+    const previewSeal =
+      Array.from(draft.sealText.trim()).slice(0, 2).join('') || Array.from(previewNick)[0] || '?';
+
+    const stats: [string, number][] = [
+      ['읽은 책', completedCount],
+      ['읽는 중', readingCount],
+      ['읽고 싶은 책', wishCount],
+      ['모은 인용문', quoteCount],
+    ];
+
+    return (
+      <div className="min-h-screen text-[#111111]">
+        <GlobalStyle />
+        {header}
+        <main className="max-w-screen-xl mx-auto px-4 py-8">
+          <div className="border border-[#111111] bg-[#F9F9F7] grid grid-cols-1 lg:grid-cols-12">
+            {/* 왼쪽 5칸: 편집 */}
+            <section className="lg:col-span-5 p-5 md:p-6 border-b lg:border-b-0 lg:border-r border-[#111111] space-y-6">
+              <div className="border-b-2 border-[#111111] pb-2">
+                <p className="text-[11px] uppercase tracking-widest text-[#737373]">Profile</p>
+                <h2 className="text-xl font-black tracking-tight">닉네임과 인장</h2>
+              </div>
+
+              <div>
+                <label className={LABEL}>닉네임</label>
+                <input
+                  type="text"
+                  value={draft.nickname}
+                  onChange={(e) =>
+                    setDraft({ ...draft, nickname: Array.from(e.target.value).slice(0, 16).join('') })
+                  }
+                  placeholder="다른 사람에게 보이는 이름"
+                  className={INPUT}
+                />
+                <p className="mt-1 text-xs text-[#737373]">
+                  {Array.from(draft.nickname).length}/16 &middot; 다른 사람과 겹치면 쓸 수 없어요.
+                </p>
+              </div>
+
+              <div>
+                <label className={LABEL}>인장 글자</label>
+                <input
+                  type="text"
+                  value={draft.sealText}
+                  onChange={(e) =>
+                    setDraft({ ...draft, sealText: Array.from(e.target.value).slice(0, 2).join('') })
+                  }
+                  placeholder="비우면 닉네임 첫 글자"
+                  className={INPUT}
+                />
+                <p className="mt-1 text-xs text-[#737373]">1~2글자까지 새길 수 있어요.</p>
+              </div>
+
+              <div>
+                <label className={LABEL}>인장 색</label>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {Object.entries(SEAL_COLORS).map(([key, c]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      aria-pressed={draft.sealColor === key}
+                      onClick={() => setDraft({ ...draft, sealColor: key })}
+                      className={`inline-flex items-center gap-2 min-h-[44px] px-4 border border-[#111111] text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
+                        draft.sealColor === key ? 'bg-[#111111] text-[#F9F9F7]' : 'hover:bg-[#F5F5F5]'
+                      }`}
+                    >
+                      <span
+                        className="inline-block w-4 h-4 border border-[#A3A3A3]"
+                        style={{ background: c.hex }}
+                      />
+                      {c.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className={LABEL}>인장 모양</label>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {SEAL_STYLES.map(([key, label]) => (
+                    <ToggleButton
+                      key={key}
+                      pressed={draft.sealStyle === key}
+                      onClick={() => setDraft({ ...draft, sealStyle: key })}
+                    >
+                      {label}
+                    </ToggleButton>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 pt-2 border-t border-[#111111]">
+                <button onClick={handleSaveProfile} disabled={profileSaving} className={`${BTN} mt-4`}>
+                  {profileSaving ? '저장 중...' : '저장'}
+                </button>
+                {profileMsg && <span className="mt-4 text-xs font-semibold">{profileMsg}</span>}
+              </div>
+            </section>
+
+            {/* 오른쪽 7칸: 미리보기 + 기록 */}
+            <section className="lg:col-span-7">
+              <div className="px-5 py-4 border-b-4 border-[#111111]">
+                <p className="text-[11px] uppercase tracking-widest text-[#737373]">Preview</p>
+                <h2 className="text-3xl font-black tracking-tight">미리보기</h2>
+              </div>
+
+              <div className="p-5 md:p-6 space-y-6">
+                <div className="flex items-center gap-5">
+                  <Seal text={previewSeal} color={draft.sealColor} styleType={draft.sealStyle} size={88} />
+                  <div className="min-w-0">
+                    <p className="text-[11px] uppercase tracking-widest text-[#737373]">Reader</p>
+                    <p className="text-3xl font-black tracking-tight truncate">{previewNick}</p>
+                  </div>
+                </div>
+
+                <div className="border-t border-[#111111] pt-4 space-y-2">
+                  <p className={LABEL}>이렇게 보여요</p>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+                    <span className="inline-flex items-center gap-1.5 font-semibold">
+                      <Seal text={previewSeal} color={draft.sealColor} styleType={draft.sealStyle} size={18} />
+                      {previewNick}
+                    </span>
+                    <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#737373]">
+                      <Seal text={previewSeal} color={draft.sealColor} styleType={draft.sealStyle} size={22} />
+                      <span>
+                        {previewNick} &middot; {today}
+                      </span>
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#737373]">
+                    인장은 전체 서재 목록, 글 상세 화면, 같은 책을 읽은 사람 목록에서 닉네임 옆에 찍혀요.
+                  </p>
+                </div>
+
+                <div>
+                  <p className={LABEL}>나의 기록</p>
+                  <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 border-t border-l border-[#111111]">
+                    {stats.map(([label, n]) => (
+                      <div key={label} className="p-4 border-r border-b border-[#111111]">
+                        <p className="text-3xl font-black tracking-tight">{n}</p>
+                        <p className="mt-1 text-[11px] uppercase tracking-widest text-[#737373]">{label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // ---------- 전체 서재 (모든 유저의 글, 읽고 싶은 책은 제외) ----------
   if (tab === 'community') {
-    const list = allReviews.filter(matchesFilter);
+    const published = allReviews.filter((r) => r.status !== 'wishlist');
+    const list = published.filter(matchesFilter);
 
     return (
       <div className="min-h-screen text-[#111111]">
@@ -1468,7 +1785,7 @@ export default function Home() {
                 <p className="text-[11px] uppercase tracking-widest text-[#737373]">Everyone&apos;s Shelf</p>
                 <h2 className="text-3xl font-black tracking-tight">
                   전체 서재{' '}
-                  <span className="text-sm font-semibold text-[#737373]">총 {allReviews.length}개의 기록</span>
+                  <span className="text-sm font-semibold text-[#737373]">총 {published.length}개의 기록</span>
                 </h2>
               </div>
               <input
@@ -1483,7 +1800,7 @@ export default function Home() {
             {list.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-[#737373]">
                 <p className="text-sm">
-                  {allReviews.length === 0 ? '아직 올라온 글이 없습니다.' : '검색 결과가 없습니다.'}
+                  {published.length === 0 ? '아직 올라온 글이 없습니다.' : '검색 결과가 없습니다.'}
                 </p>
               </div>
             ) : (
@@ -1497,7 +1814,10 @@ export default function Home() {
   }
 
   // ---------- 내 서재 ----------
-  const myList = myReviews.filter(matchesFilter);
+  const myShelf = myReviews.filter((r) => r.status !== 'wishlist');
+  const myWishlist = myReviews.filter((r) => r.status === 'wishlist');
+  const shelfList = myShelf.filter(matchesFilter);
+  const wishList = myWishlist.filter(matchesFilter);
 
   return (
     <div className="min-h-screen text-[#111111]">
@@ -1540,7 +1860,10 @@ export default function Home() {
                         <p className="text-xs text-[#525252] truncate">{book.authors.join(', ')}</p>
                       </div>
                     </div>
-                    <button onClick={() => setSelectedBook(book)} className={`${BTN_OUTLINE} !min-h-[36px] !px-3 shrink-0`}>
+                    <button
+                      onClick={() => setSelectedBook(book)}
+                      className={`${BTN_OUTLINE} !min-h-[36px] !px-3 shrink-0`}
+                    >
                       선택
                     </button>
                   </div>
@@ -1570,63 +1893,94 @@ export default function Home() {
                 </div>
 
                 <form onSubmit={handleSubmitReview} className="space-y-5">
-                  <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
-                    <ToggleButton pressed={isReading} onClick={() => setIsReading(!isReading)}>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <ToggleButton
+                      pressed={regStatus === 'wishlist'}
+                      onClick={() => setRegStatus(regStatus === 'wishlist' ? 'completed' : 'wishlist')}
+                    >
+                      읽고 싶은 책
+                    </ToggleButton>
+                    <ToggleButton
+                      pressed={regStatus === 'reading'}
+                      onClick={() => setRegStatus(regStatus === 'reading' ? 'completed' : 'reading')}
+                    >
                       읽는 중
                     </ToggleButton>
-                    {!isReading && <RatingInput value={rating} onChange={setRating} size={26} />}
                   </div>
 
-                  <div>
-                    <label className={LABEL}>첫 번째 인용문 (선택)</label>
-                    <input
-                      type="text"
-                      value={initialQuote}
-                      onChange={(e) => setInitialQuote(e.target.value)}
-                      placeholder="인상 깊었던 문장을 입력해 보세요"
-                      className={INPUT}
-                    />
-                  </div>
+                  {regStatus === 'completed' && (
+                    <div>
+                      <label className={LABEL}>별점</label>
+                      <div className="mt-2">
+                        <RatingInput value={rating} onChange={setRating} size={26} />
+                      </div>
+                    </div>
+                  )}
 
                   <button type="submit" className={`${BTN} w-full`}>
-                    내 서재에 등록하기
+                    {regStatus === 'wishlist' ? '읽고 싶은 책에 담기' : '내 서재에 등록하기'}
                   </button>
                 </form>
               </div>
             )}
           </section>
 
-          {/* 오른쪽 8칸: 내 서재 게시판 */}
-          <section className="lg:col-span-8">
-            <div className="flex flex-wrap justify-between items-end gap-3 px-5 py-4 border-b-4 border-[#111111]">
-              <div>
-                <p className="text-[11px] uppercase tracking-widest text-[#737373]">My Shelf</p>
+          {/* 오른쪽 8칸: 내 서재 + 읽고 싶은 책 */}
+          <div className="lg:col-span-8">
+            <section>
+              <div className="flex flex-wrap justify-between items-end gap-3 px-5 py-4 border-b-4 border-[#111111]">
+                <div>
+                  <p className="text-[11px] uppercase tracking-widest text-[#737373]">My Shelf</p>
+                  <h2 className="text-3xl font-black tracking-tight">
+                    내 서재{' '}
+                    <span className="text-sm font-semibold text-[#737373]">총 {myShelf.length}권</span>
+                  </h2>
+                </div>
+                <input
+                  type="text"
+                  value={boardFilter}
+                  onChange={(e) => setBoardFilter(e.target.value)}
+                  placeholder="내 서재에서 찾기..."
+                  className={`${INPUT} sm:w-56`}
+                />
+              </div>
+
+              {shelfList.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-[#737373]">
+                  <p className="text-sm">
+                    {myShelf.length === 0
+                      ? '등록된 책이 없습니다. 왼쪽에서 책을 검색해 첫 글을 만들어 보세요.'
+                      : '검색 결과가 없습니다.'}
+                  </p>
+                </div>
+              ) : (
+                renderBoard(shelfList, false)
+              )}
+            </section>
+
+            {/* 읽고 싶은 책 칸 */}
+            <section className="border-t-4 border-[#111111]">
+              <div className="px-5 py-4 border-b-4 border-[#111111]">
+                <p className="text-[11px] uppercase tracking-widest text-[#737373]">Wish List</p>
                 <h2 className="text-3xl font-black tracking-tight">
-                  내 서재{' '}
-                  <span className="text-sm font-semibold text-[#737373]">총 {myReviews.length}권</span>
+                  읽고 싶은 책{' '}
+                  <span className="text-sm font-semibold text-[#737373]">총 {myWishlist.length}권</span>
                 </h2>
               </div>
-              <input
-                type="text"
-                value={boardFilter}
-                onChange={(e) => setBoardFilter(e.target.value)}
-                placeholder="내 서재에서 찾기..."
-                className={`${INPUT} sm:w-56`}
-              />
-            </div>
 
-            {myList.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-24 text-[#737373]">
-                <p className="text-sm">
-                  {myReviews.length === 0
-                    ? '등록된 책이 없습니다. 왼쪽에서 책을 검색해 첫 글을 만들어 보세요.'
-                    : '검색 결과가 없습니다.'}
-                </p>
-              </div>
-            ) : (
-              renderBoard(myList, false)
-            )}
-          </section>
+              {wishList.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-[#737373]">
+                  <p className="text-sm">
+                    {myWishlist.length === 0
+                      ? '읽고 싶은 책이 없습니다. 책을 검색해 "읽고 싶은 책"으로 담아 보세요.'
+                      : '검색 결과가 없습니다.'}
+                  </p>
+                </div>
+              ) : (
+                renderBoard(wishList, false)
+              )}
+            </section>
+          </div>
         </div>
       </main>
       <Footer />
