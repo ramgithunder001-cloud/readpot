@@ -46,19 +46,53 @@ type Tab = 'mine' | 'community';
 const byCreated = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
 
-/* ---------- 공통 UI 조각 ---------- */
+/* ---------- Newsprint 디자인 토큰 ----------
+   paper #F9F9F7 / ink #111111 / divider #E5E5E0 / accent #CC0000
+   둥근 모서리 없음, 검은 1px 테두리, 입력칸은 아래 선만 */
 
-// 프리텐다드 폰트를 전체에 적용
-function FontStyle() {
+const FOCUS =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2';
+
+// 기본 버튼: 검정 바탕, hover 시 흰 바탕으로 반전
+const BTN = `inline-flex items-center justify-center min-h-[44px] px-5 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+// 보조 버튼: 테두리만, hover 시 검정으로 채워짐
+const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[44px] px-5 border border-[#111111] bg-transparent text-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+// 작은 버튼
+const BTN_SM = `inline-flex items-center justify-center min-h-[36px] px-3 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] ${FOCUS}`;
+// 텍스트 링크형 버튼: hover 시 빨간 밑줄
+const LINK_BTN = `text-xs font-semibold tracking-widest text-[#111111] underline-offset-4 decoration-2 decoration-[#CC0000] hover:underline ${FOCUS}`;
+// 지우기 같은 위험 동작
+const DANGER_BTN = `text-xs text-[#737373] underline-offset-4 decoration-2 decoration-[#CC0000] hover:text-[#CC0000] hover:underline ${FOCUS}`;
+// 입력칸: 아래 2px 선만
+const INPUT = `w-full bg-transparent border-b-2 border-[#111111] px-1 py-2 text-sm placeholder:text-[#A3A3A3] focus:bg-[#F0F0F0] focus:outline-none`;
+// 큰 입력 영역(독후감)
+const TEXTAREA_BOX = `w-full bg-transparent border-2 border-[#111111] p-3 text-sm leading-relaxed placeholder:text-[#A3A3A3] focus:bg-[#F0F0F0] focus:outline-none`;
+// 작은 대문자 라벨
+const LABEL = 'block text-[11px] font-semibold uppercase tracking-widest text-[#111111]';
+
+// 프리텐다드 폰트 + 신문지 질감 배경 + 직각 모서리
+function GlobalStyle() {
   return (
     <style>{`
       @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
       body, body * {
         font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important;
       }
+      body code, body pre, body pre * {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Pretendard', monospace !important;
+      }
+      body {
+        color: #111111;
+        background-color: #F9F9F7 !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23111111' fill-opacity='0.04' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E") !important;
+      }
+      body * { border-radius: 0 !important; }
+      ::selection { background: #111111; color: #F9F9F7; }
     `}</style>
   );
 }
+
+/* ---------- 공통 UI 조각 ---------- */
 
 const STAR_PATH =
   'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z';
@@ -71,13 +105,13 @@ function Star({ fill, size = 20 }: { fill: number; size?: number }) {
         viewBox="0 0 24 24"
         width={size}
         height={size}
-        className="absolute inset-0 text-gray-200"
+        className="absolute inset-0 text-[#E5E5E0]"
         fill="currentColor"
       >
         <path d={STAR_PATH} />
       </svg>
       <span
-        className="absolute left-0 top-0 h-full overflow-hidden text-amber-400"
+        className="absolute left-0 top-0 h-full overflow-hidden text-[#111111]"
         style={{ width: `${fill * 100}%` }}
       >
         <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor">
@@ -134,39 +168,39 @@ function RatingInput({
           </span>
         ))}
       </div>
-      <span className="text-sm font-semibold text-gray-600">{value}점</span>
+      <span className="text-sm font-semibold">{value}점</span>
     </div>
   );
 }
 
-function Toggle({
-  checked,
-  onChange,
-  label,
+// 켜짐/꺼짐을 버튼으로 표현 (켜지면 검정으로 채워짐)
+function ToggleButton({
+  pressed,
+  onClick,
+  children,
 }: {
-  checked: boolean;
-  onChange: (v: boolean) => void;
-  label: string;
+  pressed: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
 }) {
   return (
     <button
       type="button"
-      role="switch"
-      aria-checked={checked}
-      onClick={() => onChange(!checked)}
-      className="flex items-center gap-2 focus:outline-none"
+      aria-pressed={pressed}
+      onClick={onClick}
+      className={pressed ? BTN : BTN_OUTLINE}
     >
-      <span
-        className={`relative w-10 h-6 rounded-full transition ${checked ? 'bg-amber-500' : 'bg-gray-300'}`}
-      >
-        <span
-          className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-            checked ? 'translate-x-4' : ''
-          }`}
-        />
-      </span>
-      <span className="text-sm font-medium text-gray-700">{label}</span>
+      {children}
     </button>
+  );
+}
+
+// 읽는 중 배지 (속보 배지처럼 빨간색)
+function ReadingBadge() {
+  return (
+    <span className="inline-block bg-[#CC0000] px-2 py-0.5 text-[11px] font-semibold tracking-widest text-white">
+      읽는 중
+    </span>
   );
 }
 
@@ -177,17 +211,338 @@ function ReplyIcon() {
       viewBox="0 0 24 24"
       width={14}
       height={14}
-      className="mt-1 shrink-0 text-gray-300"
+      className="mt-1 shrink-0 text-[#A3A3A3]"
       fill="none"
       stroke="currentColor"
-      strokeWidth={2.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      strokeWidth={2}
+      strokeLinecap="square"
+      strokeLinejoin="miter"
     >
       <path d="M5 4v7a3 3 0 0 0 3 3h11" />
       <path d="M15 10l4 4-4 4" />
     </svg>
   );
+}
+
+/* ---------- 디스코드 스타일 마크다운 ---------- */
+
+// 스포일러: 클릭하면 보임
+function Spoiler({ children }: { children: React.ReactNode }) {
+  const [shown, setShown] = useState(false);
+  return (
+    <span
+      onClick={(e) => {
+        e.stopPropagation();
+        setShown(true);
+      }}
+      className={`px-0.5 ${shown ? 'bg-[#E5E5E0]' : 'bg-[#111111] cursor-pointer select-none'}`}
+    >
+      <span className={shown ? '' : 'invisible'}>{children}</span>
+    </span>
+  );
+}
+
+type InlinePattern = {
+  re: RegExp;
+  render: (m: RegExpExecArray, key: string) => React.ReactNode;
+  valid?: (m: RegExpExecArray, src: string, offset: number) => boolean;
+};
+
+const isWordChar = (c?: string) => !!c && /[0-9A-Za-z가-힣]/.test(c);
+
+// 위에 있을수록 같은 위치에서 우선 적용
+const INLINE: InlinePattern[] = [
+  // 역슬래시 이스케이프: \* \_ 등
+  { re: /\\([\\*_~`|>#\[\]()\-])/, render: (m) => m[1] },
+  // `코드`
+  {
+    re: /(`{1,3})([\s\S]+?)\1/,
+    render: (m, key) => (
+      <code
+        key={key}
+        className="px-1 py-0.5 bg-[#E5E5E0] text-[0.85em] font-normal not-italic text-[#111111]"
+      >
+        {m[2]}
+      </code>
+    ),
+  },
+  // ||스포일러||
+  {
+    re: /\|\|([\s\S]+?)\|\|/,
+    render: (m, key) => <Spoiler key={key}>{parseInline(m[1], key)}</Spoiler>,
+  },
+  // ***굵은 기울임***
+  {
+    re: /\*\*\*([\s\S]+?)\*\*\*/,
+    render: (m, key) => (
+      <strong key={key}>
+        <em>{parseInline(m[1], key)}</em>
+      </strong>
+    ),
+  },
+  // **굵게**
+  {
+    re: /\*\*([\s\S]+?)\*\*/,
+    render: (m, key) => <strong key={key}>{parseInline(m[1], key)}</strong>,
+  },
+  // __밑줄__
+  {
+    re: /__([\s\S]+?)__/,
+    render: (m, key) => <u key={key}>{parseInline(m[1], key)}</u>,
+  },
+  // ~~취소선~~
+  {
+    re: /~~([\s\S]+?)~~/,
+    render: (m, key) => <s key={key}>{parseInline(m[1], key)}</s>,
+  },
+  // *기울임*
+  {
+    re: /\*([^\s*](?:[\s\S]*?[^\s*])?)\*/,
+    render: (m, key) => <em key={key}>{parseInline(m[1], key)}</em>,
+  },
+  // _기울임_ (단어 중간의 _ 는 무시)
+  {
+    re: /_([^\s_](?:[\s\S]*?[^\s_])?)_/,
+    valid: (m, src, offset) =>
+      !isWordChar(src[offset + m.index - 1]) && !isWordChar(src[offset + m.index + m[0].length]),
+    render: (m, key) => <em key={key}>{parseInline(m[1], key)}</em>,
+  },
+  // [글자](https://주소)
+  {
+    re: /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/,
+    render: (m, key) => (
+      <a
+        key={key}
+        href={m[2]}
+        target="_blank"
+        rel="noopener noreferrer nofollow"
+        onClick={(e) => e.stopPropagation()}
+        className="underline decoration-2 decoration-[#CC0000] underline-offset-4"
+      >
+        {m[1]}
+      </a>
+    ),
+  },
+  // 그냥 주소
+  {
+    re: /https?:\/\/[^\s<>)\]]*[^\s<>)\].,!?;:'"]/,
+    render: (m, key) => (
+      <a
+        key={key}
+        href={m[0]}
+        target="_blank"
+        rel="noopener noreferrer nofollow"
+        onClick={(e) => e.stopPropagation()}
+        className="underline decoration-2 decoration-[#CC0000] underline-offset-4 break-all"
+      >
+        {m[0]}
+      </a>
+    ),
+  },
+];
+
+function parseInline(src: string, keyBase = 'i'): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  let rest = src;
+  let offset = 0;
+  let n = 0;
+
+  while (rest.length > 0) {
+    let best: { p: InlinePattern; m: RegExpExecArray } | null = null;
+    for (const p of INLINE) {
+      const m = p.re.exec(rest);
+      if (!m) continue;
+      if (p.valid && !p.valid(m, src, offset)) continue;
+      if (!best || m.index < best.m.index) best = { p, m };
+    }
+    if (!best) {
+      nodes.push(rest);
+      break;
+    }
+    const { p, m } = best;
+    if (m.index > 0) nodes.push(rest.slice(0, m.index));
+    nodes.push(p.render(m, `${keyBase}-${n++}`));
+    const consumed = m.index + m[0].length;
+    offset += consumed;
+    rest = rest.slice(consumed);
+  }
+  return nodes;
+}
+
+// 줄 단위 블록: 코드블록, > 인용, >>> 인용, # 제목, -# 작은 글씨, 목록
+function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
+  const lines = text.replace(/\r\n/g, '\n').split('\n');
+  const out: React.ReactNode[] = [];
+  let para: string[] = [];
+  let k = 0;
+  const key = () => `${keyBase}-${k++}`;
+
+  const flush = () => {
+    const joined = para.join('\n').replace(/^\n+|\n+$/g, '');
+    if (joined.trim()) {
+      const kk = key();
+      out.push(<p key={kk}>{parseInline(joined, kk)}</p>);
+    }
+    para = [];
+  };
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    // ``` 코드 블록 ```
+    if (trimmed.startsWith('```') && (trimmed.match(/```/g) || []).length === 1) {
+      const body: string[] = [];
+      const first = trimmed.slice(3);
+      if (first && !/^[\w+#.-]+$/.test(first)) body.push(first); // 언어 이름이면 버림
+      let j = i + 1;
+      let closed = false;
+      while (j < lines.length) {
+        const idx = lines[j].indexOf('```');
+        if (idx !== -1) {
+          if (idx > 0) body.push(lines[j].slice(0, idx));
+          closed = true;
+          break;
+        }
+        body.push(lines[j]);
+        j++;
+      }
+      if (closed) {
+        flush();
+        out.push(
+          <pre
+            key={key()}
+            className="my-1 p-3 border border-[#111111] bg-[#E5E5E0] text-xs font-normal not-italic text-[#111111] whitespace-pre overflow-x-auto"
+          >
+            <code>{body.join('\n')}</code>
+          </pre>
+        );
+        i = j + 1;
+        continue;
+      }
+    }
+
+    // >>> 이후 전부 인용
+    if (/^>>>(\s|$)/.test(trimmed)) {
+      flush();
+      const restText = [trimmed.replace(/^>>>\s?/, ''), ...lines.slice(i + 1)].join('\n');
+      out.push(
+        <blockquote key={key()} className="my-1 border-l-4 border-[#111111] pl-3 text-[#525252]">
+          {renderBlocks(restText, key())}
+        </blockquote>
+      );
+      i = lines.length;
+      break;
+    }
+
+    // > 인용
+    if (/^\s*>\s?/.test(line)) {
+      flush();
+      const q: string[] = [];
+      while (i < lines.length && /^\s*>\s?/.test(lines[i])) {
+        q.push(lines[i].replace(/^\s*>\s?/, ''));
+        i++;
+      }
+      out.push(
+        <blockquote key={key()} className="my-1 border-l-4 border-[#111111] pl-3 text-[#525252]">
+          {renderBlocks(q.join('\n'), key())}
+        </blockquote>
+      );
+      continue;
+    }
+
+    // # 제목
+    const h = trimmed.match(/^(#{1,3})\s+(.+)$/);
+    if (h) {
+      flush();
+      const size =
+        h[1].length === 1 ? 'text-[1.5em]' : h[1].length === 2 ? 'text-[1.25em]' : 'text-[1.1em]';
+      const kk = key();
+      out.push(
+        <p key={kk} className={`${size} font-black tracking-tight leading-snug mt-1`}>
+          {parseInline(h[2], kk)}
+        </p>
+      );
+      i++;
+      continue;
+    }
+
+    // -# 작은 글씨
+    const sub = trimmed.match(/^-#\s+(.+)$/);
+    if (sub) {
+      flush();
+      const kk = key();
+      out.push(
+        <p key={kk} className="text-xs text-[#737373]">
+          {parseInline(sub[1], kk)}
+        </p>
+      );
+      i++;
+      continue;
+    }
+
+    // - 목록
+    if (/^\s*[-*]\s+/.test(line)) {
+      flush();
+      const items: string[] = [];
+      while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) {
+        items.push(lines[i].replace(/^\s*[-*]\s+/, ''));
+        i++;
+      }
+      const kk = key();
+      out.push(
+        <ul key={kk} className="list-disc pl-5 my-1">
+          {items.map((it, idx) => (
+            <li key={idx}>{parseInline(it, `${kk}-${idx}`)}</li>
+          ))}
+        </ul>
+      );
+      continue;
+    }
+
+    // 1. 번호 목록
+    if (/^\s*\d+[.)]\s+/.test(line)) {
+      flush();
+      const items: string[] = [];
+      while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) {
+        items.push(lines[i].replace(/^\s*\d+[.)]\s+/, ''));
+        i++;
+      }
+      const kk = key();
+      out.push(
+        <ol key={kk} className="list-decimal pl-5 my-1">
+          {items.map((it, idx) => (
+            <li key={idx}>{parseInline(it, `${kk}-${idx}`)}</li>
+          ))}
+        </ol>
+      );
+      continue;
+    }
+
+    para.push(line);
+    i++;
+  }
+
+  flush();
+  return out;
+}
+
+// 줄 맨 앞에 블록 문법(#, >, -, 1., ```)이 있는지
+const BLOCK_SYNTAX = /^\s*(#{1,3}\s|-#\s|>|[-*]\s|\d+[.)]\s)|```/m;
+
+// wrapQuotes: 인용문 앞뒤에 따옴표를 붙임 (블록 문법이 들어간 글은 붙이지 않음)
+function DiscordText({
+  text,
+  className = '',
+  wrapQuotes = false,
+}: {
+  text: string;
+  className?: string;
+  wrapQuotes?: boolean;
+}) {
+  const src = wrapQuotes && !BLOCK_SYNTAX.test(text) ? `"${text}"` : text;
+  return <div className={`whitespace-pre-line break-words ${className}`}>{renderBlocks(src)}</div>;
 }
 
 // 인용문(굵게 + 기울임) + 아래에 댓글처럼 달리는 여러 개의 코멘트
@@ -222,23 +577,20 @@ function QuoteList({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="divide-y divide-[#E5E5E0]">
       {quotes.map((q) => (
-        <div key={q.id}>
+        <div key={q.id} className="py-4 first:pt-0">
           <div className="flex justify-between items-start gap-3">
-            <p
+            <div
               onClick={isOwner ? () => toggle(q.id) : undefined}
-              className={`text-sm font-bold italic text-gray-900 leading-relaxed whitespace-pre-line ${
-                isOwner ? 'cursor-pointer hover:text-gray-600' : ''
+              className={`min-w-0 text-base font-bold italic leading-relaxed ${
+                isOwner ? 'cursor-pointer hover:text-[#CC0000] transition-colors duration-200' : ''
               }`}
             >
-              &quot;{q.content}&quot;
-            </p>
+              <DiscordText text={q.content} wrapQuotes />
+            </div>
             {onDeleteQuote && (
-              <button
-                onClick={() => onDeleteQuote(q.id)}
-                className="text-gray-400 hover:text-red-500 text-xs shrink-0"
-              >
+              <button onClick={() => onDeleteQuote(q.id)} className={`${DANGER_BTN} shrink-0`}>
                 인용문 삭제
               </button>
             )}
@@ -247,14 +599,11 @@ function QuoteList({
           {q.quote_comments.length > 0 && (
             <div className="mt-2 ml-2 space-y-1.5">
               {q.quote_comments.map((c) => (
-                <div key={c.id} className="flex items-start gap-1.5 text-sm text-gray-500">
+                <div key={c.id} className="flex items-start gap-1.5 text-sm text-[#525252]">
                   <ReplyIcon />
-                  <p className="flex-1 min-w-0 leading-relaxed whitespace-pre-line">{c.content}</p>
+                  <DiscordText text={c.content} className="flex-1 min-w-0 leading-relaxed" />
                   {isOwner && onDeleteComment && (
-                    <button
-                      onClick={() => onDeleteComment(c.id)}
-                      className="text-gray-300 hover:text-red-500 text-xs shrink-0"
-                    >
+                    <button onClick={() => onDeleteComment(c.id)} className={`${DANGER_BTN} shrink-0`}>
                       삭제
                     </button>
                   )}
@@ -264,19 +613,16 @@ function QuoteList({
           )}
 
           {isOwner && openId === q.id && (
-            <form onSubmit={(e) => submit(e, q.id)} className="mt-2 ml-2 flex gap-2">
+            <form onSubmit={(e) => submit(e, q.id)} className="mt-3 ml-2 flex gap-2 items-end">
               <input
                 type="text"
                 autoFocus
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 placeholder="코멘트를 입력하세요"
-                className="flex-1 p-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                className={`${INPUT} flex-1`}
               />
-              <button
-                type="submit"
-                className="px-4 py-2.5 bg-black text-white text-xs font-semibold rounded-lg hover:bg-gray-800 shrink-0"
-              >
+              <button type="submit" className={BTN_SM}>
                 등록
               </button>
             </form>
@@ -284,6 +630,17 @@ function QuoteList({
         </div>
       ))}
     </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="mt-12 border-t-4 border-[#111111]">
+      <div className="max-w-screen-xl mx-auto px-4 py-4 flex flex-wrap justify-between gap-2 text-[11px] uppercase tracking-widest text-[#737373]">
+        <span>ReadPot</span>
+        <span>Edition: Vol 1.0</span>
+      </div>
+    </footer>
   );
 }
 
@@ -318,6 +675,19 @@ export default function Home() {
   const [newQuoteInput, setNewQuoteInput] = useState('');
   const [isEditingContent, setIsEditingContent] = useState(false);
   const [editContentText, setEditContentText] = useState('');
+  const [today, setToday] = useState('');
+
+  // 날짜는 브라우저에서만 계산 (서버/브라우저 시간 차이로 인한 오류 방지)
+  useEffect(() => {
+    setToday(
+      new Date().toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long',
+      })
+    );
+  }, []);
 
   const nameOf = (userId: string) => {
     if (profiles[userId]) return profiles[userId];
@@ -607,6 +977,14 @@ export default function Home() {
   };
 
   // ---------- 독후감 ----------
+  const startWritingReview = () => {
+    setEditContentText('');
+    setIsEditingContent(true);
+    setTimeout(() => {
+      document.getElementById('review-editor')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+  };
+
   const handleSaveContentEdit = async () => {
     if (!activeReview || !isOwner) return;
     try {
@@ -662,55 +1040,51 @@ export default function Home() {
   // ---------- 로그인 화면 ----------
   if (!user) {
     return (
-      <main className="min-h-screen bg-gray-100 flex items-center justify-center p-6 text-gray-800">
-        <FontStyle />
-        <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-black mb-2 tracking-tight">ReadPot</h1>
-            <p className="text-sm text-gray-500">
-              {isSignUp ? '새로운 계정 생성하기' : '함께 읽고, 인용하고, 기록하세요'}
-            </p>
-          </div>
+      <main className="min-h-screen flex items-center justify-center p-4 text-[#111111]">
+        <GlobalStyle />
+        <div className="w-full max-w-md border-4 border-[#111111] bg-[#F9F9F7] p-8">
+          <p className="text-center text-[11px] uppercase tracking-widest text-[#737373] mb-3">
+            Vol. 1 &middot; The Reading Edition
+          </p>
+          <h1 className="text-center text-5xl font-black tracking-tighter leading-none border-b-4 border-[#111111] pb-4">
+            ReadPot
+          </h1>
+          <p className="text-center text-sm text-[#525252] mt-4 mb-8">
+            {isSignUp ? '새로운 계정 생성하기' : '함께 읽고, 인용하고, 기록하세요'}
+          </p>
 
-          <form onSubmit={handleAuth} className="space-y-4">
+          <form onSubmit={handleAuth} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">이메일</label>
+              <label className={LABEL}>이메일</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="example@email.com"
-                className="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                className={INPUT}
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">비밀번호</label>
+              <label className={LABEL}>비밀번호</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="6자리 이상 비밀번호"
-                className="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                className={INPUT}
                 required
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={authLoading}
-              className="w-full py-3.5 bg-black text-white font-medium rounded-xl hover:bg-gray-800 transition text-sm disabled:bg-gray-400"
-            >
+            <button type="submit" disabled={authLoading} className={`${BTN} w-full`}>
               {authLoading ? '처리 중...' : isSignUp ? '회원가입' : '로그인'}
             </button>
           </form>
 
           <div className="mt-6 text-center">
-            <button
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-xs text-gray-500 underline hover:text-black"
-            >
+            <button onClick={() => setIsSignUp(!isSignUp)} className={LINK_BTN}>
               {isSignUp ? '이미 계정이 있으신가요? 로그인' : '계정이 없으신가요? 회원가입'}
             </button>
           </div>
@@ -719,15 +1093,21 @@ export default function Home() {
     );
   }
 
-  // ---------- 공통 헤더 ----------
+  // ---------- 공통 헤더 (신문 제호) ----------
   const header = (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-      <div className="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center gap-4">
-        <div className="flex items-center gap-5">
-          <button onClick={() => goTab('mine')}>
-            <h1 className="text-2xl font-black tracking-tight">ReadPot</h1>
+    <header className="sticky top-0 z-40 bg-[#F9F9F7] border-b-4 border-[#111111]">
+      <div className="bg-[#111111] text-[#F9F9F7]">
+        <div className="max-w-screen-xl mx-auto px-4 py-1 flex justify-between gap-3 text-[11px] uppercase tracking-widest">
+          <span>Vol. 1 &middot; {today}</span>
+          <span className="hidden sm:inline">The Reading Edition</span>
+        </div>
+      </div>
+      <div className="max-w-screen-xl mx-auto px-4 flex flex-wrap items-center justify-between gap-x-4">
+        <div className="flex items-center gap-4 sm:gap-6">
+          <button onClick={() => goTab('mine')} className={FOCUS}>
+            <h1 className="text-3xl sm:text-4xl font-black tracking-tighter leading-none py-2">ReadPot</h1>
           </button>
-          <nav className="flex gap-1">
+          <nav className="flex">
             {(
               [
                 ['mine', '내 서재'],
@@ -737,8 +1117,8 @@ export default function Home() {
               <button
                 key={t}
                 onClick={() => goTab(t)}
-                className={`px-3 py-1.5 text-sm font-medium rounded-lg transition ${
-                  tab === t ? 'bg-black text-white' : 'text-gray-600 hover:bg-gray-100'
+                className={`min-h-[44px] px-3 text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
+                  tab === t ? 'bg-[#111111] text-[#F9F9F7]' : 'hover:text-[#CC0000]'
                 }`}
               >
                 {label}
@@ -750,14 +1130,11 @@ export default function Home() {
           <button
             onClick={handleChangeNickname}
             title="닉네임 변경"
-            className="hidden sm:inline text-sm font-medium text-gray-600 hover:text-black"
+            className={`hidden sm:inline-flex items-center min-h-[44px] text-xs font-semibold tracking-widest hover:text-[#CC0000] transition-colors duration-200 ${FOCUS}`}
           >
             {nameOf(user.id)}
           </button>
-          <button
-            onClick={handleLogout}
-            className="px-3.5 py-1.5 text-xs bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition"
-          >
+          <button onClick={handleLogout} className={BTN_OUTLINE}>
             로그아웃
           </button>
         </div>
@@ -773,7 +1150,8 @@ export default function Home() {
 
     return (
       <>
-        <div className="hidden sm:grid grid-cols-12 gap-3 px-6 py-2.5 bg-gray-50 text-[11px] font-semibold text-gray-500 border-b border-gray-100">
+        {/* 검정으로 반전된 표 머리글 */}
+        <div className="hidden sm:grid grid-cols-12 gap-3 px-5 py-2 bg-[#111111] text-[#F9F9F7] text-[11px] font-semibold uppercase tracking-widest">
           <span className={col.title}>책 제목</span>
           <span className={col.author}>저자</span>
           {showAuthor && <span className={col.nick}>작성자</span>}
@@ -782,44 +1160,42 @@ export default function Home() {
           <span className={`${col.date} text-right`}>날짜</span>
         </div>
 
-        <ul className="divide-y divide-gray-100">
+        <ul>
           {list.map((rev) => (
             <li
               key={rev.id}
               onClick={() => openReview(rev)}
-              className="grid grid-cols-12 gap-3 items-center px-6 py-4 hover:bg-gray-50 cursor-pointer transition group"
+              className="grid grid-cols-12 gap-3 items-center px-5 py-3 border-b border-[#111111] last:border-b-0 hover:bg-[#F5F5F5] cursor-pointer transition-colors duration-200 group"
             >
               <div className={`col-span-12 ${col.title} flex items-center gap-3 min-w-0`}>
                 <img
                   src={rev.books.cover_url || undefined}
                   alt={rev.books.title}
-                  className="w-9 h-12 object-cover rounded shadow-sm shrink-0 bg-gray-200"
+                  className="w-9 h-12 object-cover border border-[#111111] bg-[#E5E5E5] grayscale transition duration-200 group-hover:sepia-[50%] shrink-0"
                 />
-                <span className="font-semibold text-sm truncate group-hover:underline">
+                <span className="font-bold text-sm truncate underline-offset-4 decoration-2 decoration-[#CC0000] group-hover:underline">
                   {rev.books.title}
                 </span>
               </div>
-              <span className={`col-span-6 ${col.author} text-xs text-gray-500 truncate`}>
+              <span className={`col-span-6 ${col.author} text-xs text-[#525252] truncate`}>
                 {rev.books.author}
               </span>
               {showAuthor && (
-                <span className={`col-span-6 ${col.nick} text-xs font-medium text-gray-700 truncate`}>
+                <span className={`col-span-6 ${col.nick} text-xs font-semibold truncate`}>
                   {nameOf(rev.user_id)}
                 </span>
               )}
               <div className={`col-span-6 ${col.status} flex sm:justify-center`}>
                 {rev.status === 'reading' ? (
-                  <span className="inline-block px-2 py-0.5 text-[11px] font-semibold bg-amber-100 text-amber-800 rounded-full">
-                    읽는 중
-                  </span>
+                  <ReadingBadge />
                 ) : (
                   <RatingDisplay value={rev.rating} size={13} />
                 )}
               </div>
-              <span className={`col-span-6 ${col.quotes} sm:text-center text-xs text-gray-500`}>
+              <span className={`col-span-6 ${col.quotes} sm:text-center text-xs text-[#525252]`}>
                 인용문 {rev.quotes?.length || 0}
               </span>
-              <span className={`hidden sm:block ${col.date} text-right text-[11px] text-gray-400`}>
+              <span className={`hidden sm:block ${col.date} text-right text-[11px] text-[#737373]`}>
                 {new Date(rev.created_at).toLocaleDateString('ko-KR', {
                   month: 'numeric',
                   day: 'numeric',
@@ -835,221 +1211,244 @@ export default function Home() {
   // ---------- 상세 화면 ----------
   if (activeReview) {
     const hasQuotes = (activeReview.quotes?.length || 0) > 0;
+    const showReview = (isEditingContent && isOwner) || !!activeReview.content;
+    const showQuotes = isOwner || hasQuotes;
+    const hasSidebar = otherReviews.length > 0;
 
     return (
-      <div className="min-h-screen bg-gray-100 text-gray-800">
-        <FontStyle />
+      <div className="min-h-screen text-[#111111]">
+        <GlobalStyle />
         {header}
-        <main className="max-w-4xl mx-auto px-6 py-8 space-y-6">
-          <button onClick={() => setActiveId(null)} className="text-sm text-gray-500 hover:text-black">
+        <main className="max-w-screen-xl mx-auto px-4 py-8 space-y-4">
+          <button onClick={() => setActiveId(null)} className={`${LINK_BTN} min-h-[44px]`}>
             &larr; 목록으로 돌아가기
           </button>
 
-          {/* 책 정보 */}
-          <section className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm flex gap-5 items-center">
-            <img
-              src={activeReview.books.cover_url || undefined}
-              alt={activeReview.books.title}
-              className="w-24 h-36 object-cover rounded-xl shadow-md shrink-0 bg-gray-200"
-            />
-            <div className="space-y-2 min-w-0">
-              <span className="text-xs text-gray-400">
-                {nameOf(activeReview.user_id)} &middot;{' '}
-                {new Date(activeReview.created_at).toLocaleDateString('ko-KR')}
-              </span>
-              <h2 className="text-2xl font-bold">{activeReview.books.title}</h2>
-              <p className="text-sm text-gray-500">{activeReview.books.author}</p>
+          <article className="border border-[#111111] bg-[#F9F9F7]">
+            {/* 책 정보 블록: 우측 상단에 읽는 중 / 독후감 추가 버튼 */}
+            <section className="p-5 md:p-6 border-b-4 border-[#111111]">
+              <div className="flex gap-5">
+                <img
+                  src={activeReview.books.cover_url || undefined}
+                  alt={activeReview.books.title}
+                  className="w-24 h-36 object-cover border border-[#111111] bg-[#E5E5E5] grayscale transition duration-200 hover:sepia-[50%] shrink-0"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[11px] uppercase tracking-widest text-[#737373]">
+                        {nameOf(activeReview.user_id)} &middot;{' '}
+                        {new Date(activeReview.created_at).toLocaleDateString('ko-KR')}
+                      </p>
+                      <h2 className="mt-1 text-3xl md:text-4xl font-black tracking-tight leading-tight">
+                        {activeReview.books.title}
+                      </h2>
+                      <p className="mt-1 text-sm text-[#525252]">{activeReview.books.author}</p>
+                    </div>
 
-              <div className="pt-2 flex flex-wrap items-center gap-x-5 gap-y-2">
-                {isOwner ? (
-                  <>
-                    <Toggle
-                      checked={activeReview.status === 'reading'}
-                      onChange={(v) => handleUpdateStatus(v, activeReview.rating)}
-                      label="읽는 중"
-                    />
-                    {activeReview.status !== 'reading' && (
-                      <RatingInput
-                        value={activeReview.rating}
-                        onChange={(v) => handleUpdateStatus(false, v)}
-                        size={26}
-                      />
-                    )}
-                  </>
-                ) : activeReview.status === 'reading' ? (
-                  <span className="px-2.5 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full">
-                    읽는 중
-                  </span>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <RatingDisplay value={activeReview.rating} size={22} />
-                    <span className="text-sm font-semibold text-gray-600">{activeReview.rating}점</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-
-          {/* 인용문 */}
-          {(isOwner || hasQuotes) && (
-            <section className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-4">
-              <h3 className="text-base font-bold">인용문 ({activeReview.quotes?.length || 0})</h3>
-              {isOwner && hasQuotes && (
-                <p className="text-xs text-gray-400 -mt-2">인용문을 누르면 코멘트를 달 수 있어요.</p>
-              )}
-
-              {isOwner && (
-                <form onSubmit={handleAddQuote} className="flex gap-2 items-end">
-                  <textarea
-                    rows={2}
-                    value={newQuoteInput}
-                    onChange={(e) => setNewQuoteInput(e.target.value)}
-                    placeholder="마음에 남은 문장을 적어 보세요"
-                    className="flex-1 p-3 border border-gray-300 rounded-xl text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-black"
-                  />
-                  <button
-                    type="submit"
-                    className="px-5 py-3 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 shrink-0"
-                  >
-                    추가
-                  </button>
-                </form>
-              )}
-
-              <div className="pt-2">
-                {hasQuotes ? (
-                  <QuoteList
-                    quotes={activeReview.quotes!}
-                    isOwner={isOwner}
-                    onDeleteQuote={isOwner ? handleDeleteQuote : undefined}
-                    onAddComment={isOwner ? handleAddComment : undefined}
-                    onDeleteComment={isOwner ? handleDeleteComment : undefined}
-                  />
-                ) : (
-                  <p className="text-sm text-gray-400 py-2">아직 추가된 인용문이 없습니다.</p>
-                )}
-              </div>
-            </section>
-          )}
-
-          {/* 독후감: 내용이 있거나 작성 중일 때만 항목이 보이고, 비어 있으면 버튼만 보임 */}
-          {isEditingContent && isOwner ? (
-            <section className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-3">
-              <h3 className="text-base font-bold">독후감</h3>
-              <textarea
-                rows={10}
-                value={editContentText}
-                onChange={(e) => setEditContentText(e.target.value)}
-                placeholder="이 책을 읽고 느낀 점을 자유롭게 적어 보세요."
-                className="w-full p-4 border border-gray-300 rounded-xl text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-black"
-              />
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={() => setIsEditingContent(false)}
-                  className="px-3 py-2 text-xs text-gray-500 hover:bg-gray-100 rounded-lg"
-                >
-                  취소
-                </button>
-                <button
-                  onClick={handleSaveContentEdit}
-                  className="px-5 py-2 text-xs bg-black text-white font-medium rounded-lg"
-                >
-                  저장
-                </button>
-              </div>
-            </section>
-          ) : activeReview.content ? (
-            <section className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-3">
-              <div className="flex justify-between items-center">
-                <h3 className="text-base font-bold">독후감</h3>
-                {isOwner && (
-                  <button
-                    onClick={() => {
-                      setEditContentText(activeReview.content || '');
-                      setIsEditingContent(true);
-                    }}
-                    className="text-xs text-gray-500 hover:text-black underline"
-                  >
-                    수정하기
-                  </button>
-                )}
-              </div>
-              <div className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
-                {activeReview.content}
-              </div>
-            </section>
-          ) : isOwner ? (
-            <button
-              onClick={() => {
-                setEditContentText('');
-                setIsEditingContent(true);
-              }}
-              className="w-full py-3.5 bg-white border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:border-black hover:text-black transition"
-            >
-              독후감 추가
-            </button>
-          ) : null}
-
-          {/* 같은 책을 읽은 다른 사람의 기록 (켜고 끌 수 있음) */}
-          {otherReviews.length > 0 && (
-            <section className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-5">
-              <div className="flex items-center justify-between gap-3">
-                <h3 className="text-base font-bold">같은 책을 읽은 사람 ({otherReviews.length})</h3>
-                <Toggle checked={showOthers} onChange={setShowOthers} label="함께 보기" />
-              </div>
-
-              {showOthers &&
-                otherReviews.map((o) => (
-                  <div key={o.id} className="border-t border-gray-100 pt-5 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <span className="font-semibold text-sm">{nameOf(o.user_id)}</span>
-                      {o.status === 'reading' ? (
-                        <span className="px-2 py-0.5 text-[11px] font-semibold bg-amber-100 text-amber-800 rounded-full">
+                    {isOwner && (
+                      <div className="flex flex-wrap gap-2 shrink-0">
+                        <ToggleButton
+                          pressed={activeReview.status === 'reading'}
+                          onClick={() =>
+                            handleUpdateStatus(activeReview.status !== 'reading', activeReview.rating)
+                          }
+                        >
                           읽는 중
-                        </span>
+                        </ToggleButton>
+                        {!activeReview.content && !isEditingContent && (
+                          <button onClick={startWritingReview} className={BTN_OUTLINE}>
+                            독후감 추가
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-4">
+                    {isOwner ? (
+                      activeReview.status !== 'reading' && (
+                        <RatingInput
+                          value={activeReview.rating}
+                          onChange={(v) => handleUpdateStatus(false, v)}
+                          size={26}
+                        />
+                      )
+                    ) : activeReview.status === 'reading' ? (
+                      <ReadingBadge />
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <RatingDisplay value={activeReview.rating} size={22} />
+                        <span className="text-sm font-semibold">{activeReview.rating}점</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12">
+              {/* 왼쪽 8칸: 인용문 + 독후감 */}
+              <div className={hasSidebar ? 'lg:col-span-8 lg:border-r border-[#111111]' : 'lg:col-span-12'}>
+                {showQuotes && (
+                  <section className={`p-5 md:p-6 ${showReview ? 'border-b border-[#111111]' : ''}`}>
+                    <h3 className="text-xl font-black tracking-tight">
+                      인용문{' '}
+                      <span className="text-sm font-semibold text-[#737373]">
+                        ({activeReview.quotes?.length || 0})
+                      </span>
+                    </h3>
+                    {isOwner && hasQuotes && (
+                      <p className="mt-1 text-xs text-[#737373]">인용문을 누르면 코멘트를 달 수 있어요.</p>
+                    )}
+
+                    <div className="mt-4">
+                      {hasQuotes ? (
+                        <QuoteList
+                          quotes={activeReview.quotes!}
+                          isOwner={isOwner}
+                          onDeleteQuote={isOwner ? handleDeleteQuote : undefined}
+                          onAddComment={isOwner ? handleAddComment : undefined}
+                          onDeleteComment={isOwner ? handleDeleteComment : undefined}
+                        />
                       ) : (
-                        <RatingDisplay value={o.rating} size={14} />
+                        <p className="text-sm text-[#737373]">아직 추가된 인용문이 없습니다.</p>
                       )}
                     </div>
 
-                    {o.quotes && o.quotes.length > 0 && <QuoteList quotes={o.quotes} />}
-
-                    {o.content && (
-                      <div className="space-y-1">
-                        <p className="text-xs font-semibold text-gray-400">독후감</p>
-                        <p className="text-sm text-gray-700 whitespace-pre-line leading-relaxed">
-                          {o.content}
-                        </p>
-                      </div>
+                    {/* 인용문 쓰는 칸은 목록 아래 */}
+                    {isOwner && (
+                      <form
+                        onSubmit={handleAddQuote}
+                        className="mt-5 pt-5 border-t border-[#111111] flex gap-3 items-end"
+                      >
+                        <div className="flex-1">
+                          <label className={LABEL}>새 인용문</label>
+                          <textarea
+                            rows={2}
+                            value={newQuoteInput}
+                            onChange={(e) => setNewQuoteInput(e.target.value)}
+                            placeholder="마음에 남은 문장을 적어 보세요"
+                            className={`${INPUT} leading-relaxed`}
+                          />
+                        </div>
+                        <button type="submit" className={BTN}>
+                          추가
+                        </button>
+                      </form>
                     )}
+                  </section>
+                )}
 
-                    {(!o.quotes || o.quotes.length === 0) && !o.content && (
-                      <p className="text-xs text-gray-400">아직 남긴 기록이 없어요.</p>
-                    )}
+                {/* 독후감: 내용이 있거나 작성 중일 때만 항목이 보임 */}
+                {isEditingContent && isOwner ? (
+                  <section id="review-editor" className="p-5 md:p-6 space-y-3">
+                    <h3 className="text-xl font-black tracking-tight">독후감</h3>
+                    <textarea
+                      rows={10}
+                      autoFocus
+                      value={editContentText}
+                      onChange={(e) => setEditContentText(e.target.value)}
+                      placeholder="이 책을 읽고 느낀 점을 자유롭게 적어 보세요."
+                      className={TEXTAREA_BOX}
+                    />
+                    <p className="text-xs text-[#737373]">
+                      {'디스코드 마크다운 사용 가능: **굵게** *기울임* __밑줄__ ~~취소선~~ ||스포일러|| `코드` > 인용 # 제목 - 목록'}
+                    </p>
+                    <div className="flex justify-end gap-2">
+                      <button onClick={() => setIsEditingContent(false)} className={BTN_OUTLINE}>
+                        취소
+                      </button>
+                      <button onClick={handleSaveContentEdit} className={BTN}>
+                        저장
+                      </button>
+                    </div>
+                  </section>
+                ) : activeReview.content ? (
+                  <section className="p-5 md:p-6 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <h3 className="text-xl font-black tracking-tight">독후감</h3>
+                      {isOwner && (
+                        <button
+                          onClick={() => {
+                            setEditContentText(activeReview.content || '');
+                            setIsEditingContent(true);
+                          }}
+                          className={LINK_BTN}
+                        >
+                          수정하기
+                        </button>
+                      )}
+                    </div>
+                    <DiscordText
+                      text={activeReview.content}
+                      className="text-sm leading-relaxed text-[#262626]"
+                    />
+                  </section>
+                ) : null}
+              </div>
+
+              {/* 오른쪽 4칸: 같은 책을 읽은 사람 (켜고 끌 수 있음) */}
+              {hasSidebar && (
+                <aside className="lg:col-span-4 border-t lg:border-t-0 border-[#111111] p-5 md:p-6 space-y-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-xl font-black tracking-tight">
+                      같은 책을 읽은 사람{' '}
+                      <span className="text-sm font-semibold text-[#737373]">({otherReviews.length})</span>
+                    </h3>
+                    <ToggleButton pressed={showOthers} onClick={() => setShowOthers(!showOthers)}>
+                      함께 보기
+                    </ToggleButton>
                   </div>
-                ))}
-            </section>
-          )}
 
-          <div className="flex justify-between items-center text-xs pb-8">
-            {isOwner ? (
-              <button
-                onClick={() => handleDeleteReview(activeReview.id)}
-                className="text-red-500 hover:underline"
-              >
-                이 책 서재에서 삭제
+                  {showOthers &&
+                    otherReviews.map((o) => (
+                      <div key={o.id} className="border-t border-[#111111] pt-4 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-sm">{nameOf(o.user_id)}</span>
+                          {o.status === 'reading' ? (
+                            <ReadingBadge />
+                          ) : (
+                            <RatingDisplay value={o.rating} size={14} />
+                          )}
+                        </div>
+
+                        {o.quotes && o.quotes.length > 0 && <QuoteList quotes={o.quotes} />}
+
+                        {o.content && (
+                          <div className="space-y-1">
+                            <p className={LABEL}>독후감</p>
+                            <DiscordText
+                              text={o.content}
+                              className="text-sm leading-relaxed text-[#262626]"
+                            />
+                          </div>
+                        )}
+
+                        {(!o.quotes || o.quotes.length === 0) && !o.content && (
+                          <p className="text-xs text-[#737373]">아직 남긴 기록이 없어요.</p>
+                        )}
+                      </div>
+                    ))}
+                </aside>
+              )}
+            </div>
+
+            <div className="flex justify-between items-center gap-3 p-4 border-t border-[#111111]">
+              {isOwner ? (
+                <button onClick={() => handleDeleteReview(activeReview.id)} className={DANGER_BTN}>
+                  이 책 서재에서 삭제
+                </button>
+              ) : (
+                <span />
+              )}
+              <button onClick={() => setActiveId(null)} className={BTN_OUTLINE}>
+                목록으로
               </button>
-            ) : (
-              <span />
-            )}
-            <button
-              onClick={() => setActiveId(null)}
-              className="px-4 py-2 bg-white border border-gray-300 font-semibold text-gray-700 rounded-xl hover:bg-gray-100"
-            >
-              목록으로
-            </button>
-          </div>
+            </div>
+          </article>
         </main>
+        <Footer />
       </div>
     );
   }
@@ -1059,27 +1458,30 @@ export default function Home() {
     const list = allReviews.filter(matchesFilter);
 
     return (
-      <div className="min-h-screen bg-gray-100 text-gray-800">
-        <FontStyle />
+      <div className="min-h-screen text-[#111111]">
+        <GlobalStyle />
         {header}
-        <main className="max-w-4xl mx-auto px-6 py-8">
-          <section className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="flex flex-wrap justify-between items-center gap-3 px-6 py-5 border-b border-gray-100">
-              <h2 className="text-lg font-bold flex items-center gap-2">
-                전체 서재
-                <span className="text-xs font-semibold text-gray-400">총 {allReviews.length}개의 기록</span>
-              </h2>
+        <main className="max-w-screen-xl mx-auto px-4 py-8">
+          <section className="border border-[#111111] bg-[#F9F9F7]">
+            <div className="flex flex-wrap justify-between items-end gap-3 px-5 py-4 border-b-4 border-[#111111]">
+              <div>
+                <p className="text-[11px] uppercase tracking-widest text-[#737373]">Everyone&apos;s Shelf</p>
+                <h2 className="text-3xl font-black tracking-tight">
+                  전체 서재{' '}
+                  <span className="text-sm font-semibold text-[#737373]">총 {allReviews.length}개의 기록</span>
+                </h2>
+              </div>
               <input
                 type="text"
                 value={boardFilter}
                 onChange={(e) => setBoardFilter(e.target.value)}
                 placeholder="책, 저자, 작성자 찾기..."
-                className="w-full sm:w-56 p-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-black"
+                className={`${INPUT} sm:w-64`}
               />
             </div>
 
             {list.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-24 text-gray-400">
+              <div className="flex flex-col items-center justify-center py-24 text-[#737373]">
                 <p className="text-sm">
                   {allReviews.length === 0 ? '아직 올라온 글이 없습니다.' : '검색 결과가 없습니다.'}
                 </p>
@@ -1089,6 +1491,7 @@ export default function Home() {
             )}
           </section>
         </main>
+        <Footer />
       </div>
     );
   }
@@ -1097,138 +1500,136 @@ export default function Home() {
   const myList = myReviews.filter(matchesFilter);
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-800">
-      <FontStyle />
+    <div className="min-h-screen text-[#111111]">
+      <GlobalStyle />
       {header}
-      <main className="max-w-4xl mx-auto px-6 py-8 space-y-6">
-        {/* 책 검색해서 새 글 만들기 */}
-        <section className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-5">
-          <h2 className="text-base font-bold">책 검색해서 새 글 만들기</h2>
+      <main className="max-w-screen-xl mx-auto px-4 py-8">
+        <div className="border border-[#111111] bg-[#F9F9F7] grid grid-cols-1 lg:grid-cols-12">
+          {/* 왼쪽 4칸: 책 검색해서 새 글 만들기 */}
+          <section className="lg:col-span-4 p-5 border-b lg:border-b-0 lg:border-r border-[#111111] space-y-5">
+            <div className="border-b-2 border-[#111111] pb-2">
+              <p className="text-[11px] uppercase tracking-widest text-[#737373]">New Entry</p>
+              <h2 className="text-xl font-black tracking-tight">책 검색해서 새 글 만들기</h2>
+            </div>
 
-          <form onSubmit={handleSearch} className="flex gap-2">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="책 제목 또는 저자 검색..."
-              className="flex-1 p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black"
-            />
-            <button
-              type="submit"
-              disabled={searchLoading}
-              className="px-5 py-3 bg-black text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition disabled:bg-gray-400 shrink-0"
-            >
-              {searchLoading ? '검색 중...' : '검색'}
-            </button>
-          </form>
+            <form onSubmit={handleSearch} className="flex gap-2 items-end">
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="책 제목 또는 저자 검색..."
+                className={`${INPUT} flex-1`}
+              />
+              <button type="submit" disabled={searchLoading} className={BTN}>
+                {searchLoading ? '검색 중...' : '검색'}
+              </button>
+            </form>
 
-          {searchResults.length > 0 && !selectedBook && (
-            <div className="divide-y divide-gray-100 max-h-72 overflow-y-auto pr-1">
-              {searchResults.map((book, idx) => (
-                <div key={idx} className="py-3 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <img
-                      src={book.thumbnail || undefined}
-                      alt={book.title}
-                      className="w-11 h-16 object-cover rounded-md shadow-sm shrink-0 bg-gray-200"
-                    />
-                    <div className="min-w-0">
-                      <p className="font-semibold text-sm truncate">{book.title}</p>
-                      <p className="text-xs text-gray-500 truncate">{book.authors.join(', ')}</p>
+            {searchResults.length > 0 && !selectedBook && (
+              <div className="divide-y divide-[#E5E5E0] border-y border-[#111111] max-h-96 overflow-y-auto">
+                {searchResults.map((book, idx) => (
+                  <div key={idx} className="py-3 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <img
+                        src={book.thumbnail || undefined}
+                        alt={book.title}
+                        className="w-11 h-16 object-cover border border-[#111111] bg-[#E5E5E5] grayscale shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm truncate">{book.title}</p>
+                        <p className="text-xs text-[#525252] truncate">{book.authors.join(', ')}</p>
+                      </div>
                     </div>
+                    <button onClick={() => setSelectedBook(book)} className={`${BTN_OUTLINE} !min-h-[36px] !px-3 shrink-0`}>
+                      선택
+                    </button>
                   </div>
-                  <button
-                    onClick={() => setSelectedBook(book)}
-                    className="px-3 py-1.5 text-xs font-medium bg-gray-100 text-black border border-gray-300 rounded-lg hover:bg-black hover:text-white transition shrink-0"
-                  >
-                    선택
+                ))}
+              </div>
+            )}
+
+            {selectedBook && (
+              <div className="border-2 border-[#111111] p-4 space-y-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-black tracking-tight">새 책 서재에 추가</h3>
+                  <button onClick={() => setSelectedBook(null)} className={DANGER_BTN}>
+                    다시 선택
                   </button>
                 </div>
-              ))}
-            </div>
-          )}
 
-          {selectedBook && (
-            <div className="border-2 border-black rounded-2xl p-5 space-y-5">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold">새 책 서재에 추가</h3>
-                <button
-                  onClick={() => setSelectedBook(null)}
-                  className="text-xs text-gray-400 hover:text-gray-700"
-                >
-                  다시 선택
-                </button>
-              </div>
-
-              <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-xl">
-                <img
-                  src={selectedBook.thumbnail || undefined}
-                  alt={selectedBook.title}
-                  className="w-12 h-16 object-cover rounded-md shadow-sm bg-gray-200"
-                />
-                <div className="min-w-0">
-                  <p className="font-bold text-sm truncate">{selectedBook.title}</p>
-                  <p className="text-xs text-gray-500 truncate">{selectedBook.authors.join(', ')}</p>
-                </div>
-              </div>
-
-              <form onSubmit={handleSubmitReview} className="space-y-5">
-                <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-                  <Toggle checked={isReading} onChange={setIsReading} label="읽는 중" />
-                  {!isReading && <RatingInput value={rating} onChange={setRating} />}
-                </div>
-
-                <div className="space-y-2">
-                  <label className="block text-xs font-semibold text-gray-600">첫 번째 인용문 (선택)</label>
-                  <input
-                    type="text"
-                    value={initialQuote}
-                    onChange={(e) => setInitialQuote(e.target.value)}
-                    placeholder="인상 깊었던 문장을 입력해 보세요"
-                    className="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black"
+                <div className="flex items-center gap-3 border-y border-[#111111] py-3">
+                  <img
+                    src={selectedBook.thumbnail || undefined}
+                    alt={selectedBook.title}
+                    className="w-12 h-16 object-cover border border-[#111111] bg-[#E5E5E5] grayscale"
                   />
+                  <div className="min-w-0">
+                    <p className="font-bold text-sm truncate">{selectedBook.title}</p>
+                    <p className="text-xs text-[#525252] truncate">{selectedBook.authors.join(', ')}</p>
+                  </div>
                 </div>
 
-                <button
-                  type="submit"
-                  className="w-full py-3.5 bg-black text-white font-semibold text-sm rounded-xl hover:bg-gray-800 transition"
-                >
-                  내 서재에 등록하기
-                </button>
-              </form>
-            </div>
-          )}
-        </section>
+                <form onSubmit={handleSubmitReview} className="space-y-5">
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+                    <ToggleButton pressed={isReading} onClick={() => setIsReading(!isReading)}>
+                      읽는 중
+                    </ToggleButton>
+                    {!isReading && <RatingInput value={rating} onChange={setRating} size={26} />}
+                  </div>
 
-        {/* 내 서재 게시판 */}
-        <section className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="flex flex-wrap justify-between items-center gap-3 px-6 py-5 border-b border-gray-100">
-            <h2 className="text-lg font-bold flex items-center gap-2">
-              내 서재
-              <span className="text-xs font-semibold text-gray-400">총 {myReviews.length}권</span>
-            </h2>
-            <input
-              type="text"
-              value={boardFilter}
-              onChange={(e) => setBoardFilter(e.target.value)}
-              placeholder="내 서재에서 찾기..."
-              className="w-full sm:w-56 p-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-black"
-            />
-          </div>
+                  <div>
+                    <label className={LABEL}>첫 번째 인용문 (선택)</label>
+                    <input
+                      type="text"
+                      value={initialQuote}
+                      onChange={(e) => setInitialQuote(e.target.value)}
+                      placeholder="인상 깊었던 문장을 입력해 보세요"
+                      className={INPUT}
+                    />
+                  </div>
 
-          {myList.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-gray-400">
-              <p className="text-sm">
-                {myReviews.length === 0
-                  ? '등록된 책이 없습니다. 위에서 책을 검색해 첫 글을 만들어 보세요.'
-                  : '검색 결과가 없습니다.'}
-              </p>
+                  <button type="submit" className={`${BTN} w-full`}>
+                    내 서재에 등록하기
+                  </button>
+                </form>
+              </div>
+            )}
+          </section>
+
+          {/* 오른쪽 8칸: 내 서재 게시판 */}
+          <section className="lg:col-span-8">
+            <div className="flex flex-wrap justify-between items-end gap-3 px-5 py-4 border-b-4 border-[#111111]">
+              <div>
+                <p className="text-[11px] uppercase tracking-widest text-[#737373]">My Shelf</p>
+                <h2 className="text-3xl font-black tracking-tight">
+                  내 서재{' '}
+                  <span className="text-sm font-semibold text-[#737373]">총 {myReviews.length}권</span>
+                </h2>
+              </div>
+              <input
+                type="text"
+                value={boardFilter}
+                onChange={(e) => setBoardFilter(e.target.value)}
+                placeholder="내 서재에서 찾기..."
+                className={`${INPUT} sm:w-56`}
+              />
             </div>
-          ) : (
-            renderBoard(myList, false)
-          )}
-        </section>
+
+            {myList.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-24 text-[#737373]">
+                <p className="text-sm">
+                  {myReviews.length === 0
+                    ? '등록된 책이 없습니다. 왼쪽에서 책을 검색해 첫 글을 만들어 보세요.'
+                    : '검색 결과가 없습니다.'}
+                </p>
+              </div>
+            ) : (
+              renderBoard(myList, false)
+            )}
+          </section>
+        </div>
       </main>
+      <Footer />
     </div>
   );
 }
