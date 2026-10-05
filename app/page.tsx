@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
 
@@ -41,7 +41,7 @@ interface Review {
   quotes?: QuoteItem[];
 }
 
-type Tab = 'mine' | 'community' | 'profile';
+type Tab = 'mine' | 'community' | 'scraps' | 'profile';
 type Status = 'wishlist' | 'reading' | 'completed';
 
 interface Profile {
@@ -723,6 +723,257 @@ function StatusCell({ review, size = 13 }: { review: Review; size?: number }) {
   return <RatingDisplay value={review.rating} size={size} />;
 }
 
+/* ---------- 시리즈 묶기 (전체 서재) ---------- */
+
+interface SeriesVolume {
+  volume: number;
+  label: string;
+  reviews: Review[];
+}
+
+interface SeriesEntry {
+  type: 'series';
+  key: string;
+  base: string;
+  author: string;
+  cover: string;
+  volumes: SeriesVolume[];
+  reviews: Review[];
+  latest: string;
+}
+
+type CommunityEntry = { type: 'review'; review: Review } | SeriesEntry;
+
+const cleanBase = (s: string) => s.replace(/[\s\-:,.·~]+$/, '').trim();
+const normKey = (s: string) => s.toLowerCase().replace(/\s+/g, '');
+
+// 책 제목 끝의 권수 표시("1", "3권", "Vol.2", "(상)" 등)를 찾아 시리즈 이름과 권수로 나눔
+function parseSeries(rawTitle: string): { base: string; volume: number; label: string } | null {
+  const t = rawTitle.trim();
+  // "(큰글자도서)" 같은 꼬리표를 떼고 한 번 더 시도
+  const candidates = [t, t.replace(/\s*[\(\[][^\)\]]*[\)\]]\s*$/, '').trim()];
+
+  for (const s of candidates) {
+    if (!s) continue;
+    let m: RegExpMatchArray | null;
+
+    // Vol. 3 / volume 3 / #3
+    m = s.match(/^(.*\S)[\s,]*(?:vol\.?|volume|#)\s*(\d{1,3})$/i);
+    if (m) return finish(m[1], Number(m[2]), `${Number(m[2])}권`);
+
+    // 제목 (3) / 제목 [3]
+    m = s.match(/^(.*\S)\s*[\(\[]\s*(\d{1,3})\s*[\)\]]$/);
+    if (m) return finish(m[1], Number(m[2]), `${Number(m[2])}권`);
+
+    // 제목 3권 / 제목 제3권 / 제목3권
+    m = s.match(/^(.*?\S)\s*(?:제\s*)?(\d{1,3})\s*권$/);
+    if (m) return finish(m[1], Number(m[2]), `${Number(m[2])}권`);
+
+    // 제목 3  (숫자 앞에 공백이 있을 때만)
+    m = s.match(/^(.*\S)\s+(\d{1,3})$/);
+    if (m) return finish(m[1], Number(m[2]), `${Number(m[2])}권`);
+
+    // 제목 (상) / 제목 상권
+    m = s.match(/^(.*\S)[\s\(\[]+(상|중|하)\s*(?:권)?\s*[\)\]]?$/);
+    if (m) {
+      const order = { 상: 1, 중: 2, 하: 3 } as Record<string, number>;
+      return finish(m[1], order[m[2]], `${m[2]}권`);
+    }
+  }
+  return null;
+
+  function finish(base: string, volume: number, label: string) {
+    const b = cleanBase(base);
+    // 너무 짧거나 숫자뿐인 제목, 200을 넘는 숫자(연도 등)는 시리즈로 보지 않음
+    if (Array.from(b).length < 2 || /^\d+$/.test(b) || volume > 200) return null;
+    return { base: b, volume, label };
+  }
+}
+
+// 같은 시리즈(제목 앞부분 + 첫 저자)가 2권 이상 있으면 한 줄로 묶음
+function buildCommunityEntries(list: Review[]): CommunityEntry[] {
+  const buckets = new Map<
+    string,
+    { base: string; author: string; vols: Map<number, SeriesVolume>; reviews: Review[] }
+  >();
+  const singles: Review[] = [];
+
+  for (const r of list) {
+    const info = parseSeries(r.books.title);
+    if (!info) {
+      singles.push(r);
+      continue;
+    }
+    const key = `${normKey(info.base)}|${normKey((r.books.author || '').split(',')[0])}`;
+    let b = buckets.get(key);
+    if (!b) {
+      b = { base: info.base, author: r.books.author, vols: new Map(), reviews: [] };
+      buckets.set(key, b);
+    }
+    let v = b.vols.get(info.volume);
+    if (!v) {
+      v = { volume: info.volume, label: info.label, reviews: [] };
+      b.vols.set(info.volume, v);
+    }
+    v.reviews.push(r);
+    b.reviews.push(r);
+  }
+
+  const entries: CommunityEntry[] = [];
+  buckets.forEach((b, key) => {
+    if (b.vols.size >= 2) {
+      const volumes = Array.from(b.vols.values()).sort((x, y) => x.volume - y.volume);
+      const latest = b.reviews.reduce((m, r) => (r.created_at > m ? r.created_at : m), '');
+      entries.push({
+        type: 'series',
+        key,
+        base: b.base,
+        author: b.author,
+        cover: volumes[0].reviews[0].books.cover_url,
+        volumes,
+        reviews: b.reviews,
+        latest,
+      });
+    } else {
+      b.reviews.forEach((r) => singles.push(r));
+    }
+  });
+  singles.forEach((r) => entries.push({ type: 'review', review: r }));
+
+  const when = (e: CommunityEntry) => (e.type === 'series' ? e.latest : e.review.created_at);
+  return entries.sort((a, b) => (when(b) > when(a) ? 1 : when(b) < when(a) ? -1 : 0));
+}
+
+/* ---------- 스크랩 (뉴스/칼럼 읽기 + 형광펜 + 각주 코멘트) ---------- */
+
+interface ClipHighlight {
+  id: string;
+  start_offset: number;
+  end_offset: number;
+  color: 'red' | 'blue' | 'erase';
+  created_at: string;
+}
+
+interface ClipNote {
+  id: string;
+  start_offset: number;
+  end_offset: number;
+  quote_text: string;
+  content: string;
+  created_at: string;
+}
+
+interface Clipping {
+  id: string;
+  title: string;
+  source: string | null;
+  content: string;
+  created_at: string;
+  clip_highlights: ClipHighlight[];
+  clip_notes: ClipNote[];
+}
+
+const HL_COLORS: Record<string, string> = {
+  red: 'rgba(204, 0, 0, 0.28)',
+  blue: 'rgba(0, 71, 204, 0.28)',
+};
+
+// 각주 번호는 문장 끝 위치 순서대로
+const sortNotes = (notes: ClipNote[]) =>
+  [...notes].sort((a, b) => a.end_offset - b.end_offset || byCreated(a, b));
+
+// 선택 영역의 끝점이 본문 글자로 몇 번째인지 계산 (각주 번호 글자는 세지 않음)
+function measureOffset(container: HTMLElement, node: Node, offset: number): number {
+  const r = document.createRange();
+  r.selectNodeContents(container);
+  r.setEnd(node, offset);
+  const frag = r.cloneContents();
+  frag.querySelectorAll('[data-fn]').forEach((el) => el.remove());
+  return (frag.textContent || '').length;
+}
+
+function scrollToNote(noteId: string) {
+  document.getElementById(`note-${noteId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// 본문 + 형광펜 + 각주 번호. 가장 늦게 칠한 획이 이기고, '지우개' 획은 색을 없앰
+const ClipArticle = memo(function ClipArticle({
+  content,
+  highlights,
+  notes,
+  containerRef,
+}: {
+  content: string;
+  highlights: ClipHighlight[];
+  notes: ClipNote[];
+  containerRef: React.Ref<HTMLDivElement>;
+}) {
+  const nodes = useMemo(() => {
+    const clamp = (n: number) => Math.max(0, Math.min(content.length, n));
+    const sorted = sortNotes(notes);
+    const numberOf = new Map<string, number>();
+    sorted.forEach((n, i) => numberOf.set(n.id, i + 1));
+
+    const pts = new Set<number>([0, content.length]);
+    highlights.forEach((h) => {
+      pts.add(clamp(h.start_offset));
+      pts.add(clamp(h.end_offset));
+    });
+    notes.forEach((n) => {
+      pts.add(clamp(n.start_offset));
+      pts.add(clamp(n.end_offset));
+    });
+    const points = Array.from(pts).sort((a, b) => a - b);
+
+    const out: React.ReactNode[] = [];
+    for (let i = 0; i < points.length - 1; i++) {
+      const a = points[i];
+      const b = points[i + 1];
+      if (b <= a) continue;
+
+      let color: string | null = null;
+      for (const h of highlights) {
+        if (h.start_offset <= a && h.end_offset >= b) color = h.color === 'erase' ? null : h.color;
+      }
+      const noted = notes.some((n) => n.start_offset <= a && n.end_offset >= b);
+
+      out.push(
+        <span
+          key={`s${a}`}
+          data-start={a}
+          style={color ? { backgroundColor: HL_COLORS[color] } : undefined}
+          className={noted ? 'underline decoration-[#111111] decoration-1 underline-offset-4' : undefined}
+        >
+          {content.slice(a, b)}
+        </span>
+      );
+
+      sorted
+        .filter((n) => clamp(n.end_offset) === b)
+        .forEach((n) => {
+          out.push(
+            <sup
+              key={`f${n.id}`}
+              data-fn={numberOf.get(n.id)}
+              onClick={() => scrollToNote(n.id)}
+              style={{ userSelect: 'none' }}
+              className="ml-0.5 cursor-pointer text-[11px] font-black hover:text-[#CC0000]"
+            >
+              {numberOf.get(n.id)})
+            </sup>
+          );
+        });
+    }
+    return out;
+  }, [content, highlights, notes]);
+
+  return (
+    <div ref={containerRef} className="whitespace-pre-wrap break-words text-[17px] leading-8">
+      {nodes}
+    </div>
+  );
+});
+
 function Footer() {
   return (
     <footer className="mt-12 border-t-4 border-[#111111]">
@@ -766,6 +1017,22 @@ export default function Home() {
   const [editContentText, setEditContentText] = useState('');
   const [today, setToday] = useState('');
 
+  // 시리즈 보기 (전체 서재)
+  const [activeSeries, setActiveSeries] = useState<string | null>(null);
+  const [activeVolume, setActiveVolume] = useState<number | null>(null);
+
+  // 스크랩 (뉴스/칼럼 읽기)
+  const [clippings, setClippings] = useState<Clipping[]>([]);
+  const [activeClipId, setActiveClipId] = useState<string | null>(null);
+  const [clipTitle, setClipTitle] = useState('');
+  const [clipSource, setClipSource] = useState('');
+  const [clipContent, setClipContent] = useState('');
+  const [clipSaving, setClipSaving] = useState(false);
+  const [selection, setSelection] = useState<{ start: number; end: number; text: string } | null>(null);
+  const [notePanelOpen, setNotePanelOpen] = useState(false);
+  const [noteDraftText, setNoteDraftText] = useState('');
+  const articleRef = useRef<HTMLDivElement>(null);
+
   // 프로필 편집
   const [draft, setDraft] = useState({ nickname: '', sealText: '', sealColor: 'ink', sealStyle: 'solid' });
   const [profileSaving, setProfileSaving] = useState(false);
@@ -799,6 +1066,7 @@ export default function Home() {
 
   const myReviews = allReviews.filter((r) => r.user_id === user?.id);
   const activeReview = allReviews.find((r) => r.id === activeId) ?? null;
+  const activeClip = clippings.find((c) => c.id === activeClipId) ?? null;
   const isOwner = !!activeReview && activeReview.user_id === user?.id;
   const otherReviews = activeReview
     ? allReviews.filter((r) => r.book_isbn === activeReview.book_isbn && r.id !== activeReview.id)
@@ -843,6 +1111,26 @@ export default function Home() {
     }
     setProfiles(map);
 
+    // 내 스크랩 (형광펜, 각주 포함)
+    const clipRes = await supabase
+      .from('clippings')
+      .select(
+        'id, title, source, content, created_at, clip_highlights(id, start_offset, end_offset, color, created_at), clip_notes(id, start_offset, end_offset, quote_text, content, created_at)'
+      )
+      .eq('user_id', u.id)
+      .order('created_at', { ascending: false });
+    if (clipRes.error) {
+      console.error('clippings 에러:', clipRes.error.message);
+    } else {
+      setClippings(
+        (clipRes.data as any[]).map((c) => ({
+          ...c,
+          clip_highlights: (c.clip_highlights || []).sort(byCreated),
+          clip_notes: (c.clip_notes || []).sort(byCreated),
+        })) as Clipping[]
+      );
+    }
+
     if (!reviewsRes.error && reviewsRes.data) {
       const normalized = (reviewsRes.data as any[])
         .filter((r) => r.books)
@@ -880,6 +1168,38 @@ export default function Home() {
     return () => subscription.unsubscribe();
   }, [loadData]);
 
+  // 스크랩 읽기 화면에서 선택한 글자의 위치를 기억해 둠 (버튼을 눌러도 선택이 풀리지 않게)
+  useEffect(() => {
+    if (tab !== 'scraps' || !activeClip) return;
+    const content = activeClip.content;
+
+    const onChange = () => {
+      const sel = window.getSelection();
+      const container = articleRef.current;
+      if (!sel || !container || sel.rangeCount === 0 || sel.isCollapsed) return;
+
+      const range = sel.getRangeAt(0);
+      const inStart = container.contains(range.startContainer);
+      const inEnd = container.contains(range.endContainer);
+      if (!inStart && !inEnd) return;
+
+      let s = inStart ? measureOffset(container, range.startContainer, range.startOffset) : 0;
+      let e = inEnd ? measureOffset(container, range.endContainer, range.endOffset) : content.length;
+      if (e < s) [s, e] = [e, s];
+      while (s < e && /\s/.test(content[s])) s++;
+      while (e > s && /\s/.test(content[e - 1])) e--;
+      if (e <= s) return;
+
+      setSelection((prev) =>
+        prev && prev.start === s && prev.end === e ? prev : { start: s, end: e, text: content.slice(s, e) }
+      );
+    };
+
+    document.addEventListener('selectionchange', onChange);
+    return () => document.removeEventListener('selectionchange', onChange);
+  }, [tab, activeClip]);
+
+
   // ---------- 인증 ----------
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -906,6 +1226,7 @@ export default function Home() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setAllReviews([]);
+    setClippings([]);
     setActiveId(null);
   };
 
@@ -1136,6 +1457,125 @@ export default function Home() {
     }
   };
 
+  // ---------- 스크랩 ----------
+  const openClip = (id: string) => {
+    setActiveClipId(id);
+    setSelection(null);
+    setNotePanelOpen(false);
+    setNoteDraftText('');
+    window.scrollTo({ top: 0 });
+  };
+
+  const handleSaveClipping = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    const body = clipContent.replace(/\r\n/g, '\n').trim();
+    if (!body) return alert('본문을 붙여넣어 주세요.');
+    const title = clipTitle.trim() || body.split('\n')[0].slice(0, 40);
+
+    setClipSaving(true);
+    const { data, error } = await supabase
+      .from('clippings')
+      .insert({ user_id: user.id, title, source: clipSource.trim() || null, content: body })
+      .select('id')
+      .single();
+    setClipSaving(false);
+
+    if (error) return alert(`스크랩 저장 실패: ${error.message}`);
+    setClipTitle('');
+    setClipSource('');
+    setClipContent('');
+    await refresh();
+    openClip(data.id);
+  };
+
+  const clearSelection = () => {
+    setSelection(null);
+    setNotePanelOpen(false);
+    window.getSelection()?.removeAllRanges();
+  };
+
+  // 선택한 문장에 형광펜(빨강/파랑) 또는 지우개
+  const applyHighlight = async (color: 'red' | 'blue' | 'erase') => {
+    if (!activeClip || !user || !selection) return;
+    const { data, error } = await supabase
+      .from('clip_highlights')
+      .insert({
+        clipping_id: activeClip.id,
+        user_id: user.id,
+        start_offset: selection.start,
+        end_offset: selection.end,
+        color,
+      })
+      .select('id, start_offset, end_offset, color, created_at')
+      .single();
+    if (error) return alert(`형광펜 저장 실패: ${error.message}`);
+
+    setClippings((prev) =>
+      prev.map((c) =>
+        c.id === activeClip.id ? { ...c, clip_highlights: [...c.clip_highlights, data as ClipHighlight] } : c
+      )
+    );
+    clearSelection();
+  };
+
+  // 선택한 문장에 각주 코멘트
+  const handleAddNote = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeClip || !user || !selection) return;
+    const text = noteDraftText.trim();
+    if (!text) return;
+
+    const { data, error } = await supabase
+      .from('clip_notes')
+      .insert({
+        clipping_id: activeClip.id,
+        user_id: user.id,
+        start_offset: selection.start,
+        end_offset: selection.end,
+        quote_text: selection.text,
+        content: text,
+      })
+      .select('id, start_offset, end_offset, quote_text, content, created_at')
+      .single();
+    if (error) return alert(`코멘트 저장 실패: ${error.message}`);
+
+    setClippings((prev) =>
+      prev.map((c) =>
+        c.id === activeClip.id ? { ...c, clip_notes: [...c.clip_notes, data as ClipNote] } : c
+      )
+    );
+    setNoteDraftText('');
+    clearSelection();
+  };
+
+  const handleDeleteNote = async (noteId: string) => {
+    if (!activeClip || !confirm('이 코멘트를 삭제하시겠습니까?')) return;
+    const { error } = await supabase.from('clip_notes').delete().eq('id', noteId);
+    if (error) return alert(`삭제 실패: ${error.message}`);
+    setClippings((prev) =>
+      prev.map((c) =>
+        c.id === activeClip.id ? { ...c, clip_notes: c.clip_notes.filter((n) => n.id !== noteId) } : c
+      )
+    );
+  };
+
+  const handleClearHighlights = async () => {
+    if (!activeClip || !confirm('이 스크랩의 형광펜을 모두 지우시겠습니까?')) return;
+    const { error } = await supabase.from('clip_highlights').delete().eq('clipping_id', activeClip.id);
+    if (error) return alert(`삭제 실패: ${error.message}`);
+    setClippings((prev) => prev.map((c) => (c.id === activeClip.id ? { ...c, clip_highlights: [] } : c)));
+  };
+
+  const handleDeleteClipping = async () => {
+    if (!activeClip || !confirm('이 스크랩과 형광펜, 코멘트를 모두 삭제하시겠습니까?')) return;
+    const { error } = await supabase.from('clippings').delete().eq('id', activeClip.id);
+    if (error) return alert(`삭제 실패: ${error.message}`);
+    setActiveClipId(null);
+    clearSelection();
+    refresh();
+  };
+
   // ---------- 화면 이동 ----------
   const openReview = (rev: Review) => {
     setActiveId(rev.id);
@@ -1149,6 +1589,10 @@ export default function Home() {
     setTab(t);
     setActiveId(null);
     setBoardFilter('');
+    setActiveSeries(null);
+    setActiveClipId(null);
+    setSelection(null);
+    setNotePanelOpen(false);
     if (t === 'profile' && user) {
       const p = profiles[user.id];
       setDraft({
@@ -1259,6 +1703,7 @@ export default function Home() {
               [
                 ['mine', '내 서재'],
                 ['community', '전체 서재'],
+                ['scraps', '스크랩'],
               ] as [Tab, string][]
             ).map(([t, label]) => (
               <button
@@ -1293,10 +1738,25 @@ export default function Home() {
   );
 
   // ---------- 게시판 표 ----------
-  const renderBoard = (list: Review[], showAuthor: boolean) => {
+  const asRows = (list: Review[]): CommunityEntry[] =>
+    list.map((review) => ({ type: 'review', review }));
+
+  const openSeries = (entry: SeriesEntry) => {
+    setActiveSeries(entry.key);
+    setActiveVolume(entry.volumes[0].volume);
+    window.scrollTo({ top: 0 });
+  };
+
+  const renderBoard = (rows: CommunityEntry[], showAuthor: boolean) => {
     const col = showAuthor
       ? { title: 'sm:col-span-4', author: 'sm:col-span-2', nick: 'sm:col-span-3', status: 'sm:col-span-2', date: 'sm:col-span-1' }
       : { title: 'sm:col-span-6', author: 'sm:col-span-3', nick: '', status: 'sm:col-span-2', date: 'sm:col-span-1' };
+    const rowClass =
+      'grid grid-cols-12 gap-3 items-center px-5 py-3 border-b border-[#111111] last:border-b-0 hover:bg-[#F5F5F5] cursor-pointer transition-colors duration-200 group';
+    const coverClass =
+      'w-9 h-12 object-cover border border-[#111111] bg-[#E5E5E5] grayscale transition duration-200 group-hover:sepia-[50%] shrink-0';
+    const titleClass =
+      'font-bold text-sm truncate underline-offset-4 decoration-2 decoration-[#CC0000] group-hover:underline';
 
     return (
       <>
@@ -1310,41 +1770,78 @@ export default function Home() {
         </div>
 
         <ul>
-          {list.map((rev) => (
-            <li
-              key={rev.id}
-              onClick={() => openReview(rev)}
-              className="grid grid-cols-12 gap-3 items-center px-5 py-3 border-b border-[#111111] last:border-b-0 hover:bg-[#F5F5F5] cursor-pointer transition-colors duration-200 group"
-            >
-              <div className={`col-span-12 ${col.title} flex items-center gap-3 min-w-0`}>
-                <img
-                  src={rev.books.cover_url || undefined}
-                  alt={rev.books.title}
-                  className="w-9 h-12 object-cover border border-[#111111] bg-[#E5E5E5] grayscale transition duration-200 group-hover:sepia-[50%] shrink-0"
-                />
-                <span className="font-bold text-sm truncate underline-offset-4 decoration-2 decoration-[#CC0000] group-hover:underline">
-                  {rev.books.title}
+          {rows.map((row) => {
+            if (row.type === 'series') {
+              const userIds = Array.from(new Set(row.reviews.map((r) => r.user_id)));
+              return (
+                <li key={`series-${row.key}`} onClick={() => openSeries(row)} className={rowClass}>
+                  <div className={`col-span-12 ${col.title} flex items-center gap-3 min-w-0`}>
+                    <img
+                      src={row.cover || undefined}
+                      alt={row.base}
+                      className={coverClass}
+                    />
+                    <span className="min-w-0">
+                      <span className={`block ${titleClass}`}>{row.base}</span>
+                      <span className="block text-[11px] text-[#737373]">
+                        시리즈 &middot; 기록된 {row.volumes.length}권
+                      </span>
+                    </span>
+                  </div>
+                  <span className={`col-span-6 ${col.author} text-xs text-[#525252] truncate`}>
+                    {row.author}
+                  </span>
+                  {showAuthor && (
+                    <span className={`col-span-6 ${col.nick} text-xs font-semibold min-w-0 flex items-center gap-1`}>
+                      {renderByline(userIds[0], 18)}
+                      {userIds.length > 1 && (
+                        <span className="shrink-0 text-[#737373]">외 {userIds.length - 1}명</span>
+                      )}
+                    </span>
+                  )}
+                  <div className={`col-span-6 ${col.status} flex sm:justify-center`}>
+                    <span className="inline-block bg-[#111111] px-2 py-0.5 text-[11px] font-semibold tracking-widest text-[#F9F9F7]">
+                      시리즈
+                    </span>
+                  </div>
+                  <span className={`hidden sm:block ${col.date} text-right text-[11px] text-[#737373]`}>
+                    {new Date(row.latest).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })}
+                  </span>
+                </li>
+              );
+            }
+
+            const rev = row.review;
+            return (
+              <li key={rev.id} onClick={() => openReview(rev)} className={rowClass}>
+                <div className={`col-span-12 ${col.title} flex items-center gap-3 min-w-0`}>
+                  <img
+                    src={rev.books.cover_url || undefined}
+                    alt={rev.books.title}
+                    className={coverClass}
+                  />
+                  <span className={titleClass}>{rev.books.title}</span>
+                </div>
+                <span className={`col-span-6 ${col.author} text-xs text-[#525252] truncate`}>
+                  {rev.books.author}
                 </span>
-              </div>
-              <span className={`col-span-6 ${col.author} text-xs text-[#525252] truncate`}>
-                {rev.books.author}
-              </span>
-              {showAuthor && (
-                <span className={`col-span-6 ${col.nick} text-xs font-semibold min-w-0`}>
-                  {renderByline(rev.user_id, 18)}
+                {showAuthor && (
+                  <span className={`col-span-6 ${col.nick} text-xs font-semibold min-w-0`}>
+                    {renderByline(rev.user_id, 18)}
+                  </span>
+                )}
+                <div className={`col-span-6 ${col.status} flex sm:justify-center`}>
+                  <StatusCell review={rev} size={13} />
+                </div>
+                <span className={`hidden sm:block ${col.date} text-right text-[11px] text-[#737373]`}>
+                  {new Date(rev.created_at).toLocaleDateString('ko-KR', {
+                    month: 'numeric',
+                    day: 'numeric',
+                  })}
                 </span>
-              )}
-              <div className={`col-span-6 ${col.status} flex sm:justify-center`}>
-                <StatusCell review={rev} size={13} />
-              </div>
-              <span className={`hidden sm:block ${col.date} text-right text-[11px] text-[#737373]`}>
-                {new Date(rev.created_at).toLocaleDateString('ko-KR', {
-                  month: 'numeric',
-                  day: 'numeric',
-                })}
-              </span>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       </>
     );
@@ -1769,10 +2266,68 @@ export default function Home() {
     );
   }
 
-  // ---------- 전체 서재 (모든 유저의 글, 읽고 싶은 책은 제외) ----------
+  // ---------- 전체 서재 (모든 유저의 글, 읽고 싶은 책은 제외, 시리즈는 묶어서) ----------
   if (tab === 'community') {
     const published = allReviews.filter((r) => r.status !== 'wishlist');
-    const list = published.filter(matchesFilter);
+
+    // 시리즈 화면: 권을 골라서 봄
+    const series = activeSeries
+      ? buildCommunityEntries(published).find(
+          (e): e is SeriesEntry => e.type === 'series' && e.key === activeSeries
+        )
+      : undefined;
+
+    if (series) {
+      const vol = series.volumes.find((v) => v.volume === activeVolume) ?? series.volumes[0];
+
+      return (
+        <div className="min-h-screen text-[#111111]">
+          <GlobalStyle />
+          {header}
+          <main className="max-w-screen-xl mx-auto px-4 py-8 space-y-4">
+            <button onClick={() => setActiveSeries(null)} className={`${LINK_BTN} min-h-[44px]`}>
+              &larr; 전체 서재로 돌아가기
+            </button>
+
+            <section className="border border-[#111111] bg-[#F9F9F7]">
+              <div className="px-5 py-4 border-b-4 border-[#111111] flex items-center gap-4">
+                <img
+                  src={series.cover || undefined}
+                  alt={series.base}
+                  className="w-14 h-20 object-cover border border-[#111111] bg-[#E5E5E5] grayscale shrink-0"
+                />
+                <div className="min-w-0">
+                  <p className="text-[11px] uppercase tracking-widest text-[#737373]">Series</p>
+                  <h2 className="text-3xl font-black tracking-tight">{series.base}</h2>
+                  <p className="text-sm text-[#525252]">
+                    {series.author} &middot; 기록된 {series.volumes.length}권
+                  </p>
+                </div>
+              </div>
+
+              {/* 권 선택 */}
+              <div className="px-5 py-3 border-b border-[#111111] flex flex-wrap items-center gap-2">
+                <span className={`${LABEL} mr-1`}>권 선택</span>
+                {series.volumes.map((v) => (
+                  <ToggleButton
+                    key={v.volume}
+                    pressed={v.volume === vol.volume}
+                    onClick={() => setActiveVolume(v.volume)}
+                  >
+                    {v.label}
+                  </ToggleButton>
+                ))}
+              </div>
+
+              {renderBoard(asRows(vol.reviews), true)}
+            </section>
+          </main>
+          <Footer />
+        </div>
+      );
+    }
+
+    const entries = buildCommunityEntries(published.filter(matchesFilter));
 
     return (
       <div className="min-h-screen text-[#111111]">
@@ -1797,16 +2352,305 @@ export default function Home() {
               />
             </div>
 
-            {list.length === 0 ? (
+            {entries.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-[#737373]">
                 <p className="text-sm">
                   {published.length === 0 ? '아직 올라온 글이 없습니다.' : '검색 결과가 없습니다.'}
                 </p>
               </div>
             ) : (
-              renderBoard(list, true)
+              renderBoard(entries, true)
             )}
           </section>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // ---------- 스크랩 ----------
+  if (tab === 'scraps') {
+    // 읽기 화면
+    if (activeClip) {
+      const notes = sortNotes(activeClip.clip_notes);
+      const isUrl = !!activeClip.source && /^https?:\/\//i.test(activeClip.source);
+      const toolBtn = `inline-flex items-center gap-2 min-h-[44px] px-3 border border-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+      const keepSelection = (e: React.MouseEvent) => e.preventDefault(); // 버튼을 눌러도 선택이 풀리지 않게
+
+      return (
+        <div className="min-h-screen text-[#111111]">
+          <GlobalStyle />
+          {header}
+          <main className="max-w-screen-xl mx-auto px-4 py-8 pb-40 space-y-4">
+            <div className="max-w-3xl mx-auto">
+              <button
+                onClick={() => {
+                  setActiveClipId(null);
+                  clearSelection();
+                }}
+                className={`${LINK_BTN} min-h-[44px]`}
+              >
+                &larr; 스크랩 목록으로 돌아가기
+              </button>
+            </div>
+
+            <article className="max-w-3xl mx-auto border border-[#111111] bg-[#F9F9F7]">
+              <section className="p-5 md:p-8 border-b-4 border-[#111111] space-y-3">
+                <p className="text-[11px] uppercase tracking-widest text-[#737373]">Clipping</p>
+                <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">
+                  {activeClip.title}
+                </h2>
+                <p className="text-xs text-[#737373] flex flex-wrap gap-x-2">
+                  {activeClip.source &&
+                    (isUrl ? (
+                      <a
+                        href={activeClip.source}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        className="underline decoration-2 decoration-[#CC0000] underline-offset-4 break-all"
+                      >
+                        {activeClip.source}
+                      </a>
+                    ) : (
+                      <span>{activeClip.source}</span>
+                    ))}
+                  <span>{new Date(activeClip.created_at).toLocaleDateString('ko-KR')}</span>
+                </p>
+                <div className="flex flex-wrap gap-4 pt-1">
+                  {activeClip.clip_highlights.length > 0 && (
+                    <button onClick={handleClearHighlights} className={DANGER_BTN}>
+                      형광펜 전체 지우기
+                    </button>
+                  )}
+                  <button onClick={handleDeleteClipping} className={DANGER_BTN}>
+                    스크랩 삭제
+                  </button>
+                </div>
+              </section>
+
+              <section className="p-5 md:p-8">
+                <ClipArticle
+                  content={activeClip.content}
+                  highlights={activeClip.clip_highlights}
+                  notes={activeClip.clip_notes}
+                  containerRef={articleRef}
+                />
+              </section>
+
+              {/* 각주: 문장 + 의견을 인용문처럼 */}
+              {notes.length > 0 && (
+                <section className="p-5 md:p-8 border-t-4 border-[#111111]">
+                  <h3 className="text-xl font-black tracking-tight">
+                    각주{' '}
+                    <span className="text-sm font-semibold text-[#737373]">({notes.length})</span>
+                  </h3>
+                  <div className="mt-4 divide-y divide-[#E5E5E0]">
+                    {notes.map((n, i) => (
+                      <div key={n.id} id={`note-${n.id}`} className="py-4 first:pt-0">
+                        <div className="flex justify-between items-start gap-3">
+                          <div className="min-w-0 text-base font-bold italic leading-relaxed whitespace-pre-line">
+                            <span className="not-italic mr-1.5 text-xs font-black">{i + 1})</span>
+                            &quot;{n.quote_text}&quot;
+                          </div>
+                          <button onClick={() => handleDeleteNote(n.id)} className={`${DANGER_BTN} shrink-0`}>
+                            삭제
+                          </button>
+                        </div>
+                        <div className="mt-2 ml-2 flex items-start gap-1.5 text-sm text-[#525252]">
+                          <ReplyIcon />
+                          <DiscordText text={n.content} className="flex-1 min-w-0 leading-relaxed" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </article>
+          </main>
+
+          {/* 하단 도구: 형광펜(빨강/파랑/지우개) + 코멘트 */}
+          <div className="fixed bottom-0 inset-x-0 z-40 bg-[#F9F9F7] border-t-4 border-[#111111]">
+            {notePanelOpen && selection && (
+              <form onSubmit={handleAddNote} className="border-b border-[#111111]">
+                <div className="max-w-3xl mx-auto px-4 py-3 space-y-2">
+                  <p className={LABEL}>선택한 문장</p>
+                  <p className="text-sm font-bold italic max-h-[3em] overflow-hidden">
+                    &quot;{selection.text}&quot;
+                  </p>
+                  <div className="flex gap-2 items-end">
+                    <input
+                      type="text"
+                      autoFocus
+                      value={noteDraftText}
+                      onChange={(e) => setNoteDraftText(e.target.value)}
+                      placeholder="이 문장에 대한 의견을 적어 보세요"
+                      className={`${INPUT} flex-1`}
+                    />
+                    <button type="submit" className={BTN_SM}>
+                      등록
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setNotePanelOpen(false)}
+                      className={`${BTN_OUTLINE} !min-h-[36px] !px-3`}
+                    >
+                      취소
+                    </button>
+                  </div>
+                </div>
+              </form>
+            )}
+
+            <div className="max-w-3xl mx-auto px-4 py-2 flex flex-wrap items-center gap-2">
+              <span className={`${LABEL} mr-1`}>형광펜</span>
+              <button
+                type="button"
+                disabled={!selection}
+                onMouseDown={keepSelection}
+                onClick={() => applyHighlight('red')}
+                className={toolBtn}
+              >
+                <span className="inline-block w-4 h-4 border border-[#111111]" style={{ background: '#CC0000' }} />
+                빨간색
+              </button>
+              <button
+                type="button"
+                disabled={!selection}
+                onMouseDown={keepSelection}
+                onClick={() => applyHighlight('blue')}
+                className={toolBtn}
+              >
+                <span className="inline-block w-4 h-4 border border-[#111111]" style={{ background: '#0047CC' }} />
+                파란색
+              </button>
+              <button
+                type="button"
+                disabled={!selection}
+                onMouseDown={keepSelection}
+                onClick={() => applyHighlight('erase')}
+                className={toolBtn}
+              >
+                <span className="inline-block w-4 h-4 border border-[#111111] bg-white" />
+                지우개
+              </button>
+
+              <span className="hidden sm:inline-block w-px h-6 bg-[#111111] mx-1" />
+
+              <button
+                type="button"
+                disabled={!selection}
+                onMouseDown={keepSelection}
+                onClick={() => setNotePanelOpen(true)}
+                className={BTN}
+              >
+                코멘트 달기
+              </button>
+
+              <span className="flex-1 min-w-[140px] truncate text-xs text-[#737373]">
+                {selection ? `선택: "${selection.text}"` : '문장을 드래그해서 선택하세요'}
+              </span>
+              {selection && (
+                <button type="button" onClick={clearSelection} className={LINK_BTN}>
+                  선택 해제
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // 목록 화면 + 새 스크랩 붙여넣기
+    return (
+      <div className="min-h-screen text-[#111111]">
+        <GlobalStyle />
+        {header}
+        <main className="max-w-screen-xl mx-auto px-4 py-8">
+          <div className="border border-[#111111] bg-[#F9F9F7] grid grid-cols-1 lg:grid-cols-12">
+            <section className="lg:col-span-5 p-5 md:p-6 border-b lg:border-b-0 lg:border-r border-[#111111] space-y-5">
+              <div className="border-b-2 border-[#111111] pb-2">
+                <p className="text-[11px] uppercase tracking-widest text-[#737373]">New Clipping</p>
+                <h2 className="text-xl font-black tracking-tight">뉴스·칼럼 붙여넣기</h2>
+              </div>
+
+              <form onSubmit={handleSaveClipping} className="space-y-5">
+                <div>
+                  <label className={LABEL}>제목</label>
+                  <input
+                    type="text"
+                    value={clipTitle}
+                    onChange={(e) => setClipTitle(e.target.value)}
+                    placeholder="비우면 본문 첫 줄을 제목으로 써요"
+                    className={INPUT}
+                  />
+                </div>
+                <div>
+                  <label className={LABEL}>출처 (선택)</label>
+                  <input
+                    type="text"
+                    value={clipSource}
+                    onChange={(e) => setClipSource(e.target.value)}
+                    placeholder="기사 주소 또는 매체 이름"
+                    className={INPUT}
+                  />
+                </div>
+                <div>
+                  <label className={LABEL}>본문</label>
+                  <textarea
+                    rows={14}
+                    value={clipContent}
+                    onChange={(e) => setClipContent(e.target.value)}
+                    placeholder="기사나 칼럼을 복사해서 붙여넣어 주세요"
+                    className={`${TEXTAREA_BOX} mt-2`}
+                  />
+                  <p className="mt-1 text-xs text-[#737373]">
+                    저장한 뒤에는 본문을 고칠 수 없어요. 형광펜과 각주 위치가 어긋나기 때문이에요.
+                  </p>
+                </div>
+                <button type="submit" disabled={clipSaving} className={`${BTN} w-full`}>
+                  {clipSaving ? '저장 중...' : '스크랩 저장'}
+                </button>
+              </form>
+            </section>
+
+            <section className="lg:col-span-7">
+              <div className="px-5 py-4 border-b-4 border-[#111111]">
+                <p className="text-[11px] uppercase tracking-widest text-[#737373]">My Clippings</p>
+                <h2 className="text-3xl font-black tracking-tight">
+                  내 스크랩{' '}
+                  <span className="text-sm font-semibold text-[#737373]">총 {clippings.length}개</span>
+                </h2>
+              </div>
+
+              {clippings.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-24 text-[#737373]">
+                  <p className="text-sm">스크랩이 없습니다. 왼쪽에 기사나 칼럼을 붙여넣어 보세요.</p>
+                </div>
+              ) : (
+                <ul>
+                  {clippings.map((c) => (
+                    <li
+                      key={c.id}
+                      onClick={() => openClip(c.id)}
+                      className="px-5 py-4 border-b border-[#111111] last:border-b-0 hover:bg-[#F5F5F5] cursor-pointer transition-colors duration-200 group"
+                    >
+                      <p className="font-bold text-base underline-offset-4 decoration-2 decoration-[#CC0000] group-hover:underline">
+                        {c.title}
+                      </p>
+                      <p className="mt-1 text-xs text-[#737373] flex flex-wrap gap-x-3">
+                        {c.source && <span className="truncate max-w-full">{c.source}</span>}
+                        <span>{new Date(c.created_at).toLocaleDateString('ko-KR')}</span>
+                        <span>
+                          형광펜 {c.clip_highlights.filter((h) => h.color !== 'erase').length} &middot; 각주{' '}
+                          {c.clip_notes.length}
+                        </span>
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          </div>
         </main>
         <Footer />
       </div>
@@ -1954,7 +2798,7 @@ export default function Home() {
                   </p>
                 </div>
               ) : (
-                renderBoard(shelfList, false)
+                renderBoard(asRows(shelfList), false)
               )}
             </section>
 
@@ -1977,7 +2821,7 @@ export default function Home() {
                   </p>
                 </div>
               ) : (
-                renderBoard(wishList, false)
+                renderBoard(asRows(wishList), false)
               )}
             </section>
           </div>
