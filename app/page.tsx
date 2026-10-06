@@ -41,7 +41,7 @@ interface Review {
   quotes?: QuoteItem[];
 }
 
-type Tab = 'mine' | 'community' | 'scraps' | 'profile';
+type Tab = 'mine' | 'community' | 'profile';
 type Status = 'wishlist' | 'reading' | 'completed';
 
 interface Profile {
@@ -62,9 +62,9 @@ const FOCUS =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2';
 
 // 기본 버튼: 검정 바탕, hover 시 흰 바탕으로 반전
-const BTN = `inline-flex items-center justify-center min-h-[44px] px-5 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN = `inline-flex items-center justify-center min-h-[44px] px-3 sm:px-5 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
 // 보조 버튼: 테두리만, hover 시 검정으로 채워짐
-const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[44px] px-5 border border-[#111111] bg-transparent text-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[44px] px-3 sm:px-5 border border-[#111111] bg-transparent text-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
 // 작은 버튼
 const BTN_SM = `inline-flex items-center justify-center min-h-[36px] px-3 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] ${FOCUS}`;
 // 텍스트 링크형 버튼: hover 시 빨간 밑줄
@@ -72,7 +72,7 @@ const LINK_BTN = `text-xs font-semibold tracking-widest text-[#111111] underline
 // 지우기 같은 위험 동작
 const DANGER_BTN = `text-xs text-[#737373] underline-offset-4 decoration-2 decoration-[#CC0000] hover:text-[#CC0000] hover:underline ${FOCUS}`;
 // 입력칸: 아래 2px 선만
-const INPUT = `w-full bg-transparent border-b-2 border-[#111111] px-1 py-2 text-sm placeholder:text-[#A3A3A3] focus:bg-[#F0F0F0] focus:outline-none`;
+const INPUT = `w-full min-w-0 bg-transparent border-b-2 border-[#111111] px-1 py-2 text-sm placeholder:text-[#A3A3A3] focus:bg-[#F0F0F0] focus:outline-none`;
 // 큰 입력 영역(독후감)
 const TEXTAREA_BOX = `w-full bg-transparent border-2 border-[#111111] p-3 text-sm leading-relaxed placeholder:text-[#A3A3A3] focus:bg-[#F0F0F0] focus:outline-none`;
 // 작은 대문자 라벨
@@ -90,6 +90,7 @@ function GlobalStyle() {
         font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Pretendard', monospace !important;
       }
       body {
+        overflow-x: clip;
         color: #111111;
         background-color: #F9F9F7 !important;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23111111' fill-opacity='0.04' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E") !important;
@@ -186,17 +187,19 @@ function ToggleButton({
   pressed,
   onClick,
   children,
+  className = '',
 }: {
   pressed: boolean;
   onClick: () => void;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <button
       type="button"
       aria-pressed={pressed}
       onClick={onClick}
-      className={pressed ? BTN : BTN_OUTLINE}
+      className={`${pressed ? BTN : BTN_OUTLINE} ${className}`}
     >
       {children}
     </button>
@@ -968,7 +971,7 @@ const ClipArticle = memo(function ClipArticle({
   }, [content, highlights, notes]);
 
   return (
-    <div ref={containerRef} className="whitespace-pre-wrap break-words text-[17px] leading-8">
+    <div ref={containerRef} className="whitespace-pre-wrap break-words text-base sm:text-[17px] leading-8">
       {nodes}
     </div>
   );
@@ -1028,6 +1031,9 @@ export default function Home() {
   const [clipSource, setClipSource] = useState('');
   const [clipContent, setClipContent] = useState('');
   const [clipSaving, setClipSaving] = useState(false);
+  const [clipFetching, setClipFetching] = useState(false);
+  const [clipFetchError, setClipFetchError] = useState('');
+  const [newKind, setNewKind] = useState<'book' | 'clip'>('book'); // 새 글 만들기: 책 / 스크랩
   const [selection, setSelection] = useState<{ start: number; end: number; text: string } | null>(null);
   const [notePanelOpen, setNotePanelOpen] = useState(false);
   const [noteDraftText, setNoteDraftText] = useState('');
@@ -1170,7 +1176,7 @@ export default function Home() {
 
   // 스크랩 읽기 화면에서 선택한 글자의 위치를 기억해 둠 (버튼을 눌러도 선택이 풀리지 않게)
   useEffect(() => {
-    if (tab !== 'scraps' || !activeClip) return;
+    if (!activeClip) return;
     const content = activeClip.content;
 
     const onChange = () => {
@@ -1197,7 +1203,7 @@ export default function Home() {
 
     document.addEventListener('selectionchange', onChange);
     return () => document.removeEventListener('selectionchange', onChange);
-  }, [tab, activeClip]);
+  }, [activeClip]);
 
 
   // ---------- 인증 ----------
@@ -1489,6 +1495,43 @@ export default function Home() {
     openClip(data.id);
   };
 
+  // 기사 링크로 제목과 본문을 자동으로 불러옴 (서버의 /api/clips/fetch 를 거침)
+  const fetchArticle = async (rawUrl: string) => {
+    const url = rawUrl.trim();
+    if (!/^https?:\/\/\S+$/i.test(url)) {
+      setClipFetchError('http:// 또는 https:// 로 시작하는 링크를 넣어 주세요.');
+      return;
+    }
+    setClipFetching(true);
+    setClipFetchError('');
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const res = await fetch(`/api/clips/fetch?url=${encodeURIComponent(url)}`, {
+        headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || '본문을 불러오지 못했어요.');
+
+      setClipTitle((prev) => (prev.trim() ? prev : data.title || ''));
+      setClipContent(data.content || '');
+      setClipSource(data.finalUrl || url);
+    } catch (err: any) {
+      setClipFetchError(`${err.message} 본문을 직접 붙여넣어 주세요.`);
+    } finally {
+      setClipFetching(false);
+    }
+  };
+
+  // 링크를 붙여넣으면 (본문이 비어 있을 때) 바로 불러옴
+  const handleClipLinkPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const text = e.clipboardData.getData('text').trim();
+    if (/^https?:\/\/\S+$/i.test(text) && !clipContent.trim()) {
+      setTimeout(() => fetchArticle(text), 0);
+    }
+  };
+
   const clearSelection = () => {
     setSelection(null);
     setNotePanelOpen(false);
@@ -1685,54 +1728,59 @@ export default function Home() {
     );
   };
 
+  const navTabs: [Tab, string][] = [
+    ['mine', '내 서재'],
+    ['community', '전체 서재'],
+  ];
+  const navButton = (t: Tab, label: string, extra = '') => (
+    <button
+      key={t}
+      onClick={() => goTab(t)}
+      className={`min-h-[44px] px-3 text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
+        tab === t ? 'bg-[#111111] text-[#F9F9F7]' : 'hover:text-[#CC0000]'
+      } ${extra}`}
+    >
+      {label}
+    </button>
+  );
+
   const header = (
-    <header className="sticky top-0 z-40 bg-[#F9F9F7] border-b-4 border-[#111111]">
+    <header className="md:sticky md:top-0 z-40 bg-[#F9F9F7] border-b-4 border-[#111111]">
       <div className="bg-[#111111] text-[#F9F9F7]">
         <div className="max-w-screen-xl mx-auto px-4 py-1 flex justify-between gap-3 text-[11px] uppercase tracking-widest">
-          <span>Vol. 1 &middot; {today}</span>
-          <span className="hidden sm:inline">The Reading Edition</span>
+          <span className="truncate">Vol. 1 &middot; {today}</span>
+          <span className="hidden sm:inline shrink-0">The Reading Edition</span>
         </div>
       </div>
       <div className="max-w-screen-xl mx-auto px-4 flex flex-wrap items-center justify-between gap-x-4">
-        <div className="flex items-center gap-4 sm:gap-6">
+        <div className="order-1 flex items-center gap-4 sm:gap-6 min-w-0">
           <button onClick={() => goTab('mine')} className={FOCUS}>
             <h1 className="text-3xl sm:text-4xl font-black tracking-tighter leading-none py-2">ReadPot</h1>
           </button>
-          <nav className="flex">
-            {(
-              [
-                ['mine', '내 서재'],
-                ['community', '전체 서재'],
-                ['scraps', '스크랩'],
-              ] as [Tab, string][]
-            ).map(([t, label]) => (
-              <button
-                key={t}
-                onClick={() => goTab(t)}
-                className={`min-h-[44px] px-3 text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
-                  tab === t ? 'bg-[#111111] text-[#F9F9F7]' : 'hover:text-[#CC0000]'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </nav>
+          {/* 화면이 넓을 때: 제호 옆에 탭 */}
+          <nav className="hidden sm:flex">{navTabs.map(([t, label]) => navButton(t, label))}</nav>
         </div>
-        <div className="flex items-center gap-3">
+
+        <div className="order-2 flex items-center gap-2 sm:gap-3">
           <button
             onClick={() => goTab('profile')}
             title="프로필 편집"
-            className={`inline-flex items-center gap-2 min-h-[44px] px-2 text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
+            className={`inline-flex items-center gap-2 min-h-[44px] px-1 sm:px-2 text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
               tab === 'profile' ? 'underline decoration-2 decoration-[#CC0000] underline-offset-8' : 'hover:text-[#CC0000]'
             }`}
           >
             <Seal text={mySeal.seal_text} color={mySeal.seal_color} styleType={mySeal.seal_style} size={26} />
             <span className="hidden sm:inline">{mySeal.nickname}</span>
           </button>
-          <button onClick={handleLogout} className={BTN_OUTLINE}>
+          <button onClick={handleLogout} className={`${BTN_OUTLINE} !min-h-[40px] !px-3`}>
             로그아웃
           </button>
         </div>
+
+        {/* 모바일: 제호 아래에 탭을 가로로 꽉 채움 */}
+        <nav className="order-3 w-full sm:hidden grid grid-cols-2 border-t border-[#111111]">
+          {navTabs.map(([t, label]) => navButton(t, label, 'justify-center'))}
+        </nav>
       </div>
     </header>
   );
@@ -1868,11 +1916,11 @@ export default function Home() {
           <article className="border border-[#111111] bg-[#F9F9F7]">
             {/* 책 정보 블록: 우측 상단에 읽고 싶은 책 / 읽는 중 / 독후감 추가 버튼 */}
             <section className="p-5 md:p-6 border-b-4 border-[#111111]">
-              <div className="flex gap-5">
+              <div className="flex gap-4 sm:gap-5">
                 <img
                   src={activeReview.books.cover_url || undefined}
                   alt={activeReview.books.title}
-                  className="w-24 h-36 object-cover border border-[#111111] bg-[#E5E5E5] grayscale transition duration-200 hover:sepia-[50%] shrink-0"
+                  className="w-20 h-28 sm:w-24 sm:h-36 object-cover border border-[#111111] bg-[#E5E5E5] grayscale transition duration-200 hover:sepia-[50%] shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-start justify-between gap-3">
@@ -1881,14 +1929,14 @@ export default function Home() {
                         {renderByline(activeReview.user_id, 20, 'font-semibold text-[#111111]')}
                         <span>&middot; {new Date(activeReview.created_at).toLocaleDateString('ko-KR')}</span>
                       </p>
-                      <h2 className="mt-1 text-3xl md:text-4xl font-black tracking-tight leading-tight">
+                      <h2 className="mt-1 text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight break-words">
                         {activeReview.books.title}
                       </h2>
                       <p className="mt-1 text-sm text-[#525252]">{activeReview.books.author}</p>
                     </div>
 
                     {isOwner && (
-                      <div className="flex flex-wrap gap-2 shrink-0">
+                      <div className="flex flex-wrap gap-2 max-w-full">
                         <ToggleButton
                           pressed={activeReview.status === 'wishlist'}
                           onClick={() =>
@@ -2100,6 +2148,258 @@ export default function Home() {
           </article>
         </main>
         <Footer />
+      </div>
+    );
+  }
+
+  // ---------- 스크랩 읽기 화면 ----------
+  if (activeClip) {
+    const notes = sortNotes(activeClip.clip_notes);
+    const isUrl = !!activeClip.source && /^https?:\/\//i.test(activeClip.source);
+    const swatches: { key: 'red' | 'blue' | 'erase'; label: string; color: string }[] = [
+      { key: 'red', label: '빨간색', color: '#CC0000' },
+      { key: 'blue', label: '파란색', color: '#0047CC' },
+      { key: 'erase', label: '지우개', color: '#FFFFFF' },
+    ];
+    const keepSelection = (e: React.MouseEvent) => e.preventDefault(); // 버튼을 눌러도 선택이 풀리지 않게
+
+    const sideBtn = `flex w-full items-center gap-2 min-h-[44px] px-3 border border-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+    const barBtn = `flex flex-col items-center justify-center gap-1 min-h-[52px] min-w-0 border border-[#111111] text-[11px] font-semibold transition-all duration-200 active:bg-[#111111] active:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+
+    // 코멘트 입력창 (PC 옆 패널 / 모바일 하단 막대에서 같이 씀)
+    const noteForm = (variant: 'side' | 'bar') =>
+      selection && notePanelOpen ? (
+        <form
+          onSubmit={handleAddNote}
+          className={
+            variant === 'side'
+              ? 'space-y-2 border-t border-[#111111] pt-3'
+              : 'px-3 py-3 space-y-2 border-b border-[#111111]'
+          }
+        >
+          {variant === 'bar' && (
+            <p className="text-xs font-bold italic max-h-[2.6em] overflow-hidden break-words">
+              &quot;{selection.text}&quot;
+            </p>
+          )}
+          {variant === 'side' ? (
+            <textarea
+              rows={3}
+              autoFocus
+              value={noteDraftText}
+              onChange={(e) => setNoteDraftText(e.target.value)}
+              placeholder="이 문장에 대한 의견을 적어 보세요"
+              className={`${INPUT} leading-relaxed`}
+            />
+          ) : (
+            <input
+              type="text"
+              autoFocus
+              value={noteDraftText}
+              onChange={(e) => setNoteDraftText(e.target.value)}
+              placeholder="이 문장에 대한 의견"
+              className={INPUT}
+            />
+          )}
+          <div className="flex gap-2">
+            <button type="submit" className={`${BTN_SM} flex-1`}>
+              등록
+            </button>
+            <button
+              type="button"
+              onClick={() => setNotePanelOpen(false)}
+              className={`${BTN_OUTLINE} !min-h-[36px] !px-3 flex-1`}
+            >
+              취소
+            </button>
+          </div>
+        </form>
+      ) : null;
+
+    return (
+      <div className="min-h-screen text-[#111111]">
+        <GlobalStyle />
+        {header}
+        <main className="mx-auto max-w-3xl lg:max-w-[66rem] px-4 py-6 md:py-8 pb-56 lg:pb-8">
+          <button
+            onClick={() => {
+              setActiveClipId(null);
+              clearSelection();
+            }}
+            className={`${LINK_BTN} min-h-[44px]`}
+          >
+            &larr; 내 서재로 돌아가기
+          </button>
+
+          <div className="mt-2 lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-6">
+            <article className="min-w-0 border border-[#111111] bg-[#F9F9F7]">
+              <section className="p-5 md:p-8 border-b-4 border-[#111111] space-y-3">
+                <p className="text-[11px] uppercase tracking-widest text-[#737373]">Clipping</p>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight break-words">
+                  {activeClip.title}
+                </h2>
+                <p className="text-xs text-[#737373] flex flex-wrap gap-x-3 gap-y-1">
+                  {activeClip.source &&
+                    (isUrl ? (
+                      <a
+                        href={activeClip.source}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        className="underline decoration-2 decoration-[#CC0000] underline-offset-4 break-all"
+                      >
+                        {activeClip.source}
+                      </a>
+                    ) : (
+                      <span className="break-words">{activeClip.source}</span>
+                    ))}
+                  <span>{new Date(activeClip.created_at).toLocaleDateString('ko-KR')}</span>
+                </p>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1">
+                  {activeClip.clip_highlights.length > 0 && (
+                    <button onClick={handleClearHighlights} className={`${DANGER_BTN} min-h-[36px]`}>
+                      형광펜 전체 지우기
+                    </button>
+                  )}
+                  <button onClick={handleDeleteClipping} className={`${DANGER_BTN} min-h-[36px]`}>
+                    스크랩 삭제
+                  </button>
+                </div>
+              </section>
+
+              <section className="p-5 md:p-8">
+                <ClipArticle
+                  content={activeClip.content}
+                  highlights={activeClip.clip_highlights}
+                  notes={activeClip.clip_notes}
+                  containerRef={articleRef}
+                />
+              </section>
+
+              {/* 각주: 문장 + 의견을 인용문처럼 */}
+              {notes.length > 0 && (
+                <section className="p-5 md:p-8 border-t-4 border-[#111111]">
+                  <h3 className="text-xl font-black tracking-tight">
+                    각주{' '}
+                    <span className="text-sm font-semibold text-[#737373]">({notes.length})</span>
+                  </h3>
+                  <div className="mt-4 divide-y divide-[#E5E5E0]">
+                    {notes.map((n, i) => (
+                      <div key={n.id} id={`note-${n.id}`} className="py-4 first:pt-0">
+                        <div className="flex justify-between items-start gap-3">
+                          <div className="min-w-0 text-base font-bold italic leading-relaxed whitespace-pre-line break-words">
+                            <span className="not-italic mr-1.5 text-xs font-black">{i + 1})</span>
+                            &quot;{n.quote_text}&quot;
+                          </div>
+                          <button onClick={() => handleDeleteNote(n.id)} className={`${DANGER_BTN} shrink-0`}>
+                            삭제
+                          </button>
+                        </div>
+                        <div className="mt-2 ml-2 flex items-start gap-1.5 text-sm text-[#525252]">
+                          <ReplyIcon />
+                          <DiscordText text={n.content} className="flex-1 min-w-0 leading-relaxed" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </article>
+
+            {/* PC: 본문 옆에 떠서 스크롤을 따라옴 */}
+            <aside className="hidden lg:block lg:self-start lg:sticky lg:top-28">
+              <div className="border border-[#111111] bg-[#F9F9F7]">
+                <div className="px-4 py-2 bg-[#111111] text-[#F9F9F7] text-[11px] font-semibold uppercase tracking-widest">
+                  도구
+                </div>
+                <div className="p-4 space-y-4">
+                  <div>
+                    <p className={LABEL}>형광펜</p>
+                    <div className="mt-2 grid gap-2">
+                      {swatches.map((b) => (
+                        <button
+                          key={b.key}
+                          type="button"
+                          disabled={!selection}
+                          onMouseDown={keepSelection}
+                          onClick={() => applyHighlight(b.key)}
+                          className={sideBtn}
+                        >
+                          <span
+                            className="inline-block w-4 h-4 border border-[#111111]"
+                            style={{ background: b.color }}
+                          />
+                          {b.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="border-t border-[#111111] pt-4 space-y-3">
+                    <p className={LABEL}>선택한 문장</p>
+                    <p className="text-xs text-[#525252] break-words max-h-32 overflow-y-auto">
+                      {selection ? `"${selection.text}"` : '문장을 드래그해서 선택하세요'}
+                    </p>
+                    {selection && (
+                      <button type="button" onClick={clearSelection} className={LINK_BTN}>
+                        선택 해제
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      disabled={!selection}
+                      onMouseDown={keepSelection}
+                      onClick={() => setNotePanelOpen(true)}
+                      className={`${BTN} w-full`}
+                    >
+                      코멘트 달기
+                    </button>
+                    {noteForm('side')}
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </main>
+
+        {/* 모바일: 화면 아래에 고정 */}
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-[#F9F9F7] border-t-4 border-[#111111] pb-[env(safe-area-inset-bottom)]">
+          {noteForm('bar')}
+          <div className="px-3 pt-2 flex items-center gap-3 text-xs">
+            <span className="flex-1 min-w-0 truncate text-[#737373]">
+              {selection ? `선택: "${selection.text}"` : '문장을 드래그해서 선택하세요'}
+            </span>
+            {selection && (
+              <button type="button" onClick={clearSelection} className={`${LINK_BTN} shrink-0`}>
+                해제
+              </button>
+            )}
+          </div>
+          <div className="px-3 pb-2 pt-1.5 grid grid-cols-4 gap-1.5">
+            {swatches.map((b) => (
+              <button
+                key={b.key}
+                type="button"
+                disabled={!selection}
+                onMouseDown={keepSelection}
+                onClick={() => applyHighlight(b.key)}
+                className={barBtn}
+              >
+                <span className="inline-block w-4 h-4 border border-[#111111]" style={{ background: b.color }} />
+                <span>{b.label}</span>
+              </button>
+            ))}
+            <button
+              type="button"
+              disabled={!selection}
+              onMouseDown={keepSelection}
+              onClick={() => setNotePanelOpen(true)}
+              className={`${barBtn} bg-[#111111] text-[#F9F9F7]`}
+            >
+              <span className="text-base font-black leading-none">+</span>
+              <span>코멘트</span>
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -2368,212 +2668,165 @@ export default function Home() {
     );
   }
 
-  // ---------- 스크랩 ----------
-  if (tab === 'scraps') {
-    // 읽기 화면
-    if (activeClip) {
-      const notes = sortNotes(activeClip.clip_notes);
-      const isUrl = !!activeClip.source && /^https?:\/\//i.test(activeClip.source);
-      const toolBtn = `inline-flex items-center gap-2 min-h-[44px] px-3 border border-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
-      const keepSelection = (e: React.MouseEvent) => e.preventDefault(); // 버튼을 눌러도 선택이 풀리지 않게
+  // ---------- 내 서재 ----------
+  const myShelf = myReviews.filter((r) => r.status !== 'wishlist');
+  const myWishlist = myReviews.filter((r) => r.status === 'wishlist');
+  const shelfList = myShelf.filter(matchesFilter);
+  const wishList = myWishlist.filter(matchesFilter);
+  const filterQ = boardFilter.trim().toLowerCase();
+  const clipList = clippings.filter(
+    (c) => !filterQ || `${c.title} ${c.source || ''}`.toLowerCase().includes(filterQ)
+  );
 
-      return (
-        <div className="min-h-screen text-[#111111]">
-          <GlobalStyle />
-          {header}
-          <main className="max-w-screen-xl mx-auto px-4 py-8 pb-40 space-y-4">
-            <div className="max-w-3xl mx-auto">
-              <button
-                onClick={() => {
-                  setActiveClipId(null);
-                  clearSelection();
-                }}
-                className={`${LINK_BTN} min-h-[44px]`}
-              >
-                &larr; 스크랩 목록으로 돌아가기
-              </button>
+  return (
+    <div className="min-h-screen text-[#111111]">
+      <GlobalStyle />
+      {header}
+      <main className="max-w-screen-xl mx-auto px-4 py-6 md:py-8">
+        <div className="border border-[#111111] bg-[#F9F9F7] grid grid-cols-1 lg:grid-cols-12">
+          {/* 왼쪽 4칸: 새 글 만들기 (책 / 스크랩) */}
+          <section className="lg:col-span-4 min-w-0 p-4 sm:p-5 border-b lg:border-b-0 lg:border-r border-[#111111] space-y-5">
+            <div className="border-b-2 border-[#111111] pb-2">
+              <p className="text-[11px] uppercase tracking-widest text-[#737373]">New Entry</p>
+              <h2 className="text-xl font-black tracking-tight">새 글 만들기</h2>
             </div>
 
-            <article className="max-w-3xl mx-auto border border-[#111111] bg-[#F9F9F7]">
-              <section className="p-5 md:p-8 border-b-4 border-[#111111] space-y-3">
-                <p className="text-[11px] uppercase tracking-widest text-[#737373]">Clipping</p>
-                <h2 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">
-                  {activeClip.title}
-                </h2>
-                <p className="text-xs text-[#737373] flex flex-wrap gap-x-2">
-                  {activeClip.source &&
-                    (isUrl ? (
-                      <a
-                        href={activeClip.source}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        className="underline decoration-2 decoration-[#CC0000] underline-offset-4 break-all"
-                      >
-                        {activeClip.source}
-                      </a>
-                    ) : (
-                      <span>{activeClip.source}</span>
-                    ))}
-                  <span>{new Date(activeClip.created_at).toLocaleDateString('ko-KR')}</span>
-                </p>
-                <div className="flex flex-wrap gap-4 pt-1">
-                  {activeClip.clip_highlights.length > 0 && (
-                    <button onClick={handleClearHighlights} className={DANGER_BTN}>
-                      형광펜 전체 지우기
-                    </button>
-                  )}
-                  <button onClick={handleDeleteClipping} className={DANGER_BTN}>
-                    스크랩 삭제
+            <div className="grid grid-cols-2 gap-2">
+              <ToggleButton pressed={newKind === 'book'} onClick={() => setNewKind('book')} className="w-full">
+                책 검색
+              </ToggleButton>
+              <ToggleButton pressed={newKind === 'clip'} onClick={() => setNewKind('clip')} className="w-full">
+                스크랩
+              </ToggleButton>
+            </div>
+
+            {newKind === 'book' ? (
+              <>
+                <form onSubmit={handleSearch} className="flex gap-2 items-end">
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="책 제목 또는 저자 검색..."
+                    className={`${INPUT} flex-1`}
+                  />
+                  <button type="submit" disabled={searchLoading} className={`${BTN} shrink-0`}>
+                    {searchLoading ? '검색 중' : '검색'}
                   </button>
-                </div>
-              </section>
+                </form>
 
-              <section className="p-5 md:p-8">
-                <ClipArticle
-                  content={activeClip.content}
-                  highlights={activeClip.clip_highlights}
-                  notes={activeClip.clip_notes}
-                  containerRef={articleRef}
-                />
-              </section>
-
-              {/* 각주: 문장 + 의견을 인용문처럼 */}
-              {notes.length > 0 && (
-                <section className="p-5 md:p-8 border-t-4 border-[#111111]">
-                  <h3 className="text-xl font-black tracking-tight">
-                    각주{' '}
-                    <span className="text-sm font-semibold text-[#737373]">({notes.length})</span>
-                  </h3>
-                  <div className="mt-4 divide-y divide-[#E5E5E0]">
-                    {notes.map((n, i) => (
-                      <div key={n.id} id={`note-${n.id}`} className="py-4 first:pt-0">
-                        <div className="flex justify-between items-start gap-3">
-                          <div className="min-w-0 text-base font-bold italic leading-relaxed whitespace-pre-line">
-                            <span className="not-italic mr-1.5 text-xs font-black">{i + 1})</span>
-                            &quot;{n.quote_text}&quot;
+                {searchResults.length > 0 && !selectedBook && (
+                  <div className="divide-y divide-[#E5E5E0] border-y border-[#111111] max-h-96 overflow-y-auto">
+                    {searchResults.map((book, idx) => (
+                      <div key={idx} className="py-3 flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <img
+                            src={book.thumbnail || undefined}
+                            alt={book.title}
+                            className="w-11 h-16 object-cover border border-[#111111] bg-[#E5E5E5] grayscale shrink-0"
+                          />
+                          <div className="min-w-0">
+                            <p className="font-bold text-sm truncate">{book.title}</p>
+                            <p className="text-xs text-[#525252] truncate">{book.authors.join(', ')}</p>
                           </div>
-                          <button onClick={() => handleDeleteNote(n.id)} className={`${DANGER_BTN} shrink-0`}>
-                            삭제
-                          </button>
                         </div>
-                        <div className="mt-2 ml-2 flex items-start gap-1.5 text-sm text-[#525252]">
-                          <ReplyIcon />
-                          <DiscordText text={n.content} className="flex-1 min-w-0 leading-relaxed" />
-                        </div>
+                        <button
+                          onClick={() => setSelectedBook(book)}
+                          className={`${BTN_OUTLINE} !min-h-[36px] !px-3 shrink-0`}
+                        >
+                          선택
+                        </button>
                       </div>
                     ))}
                   </div>
-                </section>
-              )}
-            </article>
-          </main>
+                )}
 
-          {/* 하단 도구: 형광펜(빨강/파랑/지우개) + 코멘트 */}
-          <div className="fixed bottom-0 inset-x-0 z-40 bg-[#F9F9F7] border-t-4 border-[#111111]">
-            {notePanelOpen && selection && (
-              <form onSubmit={handleAddNote} className="border-b border-[#111111]">
-                <div className="max-w-3xl mx-auto px-4 py-3 space-y-2">
-                  <p className={LABEL}>선택한 문장</p>
-                  <p className="text-sm font-bold italic max-h-[3em] overflow-hidden">
-                    &quot;{selection.text}&quot;
-                  </p>
+                {selectedBook && (
+                  <div className="border-2 border-[#111111] p-4 space-y-5">
+                    <div className="flex items-center justify-between gap-3">
+                      <h3 className="text-sm font-black tracking-tight">새 책 서재에 추가</h3>
+                      <button onClick={() => setSelectedBook(null)} className={`${DANGER_BTN} shrink-0`}>
+                        다시 선택
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-3 border-y border-[#111111] py-3">
+                      <img
+                        src={selectedBook.thumbnail || undefined}
+                        alt={selectedBook.title}
+                        className="w-12 h-16 object-cover border border-[#111111] bg-[#E5E5E5] grayscale shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm break-words">{selectedBook.title}</p>
+                        <p className="text-xs text-[#525252] truncate">{selectedBook.authors.join(', ')}</p>
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleSubmitReview} className="space-y-5">
+                      <div className="grid grid-cols-2 gap-2">
+                        <ToggleButton
+                          className="w-full"
+                          pressed={regStatus === 'wishlist'}
+                          onClick={() => setRegStatus(regStatus === 'wishlist' ? 'completed' : 'wishlist')}
+                        >
+                          읽고 싶은 책
+                        </ToggleButton>
+                        <ToggleButton
+                          className="w-full"
+                          pressed={regStatus === 'reading'}
+                          onClick={() => setRegStatus(regStatus === 'reading' ? 'completed' : 'reading')}
+                        >
+                          읽는 중
+                        </ToggleButton>
+                      </div>
+
+                      {regStatus === 'completed' && (
+                        <div>
+                          <label className={LABEL}>별점</label>
+                          <div className="mt-2">
+                            <RatingInput value={rating} onChange={setRating} size={26} />
+                          </div>
+                        </div>
+                      )}
+
+                      <button type="submit" className={`${BTN} w-full`}>
+                        {regStatus === 'wishlist' ? '읽고 싶은 책에 담기' : '내 서재에 등록하기'}
+                      </button>
+                    </form>
+                  </div>
+                )}
+              </>
+            ) : (
+              <form onSubmit={handleSaveClipping} className="space-y-5">
+                <div>
+                  <label className={LABEL}>기사 링크 (선택)</label>
                   <div className="flex gap-2 items-end">
                     <input
                       type="text"
-                      autoFocus
-                      value={noteDraftText}
-                      onChange={(e) => setNoteDraftText(e.target.value)}
-                      placeholder="이 문장에 대한 의견을 적어 보세요"
+                      inputMode="url"
+                      value={clipSource}
+                      onChange={(e) => setClipSource(e.target.value)}
+                      onPaste={handleClipLinkPaste}
+                      placeholder="링크를 붙여넣으면 본문을 불러와요"
                       className={`${INPUT} flex-1`}
                     />
-                    <button type="submit" className={BTN_SM}>
-                      등록
-                    </button>
                     <button
                       type="button"
-                      onClick={() => setNotePanelOpen(false)}
-                      className={`${BTN_OUTLINE} !min-h-[36px] !px-3`}
+                      onClick={() => fetchArticle(clipSource)}
+                      disabled={clipFetching || !clipSource.trim()}
+                      className={`${BTN_OUTLINE} shrink-0`}
                     >
-                      취소
+                      {clipFetching ? '불러오는 중' : '불러오기'}
                     </button>
                   </div>
+                  {clipFetchError && (
+                    <p className="mt-1 text-xs font-semibold text-[#CC0000] break-words">{clipFetchError}</p>
+                  )}
+                  <p className="mt-1 text-xs text-[#737373]">
+                    링크 대신 매체 이름을 적어도 돼요. 일부 사이트는 불러오지 못할 수 있어요.
+                  </p>
                 </div>
-              </form>
-            )}
 
-            <div className="max-w-3xl mx-auto px-4 py-2 flex flex-wrap items-center gap-2">
-              <span className={`${LABEL} mr-1`}>형광펜</span>
-              <button
-                type="button"
-                disabled={!selection}
-                onMouseDown={keepSelection}
-                onClick={() => applyHighlight('red')}
-                className={toolBtn}
-              >
-                <span className="inline-block w-4 h-4 border border-[#111111]" style={{ background: '#CC0000' }} />
-                빨간색
-              </button>
-              <button
-                type="button"
-                disabled={!selection}
-                onMouseDown={keepSelection}
-                onClick={() => applyHighlight('blue')}
-                className={toolBtn}
-              >
-                <span className="inline-block w-4 h-4 border border-[#111111]" style={{ background: '#0047CC' }} />
-                파란색
-              </button>
-              <button
-                type="button"
-                disabled={!selection}
-                onMouseDown={keepSelection}
-                onClick={() => applyHighlight('erase')}
-                className={toolBtn}
-              >
-                <span className="inline-block w-4 h-4 border border-[#111111] bg-white" />
-                지우개
-              </button>
-
-              <span className="hidden sm:inline-block w-px h-6 bg-[#111111] mx-1" />
-
-              <button
-                type="button"
-                disabled={!selection}
-                onMouseDown={keepSelection}
-                onClick={() => setNotePanelOpen(true)}
-                className={BTN}
-              >
-                코멘트 달기
-              </button>
-
-              <span className="flex-1 min-w-[140px] truncate text-xs text-[#737373]">
-                {selection ? `선택: "${selection.text}"` : '문장을 드래그해서 선택하세요'}
-              </span>
-              {selection && (
-                <button type="button" onClick={clearSelection} className={LINK_BTN}>
-                  선택 해제
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // 목록 화면 + 새 스크랩 붙여넣기
-    return (
-      <div className="min-h-screen text-[#111111]">
-        <GlobalStyle />
-        {header}
-        <main className="max-w-screen-xl mx-auto px-4 py-8">
-          <div className="border border-[#111111] bg-[#F9F9F7] grid grid-cols-1 lg:grid-cols-12">
-            <section className="lg:col-span-5 p-5 md:p-6 border-b lg:border-b-0 lg:border-r border-[#111111] space-y-5">
-              <div className="border-b-2 border-[#111111] pb-2">
-                <p className="text-[11px] uppercase tracking-widest text-[#737373]">New Clipping</p>
-                <h2 className="text-xl font-black tracking-tight">뉴스·칼럼 붙여넣기</h2>
-              </div>
-
-              <form onSubmit={handleSaveClipping} className="space-y-5">
                 <div>
                   <label className={LABEL}>제목</label>
                   <input
@@ -2584,198 +2837,36 @@ export default function Home() {
                     className={INPUT}
                   />
                 </div>
-                <div>
-                  <label className={LABEL}>출처 (선택)</label>
-                  <input
-                    type="text"
-                    value={clipSource}
-                    onChange={(e) => setClipSource(e.target.value)}
-                    placeholder="기사 주소 또는 매체 이름"
-                    className={INPUT}
-                  />
-                </div>
+
                 <div>
                   <label className={LABEL}>본문</label>
                   <textarea
-                    rows={14}
+                    rows={12}
                     value={clipContent}
                     onChange={(e) => setClipContent(e.target.value)}
-                    placeholder="기사나 칼럼을 복사해서 붙여넣어 주세요"
+                    placeholder="기사나 칼럼을 복사해서 붙여넣어도 돼요"
                     className={`${TEXTAREA_BOX} mt-2`}
                   />
                   <p className="mt-1 text-xs text-[#737373]">
-                    저장한 뒤에는 본문을 고칠 수 없어요. 형광펜과 각주 위치가 어긋나기 때문이에요.
+                    저장한 뒤에는 본문을 고칠 수 없어요. 형광펜과 각주 위치가 어긋나기 때문이에요. 불필요한
+                    부분은 저장 전에 지워 주세요.
                   </p>
                 </div>
+
                 <button type="submit" disabled={clipSaving} className={`${BTN} w-full`}>
                   {clipSaving ? '저장 중...' : '스크랩 저장'}
                 </button>
               </form>
-            </section>
-
-            <section className="lg:col-span-7">
-              <div className="px-5 py-4 border-b-4 border-[#111111]">
-                <p className="text-[11px] uppercase tracking-widest text-[#737373]">My Clippings</p>
-                <h2 className="text-3xl font-black tracking-tight">
-                  내 스크랩{' '}
-                  <span className="text-sm font-semibold text-[#737373]">총 {clippings.length}개</span>
-                </h2>
-              </div>
-
-              {clippings.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-24 text-[#737373]">
-                  <p className="text-sm">스크랩이 없습니다. 왼쪽에 기사나 칼럼을 붙여넣어 보세요.</p>
-                </div>
-              ) : (
-                <ul>
-                  {clippings.map((c) => (
-                    <li
-                      key={c.id}
-                      onClick={() => openClip(c.id)}
-                      className="px-5 py-4 border-b border-[#111111] last:border-b-0 hover:bg-[#F5F5F5] cursor-pointer transition-colors duration-200 group"
-                    >
-                      <p className="font-bold text-base underline-offset-4 decoration-2 decoration-[#CC0000] group-hover:underline">
-                        {c.title}
-                      </p>
-                      <p className="mt-1 text-xs text-[#737373] flex flex-wrap gap-x-3">
-                        {c.source && <span className="truncate max-w-full">{c.source}</span>}
-                        <span>{new Date(c.created_at).toLocaleDateString('ko-KR')}</span>
-                        <span>
-                          형광펜 {c.clip_highlights.filter((h) => h.color !== 'erase').length} &middot; 각주{' '}
-                          {c.clip_notes.length}
-                        </span>
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  // ---------- 내 서재 ----------
-  const myShelf = myReviews.filter((r) => r.status !== 'wishlist');
-  const myWishlist = myReviews.filter((r) => r.status === 'wishlist');
-  const shelfList = myShelf.filter(matchesFilter);
-  const wishList = myWishlist.filter(matchesFilter);
-
-  return (
-    <div className="min-h-screen text-[#111111]">
-      <GlobalStyle />
-      {header}
-      <main className="max-w-screen-xl mx-auto px-4 py-8">
-        <div className="border border-[#111111] bg-[#F9F9F7] grid grid-cols-1 lg:grid-cols-12">
-          {/* 왼쪽 4칸: 책 검색해서 새 글 만들기 */}
-          <section className="lg:col-span-4 p-5 border-b lg:border-b-0 lg:border-r border-[#111111] space-y-5">
-            <div className="border-b-2 border-[#111111] pb-2">
-              <p className="text-[11px] uppercase tracking-widest text-[#737373]">New Entry</p>
-              <h2 className="text-xl font-black tracking-tight">책 검색해서 새 글 만들기</h2>
-            </div>
-
-            <form onSubmit={handleSearch} className="flex gap-2 items-end">
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="책 제목 또는 저자 검색..."
-                className={`${INPUT} flex-1`}
-              />
-              <button type="submit" disabled={searchLoading} className={BTN}>
-                {searchLoading ? '검색 중...' : '검색'}
-              </button>
-            </form>
-
-            {searchResults.length > 0 && !selectedBook && (
-              <div className="divide-y divide-[#E5E5E0] border-y border-[#111111] max-h-96 overflow-y-auto">
-                {searchResults.map((book, idx) => (
-                  <div key={idx} className="py-3 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <img
-                        src={book.thumbnail || undefined}
-                        alt={book.title}
-                        className="w-11 h-16 object-cover border border-[#111111] bg-[#E5E5E5] grayscale shrink-0"
-                      />
-                      <div className="min-w-0">
-                        <p className="font-bold text-sm truncate">{book.title}</p>
-                        <p className="text-xs text-[#525252] truncate">{book.authors.join(', ')}</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setSelectedBook(book)}
-                      className={`${BTN_OUTLINE} !min-h-[36px] !px-3 shrink-0`}
-                    >
-                      선택
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {selectedBook && (
-              <div className="border-2 border-[#111111] p-4 space-y-5">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-black tracking-tight">새 책 서재에 추가</h3>
-                  <button onClick={() => setSelectedBook(null)} className={DANGER_BTN}>
-                    다시 선택
-                  </button>
-                </div>
-
-                <div className="flex items-center gap-3 border-y border-[#111111] py-3">
-                  <img
-                    src={selectedBook.thumbnail || undefined}
-                    alt={selectedBook.title}
-                    className="w-12 h-16 object-cover border border-[#111111] bg-[#E5E5E5] grayscale"
-                  />
-                  <div className="min-w-0">
-                    <p className="font-bold text-sm truncate">{selectedBook.title}</p>
-                    <p className="text-xs text-[#525252] truncate">{selectedBook.authors.join(', ')}</p>
-                  </div>
-                </div>
-
-                <form onSubmit={handleSubmitReview} className="space-y-5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <ToggleButton
-                      pressed={regStatus === 'wishlist'}
-                      onClick={() => setRegStatus(regStatus === 'wishlist' ? 'completed' : 'wishlist')}
-                    >
-                      읽고 싶은 책
-                    </ToggleButton>
-                    <ToggleButton
-                      pressed={regStatus === 'reading'}
-                      onClick={() => setRegStatus(regStatus === 'reading' ? 'completed' : 'reading')}
-                    >
-                      읽는 중
-                    </ToggleButton>
-                  </div>
-
-                  {regStatus === 'completed' && (
-                    <div>
-                      <label className={LABEL}>별점</label>
-                      <div className="mt-2">
-                        <RatingInput value={rating} onChange={setRating} size={26} />
-                      </div>
-                    </div>
-                  )}
-
-                  <button type="submit" className={`${BTN} w-full`}>
-                    {regStatus === 'wishlist' ? '읽고 싶은 책에 담기' : '내 서재에 등록하기'}
-                  </button>
-                </form>
-              </div>
             )}
           </section>
 
-          {/* 오른쪽 8칸: 내 서재 + 읽고 싶은 책 */}
-          <div className="lg:col-span-8">
+          {/* 오른쪽 8칸: 내 서재 + 읽고 싶은 책 + 스크랩 */}
+          <div className="lg:col-span-8 min-w-0">
             <section>
-              <div className="flex flex-wrap justify-between items-end gap-3 px-5 py-4 border-b-4 border-[#111111]">
+              <div className="flex flex-wrap justify-between items-end gap-3 px-4 sm:px-5 py-4 border-b-4 border-[#111111]">
                 <div>
                   <p className="text-[11px] uppercase tracking-widest text-[#737373]">My Shelf</p>
-                  <h2 className="text-3xl font-black tracking-tight">
+                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
                     내 서재{' '}
                     <span className="text-sm font-semibold text-[#737373]">총 {myShelf.length}권</span>
                   </h2>
@@ -2790,10 +2881,10 @@ export default function Home() {
               </div>
 
               {shelfList.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-[#737373]">
+                <div className="flex flex-col items-center justify-center py-16 px-4 text-center text-[#737373]">
                   <p className="text-sm">
                     {myShelf.length === 0
-                      ? '등록된 책이 없습니다. 왼쪽에서 책을 검색해 첫 글을 만들어 보세요.'
+                      ? '등록된 책이 없습니다. "새 글 만들기"에서 책을 검색해 첫 글을 만들어 보세요.'
                       : '검색 결과가 없습니다.'}
                   </p>
                 </div>
@@ -2804,16 +2895,16 @@ export default function Home() {
 
             {/* 읽고 싶은 책 칸 */}
             <section className="border-t-4 border-[#111111]">
-              <div className="px-5 py-4 border-b-4 border-[#111111]">
+              <div className="px-4 sm:px-5 py-4 border-b-4 border-[#111111]">
                 <p className="text-[11px] uppercase tracking-widest text-[#737373]">Wish List</p>
-                <h2 className="text-3xl font-black tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
                   읽고 싶은 책{' '}
                   <span className="text-sm font-semibold text-[#737373]">총 {myWishlist.length}권</span>
                 </h2>
               </div>
 
               {wishList.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-[#737373]">
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-[#737373]">
                   <p className="text-sm">
                     {myWishlist.length === 0
                       ? '읽고 싶은 책이 없습니다. 책을 검색해 "읽고 싶은 책"으로 담아 보세요.'
@@ -2822,6 +2913,49 @@ export default function Home() {
                 </div>
               ) : (
                 renderBoard(asRows(wishList), false)
+              )}
+            </section>
+
+            {/* 스크랩 칸 */}
+            <section className="border-t-4 border-[#111111]">
+              <div className="px-4 sm:px-5 py-4 border-b-4 border-[#111111]">
+                <p className="text-[11px] uppercase tracking-widest text-[#737373]">Clippings</p>
+                <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
+                  스크랩{' '}
+                  <span className="text-sm font-semibold text-[#737373]">총 {clippings.length}개</span>
+                </h2>
+              </div>
+
+              {clipList.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-[#737373]">
+                  <p className="text-sm">
+                    {clippings.length === 0
+                      ? '스크랩이 없습니다. "새 글 만들기"에서 기사 링크나 칼럼을 추가해 보세요.'
+                      : '검색 결과가 없습니다.'}
+                  </p>
+                </div>
+              ) : (
+                <ul>
+                  {clipList.map((c) => (
+                    <li
+                      key={c.id}
+                      onClick={() => openClip(c.id)}
+                      className="px-4 sm:px-5 py-4 border-b border-[#111111] last:border-b-0 hover:bg-[#F5F5F5] cursor-pointer transition-colors duration-200 group"
+                    >
+                      <p className="font-bold text-base break-words underline-offset-4 decoration-2 decoration-[#CC0000] group-hover:underline">
+                        {c.title}
+                      </p>
+                      <p className="mt-1 text-xs text-[#737373] flex flex-wrap gap-x-3 gap-y-0.5">
+                        {c.source && <span className="truncate max-w-full">{c.source}</span>}
+                        <span>{new Date(c.created_at).toLocaleDateString('ko-KR')}</span>
+                        <span>
+                          형광펜 {c.clip_highlights.filter((h) => h.color !== 'erase').length} &middot; 각주{' '}
+                          {c.clip_notes.length}
+                        </span>
+                      </p>
+                    </li>
+                  ))}
+                </ul>
               )}
             </section>
           </div>
