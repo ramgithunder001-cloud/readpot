@@ -666,12 +666,14 @@ function Seal({
   styleType = 'solid',
   size = 20,
   image = '',
+  onImageError,
 }: {
   text: string;
   color?: string;
   styleType?: string;
   size?: number;
   image?: string | null;
+  onImageError?: () => void;
 }) {
   const hex = (SEAL_COLORS[color] ?? SEAL_COLORS.ink).hex;
   const w = Math.max(1, Math.round(size / 14));
@@ -684,7 +686,15 @@ function Seal({
         className="inline-block shrink-0 overflow-hidden bg-[#E5E5E5]"
         style={{ width: size, height: size, border: `${w}px solid ${hex}` }}
       >
-        <img src={image} alt="" className="block w-full h-full object-cover grayscale" />
+        <img
+          src={image}
+          alt=""
+          onError={() => {
+            console.warn('인장 사진을 불러오지 못했어요:', image);
+            onImageError?.();
+          }}
+          className="block w-full h-full object-cover grayscale"
+        />
       </span>
     );
   }
@@ -1116,6 +1126,10 @@ export default function Home() {
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileMsg, setProfileMsg] = useState('');
   const [pendingImage, setPendingImage] = useState<Blob | null>(null);
+  const [sealImageBroken, setSealImageBroken] = useState(false);
+  useEffect(() => {
+    setSealImageBroken(false);
+  }, [draft.sealImage]);
 
   // 날짜는 브라우저에서만 계산 (서버/브라우저 시간 차이로 인한 오류 방지)
   useEffect(() => {
@@ -1376,6 +1390,7 @@ export default function Home() {
         );
       }
       newImageUrl = supabase.storage.from('seals').getPublicUrl(newPath).data.publicUrl;
+      console.log('인장 사진 주소:', newImageUrl);
     }
 
     const payload: Record<string, any> = {
@@ -1411,7 +1426,7 @@ export default function Home() {
       setPendingImage(null);
     }
     await refresh();
-    setProfileMsg('저장했어요.');
+    setProfileMsg(pendingImage ? '사진까지 저장했어요.' : '저장했어요.');
   };
 
   // ---------- 책 검색 / 등록 ----------
@@ -2608,6 +2623,7 @@ export default function Home() {
                     styleType={draft.sealStyle}
                     image={draft.sealImage}
                     size={64}
+                    onImageError={() => setSealImageBroken(true)}
                   />
                   <div className="flex flex-wrap gap-2 min-w-0">
                     <label
@@ -2628,6 +2644,21 @@ export default function Home() {
                     )}
                   </div>
                 </div>
+                {sealImageBroken && draft.sealImage.startsWith('http') && (
+                  <p className="mt-2 text-xs font-semibold text-[#CC0000] break-words">
+                    저장된 사진을 불러오지 못했어요. Supabase Storage의 seals 버킷이 Public(공개)인지 확인해 주세요.
+                  </p>
+                )}
+                {draft.sealImage.startsWith('http') && (
+                  <a
+                    href={draft.sealImage}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`${LINK_BTN} mt-2 inline-block break-all`}
+                  >
+                    저장된 사진 주소 열어보기
+                  </a>
+                )}
                 <p className="mt-2 text-xs text-[#737373]">
                   가운데를 정사각형으로 잘라 흑백으로 보여줘요. 사진을 쓰면 인장 글자와 모양은 쓰이지 않고, 색은
                   테두리에만 쓰여요. 저장해야 올라가요.
