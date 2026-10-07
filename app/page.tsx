@@ -42,6 +42,22 @@ interface Review {
 }
 
 type Tab = 'mine' | 'community' | 'profile';
+
+// 지금 어느 화면인지 (브라우저 뒤로가기 기록에 저장됨)
+interface NavState {
+  tab: Tab;
+  activeId: string | null;
+  activeSeries: string | null;
+  activeVolume: number | null;
+  activeClipId: string | null;
+}
+const NAV_HOME: NavState = {
+  tab: 'mine',
+  activeId: null,
+  activeSeries: null,
+  activeVolume: null,
+  activeClipId: null,
+};
 type Status = 'wishlist' | 'reading' | 'completed';
 
 interface Profile {
@@ -51,6 +67,19 @@ interface Profile {
   seal_style: string | null;
   seal_image: string | null;
 }
+
+// catch 로 잡은 에러에서 메시지만 안전하게 꺼냄
+const errMsg = (e: unknown): string => (e instanceof Error ? e.message : String(e));
+
+interface ProfileRow {
+  id: string;
+  nickname: string;
+  seal_text?: string | null;
+  seal_color?: string | null;
+  seal_style?: string | null;
+  seal_image?: string | null;
+}
+type ProfilesResult = { data: ProfileRow[] | null; error: { message: string } | null };
 
 const byCreated = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
@@ -1010,7 +1039,7 @@ async function squareImageBlob(file: File, size = 256): Promise<Blob> {
   let source: ImageBitmap | HTMLImageElement;
   try {
     // 휴대폰 사진의 회전 정보를 반영해서 읽음
-    source = await createImageBitmap(file, { imageOrientation: 'from-image' } as any);
+    source = await createImageBitmap(file, { imageOrientation: 'from-image' } as unknown as ImageBitmapOptions);
   } catch {
     source = await new Promise<HTMLImageElement>((resolve, reject) => {
       const img = new Image();
@@ -1131,6 +1160,42 @@ export default function Home() {
     setSealImageBroken(false);
   }, [draft.sealImage]);
 
+  // ---------- 브라우저 뒤로가기 ----------
+  // 화면을 옮길 때마다 기록(history)을 남기고, 뒤로가기를 누르면 이전에 머문 화면으로 돌아감
+  const navIdx = useRef(0);
+
+  const applyNav = useCallback((n: NavState) => {
+    setTab(n.tab);
+    setActiveId(n.activeId);
+    setActiveSeries(n.activeSeries);
+    setActiveVolume(n.activeVolume);
+    setActiveClipId(n.activeClipId);
+    setSelection(null);
+    setNotePanelOpen(false);
+    setIsEditingContent(false);
+    setNewQuoteInput('');
+  }, []);
+
+  useEffect(() => {
+    window.history.replaceState({ ...window.history.state, rp: true, idx: 0, nav: NAV_HOME }, '');
+    navIdx.current = 0;
+
+    const onPop = (e: PopStateEvent) => {
+      const st = e.state as { rp?: boolean; idx?: number; nav?: NavState; scroll?: number } | null;
+      if (st?.rp && st.nav) {
+        navIdx.current = st.idx ?? 0;
+        applyNav(st.nav);
+        // 이전에 보던 위치로 스크롤
+        setTimeout(() => window.scrollTo(0, st.scroll ?? 0), 50);
+      } else {
+        navIdx.current = 0;
+        applyNav(NAV_HOME);
+      }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [applyNav]);
+
   // 날짜는 브라우저에서만 계산 (서버/브라우저 시간 차이로 인한 오류 방지)
   useEffect(() => {
     setToday(
@@ -1175,23 +1240,21 @@ export default function Home() {
       .order('created_at', { ascending: false });
 
     // 인장 컬럼이 아직 없으면 닉네임만 불러옴
-    let profilesRes: any = await supabase
-      .from('profiles')
-      .select('id, nickname, seal_text, seal_color, seal_style, seal_image');
+    const queryProfiles = async (cols: string) =>
+      (await supabase.from('profiles').select(cols)) as unknown as ProfilesResult;
+    let profilesRes = await queryProfiles('id, nickname, seal_text, seal_color, seal_style, seal_image');
     if (profilesRes.error) {
-      profilesRes = await supabase
-        .from('profiles')
-        .select('id, nickname, seal_text, seal_color, seal_style');
+      profilesRes = await queryProfiles('id, nickname, seal_text, seal_color, seal_style');
     }
     if (profilesRes.error) {
-      profilesRes = await supabase.from('profiles').select('id, nickname');
+      profilesRes = await queryProfiles('id, nickname');
     }
 
     if (reviewsRes.error) console.error('reviews 에러:', reviewsRes.error.message);
     if (profilesRes.error) console.error('profiles 에러:', profilesRes.error.message);
 
     const map: Record<string, Profile> = {};
-    (profilesRes.data || []).forEach((p: any) => {
+    (profilesRes.data || []).forEach((p) => {
       map[p.id] = {
         nickname: p.nickname,
         seal_text: p.seal_text ?? null,
@@ -1223,28 +1286,28 @@ export default function Home() {
       console.error('clippings 에러:', clipRes.error.message);
     } else {
       setClippings(
-        (clipRes.data as any[]).map((c) => ({
+        (clipRes.data as unknown as Clipping[]).map((c) => ({
           ...c,
-          clip_highlights: (c.clip_highlights || []).sort(byCreated),
-          clip_notes: (c.clip_notes || []).sort(byCreated),
-        })) as Clipping[]
+          clip_highlights: [...(c.clip_highlights || [])].sort(byCreated),
+          clip_notes: [...(c.clip_notes || [])].sort(byCreated),
+        }))
       );
     }
 
     if (!reviewsRes.error && reviewsRes.data) {
-      const normalized = (reviewsRes.data as any[])
+      const normalized: Review[] = (reviewsRes.data as unknown as Review[])
         .filter((r) => r.books)
         .map((r) => ({
           ...r,
           rating: Number(r.rating) || 0,
           quotes: (r.quotes || [])
-            .map((q: any) => ({
+            .map((q) => ({
               ...q,
-              quote_comments: (q.quote_comments || []).sort(byCreated),
+              quote_comments: [...(q.quote_comments || [])].sort(byCreated),
             }))
             .sort(byCreated),
         }));
-      setAllReviews(normalized as Review[]);
+      setAllReviews(normalized);
     }
   }, []);
 
@@ -1316,8 +1379,8 @@ export default function Home() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
-    } catch (err: any) {
-      alert(`인증 에러: ${err.message}`);
+    } catch (err) {
+      alert(`인증 에러: ${errMsg(err)}`);
     } finally {
       setAuthLoading(false);
     }
@@ -1327,7 +1390,7 @@ export default function Home() {
     await supabase.auth.signOut();
     setAllReviews([]);
     setClippings([]);
-    setActiveId(null);
+    applyNav(NAV_HOME);
   };
 
   // 인장 사진 고르기: 정사각형으로 잘라 미리보기만 보여주고, 저장할 때 올림
@@ -1344,8 +1407,8 @@ export default function Home() {
       setPendingImage(blob);
       setDraft({ ...draft, sealImage: URL.createObjectURL(blob) });
       setProfileMsg('');
-    } catch (err: any) {
-      alert(err.message || '이미지를 처리하지 못했어요.');
+    } catch (err) {
+      alert(errMsg(err) || '이미지를 처리하지 못했어요.');
     }
   };
 
@@ -1393,7 +1456,7 @@ export default function Home() {
       console.log('인장 사진 주소:', newImageUrl);
     }
 
-    const payload: Record<string, any> = {
+    const payload: Record<string, string | null> = {
       id: user.id,
       nickname: nick,
       seal_text: sealText || null,
@@ -1439,7 +1502,7 @@ export default function Home() {
       const res = await fetch(`/api/books/search?query=${encodeURIComponent(query)}`);
       const data = await res.json();
       setSearchResults(data.documents || []);
-    } catch (err) {
+    } catch {
       alert('책 검색 실패');
     } finally {
       setSearchLoading(false);
@@ -1465,7 +1528,7 @@ export default function Home() {
       if (dup) {
         alert('이미 서재에 있는 책이에요. 해당 글로 이동할게요.');
         setSelectedBook(null);
-        setActiveId(dup.id);
+        navigate({ tab: 'mine', activeId: dup.id });
         return;
       }
 
@@ -1499,12 +1562,10 @@ export default function Home() {
       await loadData(user);
 
       // 등록하자마자 해당 글 상세 화면으로 이동
-      setTab('mine');
-      setActiveId(reviewData.id);
-      setIsEditingContent(false);
+      navigate({ tab: 'mine', activeId: reviewData.id });
       setEditContentText('');
-    } catch (err: any) {
-      alert(`저장 실패: ${err.message}`);
+    } catch (err) {
+      alert(`저장 실패: ${errMsg(err)}`);
     }
   };
 
@@ -1545,8 +1606,8 @@ export default function Home() {
       if (error) throw error;
       setNewQuoteInput('');
       refresh();
-    } catch (err: any) {
-      alert(`인용문 추가 실패: ${err.message}`);
+    } catch (err) {
+      alert(`인용문 추가 실패: ${errMsg(err)}`);
     }
   };
 
@@ -1556,8 +1617,8 @@ export default function Home() {
       const { error } = await supabase.from('quotes').delete().eq('id', quoteId);
       if (error) throw error;
       refresh();
-    } catch (err: any) {
-      alert(`삭제 실패: ${err.message}`);
+    } catch (err) {
+      alert(`삭제 실패: ${errMsg(err)}`);
     }
   };
 
@@ -1601,8 +1662,8 @@ export default function Home() {
       if (error) throw error;
       setIsEditingContent(false);
       refresh();
-    } catch (err: any) {
-      alert(`독후감 저장 실패: ${err.message}`);
+    } catch (err) {
+      alert(`독후감 저장 실패: ${errMsg(err)}`);
     }
   };
 
@@ -1611,18 +1672,16 @@ export default function Home() {
     try {
       const { error } = await supabase.from('reviews').delete().eq('id', reviewId);
       if (error) throw error;
-      setActiveId(null);
+      goBack();
       refresh();
-    } catch (err: any) {
-      alert(`삭제 실패: ${err.message}`);
+    } catch (err) {
+      alert(`삭제 실패: ${errMsg(err)}`);
     }
   };
 
   // ---------- 스크랩 ----------
   const openClip = (id: string) => {
-    setActiveClipId(id);
-    setSelection(null);
-    setNotePanelOpen(false);
+    navigate({ activeClipId: id });
     setNoteDraftText('');
     window.scrollTo({ top: 0 });
   };
@@ -1672,8 +1731,8 @@ export default function Home() {
       setClipTitle((prev) => (prev.trim() ? prev : data.title || ''));
       setClipContent(data.content || '');
       setClipSource(data.finalUrl || url);
-    } catch (err: any) {
-      setClipFetchError(`${err.message} 본문을 직접 붙여넣어 주세요.`);
+    } catch (err) {
+      setClipFetchError(`${errMsg(err)} 본문을 직접 붙여넣어 주세요.`);
     } finally {
       setClipFetching(false);
     }
@@ -1769,28 +1828,50 @@ export default function Home() {
     if (!activeClip || !confirm('이 스크랩과 형광펜, 코멘트를 모두 삭제하시겠습니까?')) return;
     const { error } = await supabase.from('clippings').delete().eq('id', activeClip.id);
     if (error) return alert(`삭제 실패: ${error.message}`);
-    setActiveClipId(null);
+    goBack();
     clearSelection();
     refresh();
   };
 
   // ---------- 화면 이동 ----------
+  // 화면을 바꿀 때는 항상 이 함수를 거침. replace=true 면 기록을 쌓지 않고 현재 기록만 바꿈
+  const navigate = (patch: Partial<NavState>, replace = false) => {
+    const next: NavState = { tab, activeId, activeSeries, activeVolume, activeClipId, ...patch };
+    const same =
+      next.tab === tab &&
+      next.activeId === activeId &&
+      next.activeSeries === activeSeries &&
+      next.activeVolume === activeVolume &&
+      next.activeClipId === activeClipId;
+
+    if (!same) {
+      if (replace) {
+        window.history.replaceState({ ...window.history.state, rp: true, idx: navIdx.current, nav: next }, '');
+      } else {
+        // 지금 화면의 스크롤 위치를 기록해 두고, 새 화면을 쌓음
+        window.history.replaceState({ ...window.history.state, scroll: window.scrollY }, '');
+        navIdx.current += 1;
+        window.history.pushState({ rp: true, idx: navIdx.current, nav: next }, '');
+      }
+    }
+    applyNav(next);
+  };
+
+  // 앱 안의 '목록으로' 버튼도 브라우저 뒤로가기와 똑같이 이전 화면으로 보냄
+  const goBack = () => {
+    if (navIdx.current > 0) window.history.back();
+    else navigate({ activeId: null, activeSeries: null, activeVolume: null, activeClipId: null }, true);
+  };
+
   const openReview = (rev: Review) => {
-    setActiveId(rev.id);
-    setIsEditingContent(false);
+    navigate({ activeId: rev.id });
     setEditContentText(rev.content || '');
-    setNewQuoteInput('');
     window.scrollTo({ top: 0 });
   };
 
   const goTab = (t: Tab) => {
-    setTab(t);
-    setActiveId(null);
+    navigate({ tab: t, activeId: null, activeSeries: null, activeVolume: null, activeClipId: null });
     setBoardFilter('');
-    setActiveSeries(null);
-    setActiveClipId(null);
-    setSelection(null);
-    setNotePanelOpen(false);
     if (t === 'profile' && user) {
       const p = profiles[user.id];
       setDraft({
@@ -1952,9 +2033,19 @@ export default function Home() {
   const asRows = (list: Review[]): CommunityEntry[] =>
     list.map((review) => ({ type: 'review', review }));
 
+  // 같은 권을 읽은 기록이 여러 개면 내 기록을 먼저, 없으면 가장 최근 기록을 염
+  const pickReview = (v: SeriesVolume) => v.reviews.find((r) => r.user_id === user.id) ?? v.reviews[0];
+
+  // 시리즈를 누르면 목록 없이 바로 첫 권의 본문(리뷰)을 염
   const openSeries = (entry: SeriesEntry) => {
-    setActiveSeries(entry.key);
-    setActiveVolume(entry.volumes[0].volume);
+    const vol = entry.volumes[0];
+    navigate({ activeSeries: entry.key, activeVolume: vol.volume, activeId: pickReview(vol).id });
+    window.scrollTo({ top: 0 });
+  };
+
+  // 시리즈 안에서 다른 권으로 옮기기 (뒤로가기 기록은 쌓지 않음)
+  const openVolume = (vol: SeriesVolume) => {
+    navigate({ activeVolume: vol.volume, activeId: pickReview(vol).id }, true);
     window.scrollTo({ top: 0 });
   };
 
@@ -2066,15 +2157,40 @@ export default function Home() {
     // 읽고 싶은 책으로만 담아 둔 사람은 '읽은 사람'에 넣지 않음
     const readers = otherReviews.filter((r) => r.status !== 'wishlist');
     const hasSidebar = readers.length > 0;
+    // 시리즈에서 들어왔으면 권 선택줄을 보여줌
+    const seriesEntry = activeSeries
+      ? buildCommunityEntries(allReviews.filter((r) => r.status !== 'wishlist')).find(
+          (e): e is SeriesEntry => e.type === 'series' && e.key === activeSeries
+        )
+      : undefined;
 
     return (
       <div className="min-h-screen text-[#111111]">
         <GlobalStyle />
         {header}
-        <main className="max-w-screen-xl mx-auto px-4 py-8 space-y-4">
-          <button onClick={() => setActiveId(null)} className={`${LINK_BTN} min-h-[44px]`}>
+        <main className="max-w-[700px] mx-auto px-4 py-6 md:py-8 space-y-4">
+          <button onClick={goBack} className={`${LINK_BTN} min-h-[44px]`}>
             &larr; 목록으로 돌아가기
           </button>
+
+          {seriesEntry && (
+            <div className="border border-[#111111] bg-[#F9F9F7] px-4 py-3">
+              <p className="text-[11px] uppercase tracking-widest text-[#737373]">Series</p>
+              <p className="font-black tracking-tight break-words">{seriesEntry.base}</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {seriesEntry.volumes.map((v) => (
+                  <ToggleButton
+                    key={v.volume}
+                    pressed={v.reviews.some((r) => r.id === activeReview.id)}
+                    onClick={() => openVolume(v)}
+                    className="!min-h-[36px] !px-3"
+                  >
+                    {v.label}
+                  </ToggleButton>
+                ))}
+              </div>
+            </div>
+          )}
 
           <article className="border border-[#111111] bg-[#F9F9F7]">
             {/* 책 정보 블록: 우측 상단에 읽고 싶은 책 / 읽는 중 / 독후감 추가 버튼 */}
@@ -2153,9 +2269,9 @@ export default function Home() {
               </div>
             </section>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12">
-              {/* 왼쪽 8칸: 인용문 + 독후감 */}
-              <div className={hasSidebar ? 'lg:col-span-8 lg:border-r border-[#111111]' : 'lg:col-span-12'}>
+            <div>
+              {/* 인용문 + 독후감 */}
+              <div>
                 {showQuotes && (
                   <section className={`p-5 md:p-6 ${showReview ? 'border-b border-[#111111]' : ''}`}>
                     <h3 className="text-xl font-black tracking-tight">
@@ -2254,9 +2370,9 @@ export default function Home() {
                 ) : null}
               </div>
 
-              {/* 오른쪽 4칸: 같은 책을 읽은 사람 (켜고 끌 수 있음) */}
+              {/* 같은 책을 읽은 사람 (켜고 끌 수 있음) */}
               {hasSidebar && (
-                <aside className="lg:col-span-4 border-t lg:border-t-0 border-[#111111] p-5 md:p-6 space-y-4">
+                <aside className="border-t border-[#111111] p-5 md:p-6 space-y-4">
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-xl font-black tracking-tight">
                       같은 책을 읽은 사람{' '}
@@ -2304,7 +2420,7 @@ export default function Home() {
               ) : (
                 <span />
               )}
-              <button onClick={() => setActiveId(null)} className={BTN_OUTLINE}>
+              <button onClick={goBack} className={BTN_OUTLINE}>
                 목록으로
               </button>
             </div>
@@ -2385,10 +2501,7 @@ export default function Home() {
         {header}
         <main className="mx-auto max-w-3xl lg:max-w-[66rem] px-4 py-6 md:py-8 pb-56 lg:pb-8">
           <button
-            onClick={() => {
-              setActiveClipId(null);
-              clearSelection();
-            }}
+            onClick={goBack}
             className={`${LINK_BTN} min-h-[44px]`}
           >
             &larr; 내 서재로 돌아가기

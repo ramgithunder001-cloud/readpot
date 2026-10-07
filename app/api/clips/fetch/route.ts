@@ -145,6 +145,57 @@ async function fetchHtml(startUrl: string): Promise<{ html: string; finalUrl: st
   throw new Error('이동이 너무 많은 링크예요.');
 }
 
+/* ---------- 본문 정리 (광고, 플레이어 문구, 기자 이름/이메일 지우기) ---------- */
+
+// 본문이 아닌 요소는 미리 통째로 지움
+const NOISE_SELECTOR = [
+  'audio', 'video', 'source', 'track', 'iframe', 'noscript', 'button', 'svg',
+  'ins.adsbygoogle', '[class*="adsbygoogle"]', '[id^="google_ads"]',
+  '[class*="advertisement"]', '[class~="ad"]', '[class~="ads"]', '[data-ad-slot]',
+  // ad_wrap, ad-box, ads_area, top_ad 처럼 이름이 ad / ads 로 시작하거나 끝나는 영역
+  '[class^="ad_"]', '[class*=" ad_"]', '[class^="ad-"]', '[class*=" ad-"]',
+  '[class^="ads_"]', '[class*=" ads_"]', '[class^="ads-"]', '[class*=" ads-"]',
+  '[class$="_ad"]', '[class*="_ad "]', '[class$="-ad"]', '[class*="-ad "]',
+  '[id^="ad_"]', '[id^="ad-"]', '[id^="ads_"]', '[id^="ads-"]',
+].join(', ');
+
+const EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/g;
+const EMAIL_LABEL_RE = /\s*(?:이메일|E-?mail|메일)\s*[:：]?\s*$/i;
+const AUDIO_NOTE_RE = /(?:\d{1,2}:\d{2}\s*)?your browser does not support[^.]*\.?/gi;
+// 문단 전체가 "광고" 표시뿐일 때만 광고로 봄 (본문 속 '광고'라는 단어는 그대로 둠)
+const AD_LABEL_RE =
+  /^[\s\[\(<【▶▷■□◆◇\-–—]*(?:광고|AD|ADVERTISEMENT|SPONSORED|스폰서|제휴\s*광고|PR)[\s\]\)>】\-–—]*$/i;
+const TIMESTAMP_RE = /^\d{1,2}:\d{2}(?::\d{2})?(?:\s*[\/-]\s*\d{1,2}:\d{2}(?::\d{2})?)?$/;
+const PLAYER_WORD_RE = /^(?:재생|일시정지|음소거|전체화면|다시 재생)$/;
+// "(서울=연합뉴스) 홍길동 기자 = 본문" 에서 앞부분만 떼어냄
+const WIRE_LEAD_RE =
+  /^\s*[\(\[]?[가-힣A-Za-z0-9]{1,8}\s*=\s*[가-힣A-Za-z0-9 ]{1,12}[\)\]]\s*(?:[가-힣]{2,4}\s*(?:선임|수석)?\s*(?:기자|특파원|통신원)\s*)?(?:=\s*)?/;
+const REPORTER_LEAD_RE = /^[가-힣]{2,4}\s*(?:선임|수석)?\s*(?:기자|특파원)\s*=\s*/;
+// "홍길동 기자", "글·사진 홍길동 기자", "홍길동 논설위원" 처럼 이름 줄만 있는 경우
+const BYLINE_RE =
+  /^(?:[가-힣A-Za-z·=,\/\s]{0,12})?[가-힣]{2,4}\s*(?:선임|수석|논설|편집|전문|객원|인턴)?\s*(?:기자|특파원|논설위원|통신원|칼럼니스트|에디터|PD)(?:\s*[=,·\/]?\s*[가-힣]{2,4}\s*(?:기자|특파원))*\s*$|^(?:기자|특파원)\s*[가-힣]{2,4}\s*$/;
+
+function cleanBlock(raw: string): string {
+  const hadEmail = new RegExp(EMAIL_RE.source).test(raw);
+  let t = raw
+    .replace(AUDIO_NOTE_RE, '')
+    .replace(EMAIL_RE, '')
+    .replace(EMAIL_LABEL_RE, '')
+    .replace(/[\(\[<（]\s*[\)\]>）]/g, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  // 이메일이 붙어 있던 문단 끝의 "홍길동 기자"도 같이 지움 (이메일이 없던 문장은 건드리지 않음)
+  if (hadEmail) {
+    t = t.replace(/\s*[가-힣]{2,4}\s*(?:선임|수석)?\s*(?:기자|특파원|논설위원|통신원)\s*$/, '').trim();
+  }
+  t = t.replace(WIRE_LEAD_RE, '').replace(REPORTER_LEAD_RE, '').trim();
+  if (!t) return '';
+  if (AD_LABEL_RE.test(t) || TIMESTAMP_RE.test(t) || PLAYER_WORD_RE.test(t) || BYLINE_RE.test(t)) {
+    return '';
+  }
+  return t;
+}
+
 /* ---------- 본문 뽑기 ---------- */
 
 function extractArticle(html: string, pageUrl: string) {
@@ -154,15 +205,17 @@ function extractArticle(html: string, pageUrl: string) {
   const siteName = meta('meta[property="og:site_name"]');
   const docTitle = (document.title || '').trim();
 
+  document.querySelectorAll(NOISE_SELECTOR).forEach((el) => el.remove());
+
   const article = new Readability(document as unknown as Document, { charThreshold: 200 }).parse();
   if (!article || !article.content) return null;
 
   // 문단 단위로 나눠서 빈 줄로 이어 붙임
   const { document: body } = parseHTML(`<div>${article.content}</div>`);
   const blockSel = 'p, h1, h2, h3, h4, li, blockquote, pre';
-  const blocks = Array.from(body.querySelectorAll(blockSel) as ArrayLike<any>)
+  const blocks = Array.from(body.querySelectorAll(blockSel) as unknown as ArrayLike<Element>)
     .filter((el) => !el.querySelector(blockSel))
-    .map((el) => String(el.textContent || '').replace(/\s+/g, ' ').trim())
+    .map((el) => cleanBlock(String(el.textContent || '').replace(/\s+/g, ' ').trim()))
     .filter((t) => t.length > 0);
 
   const title = (article.title || ogTitle || docTitle).trim();
@@ -173,8 +226,10 @@ function extractArticle(html: string, pageUrl: string) {
   if (content.length < 100) {
     content = String(article.textContent || '')
       .replace(/[ \t]+/g, ' ')
-      .replace(/\n\s*\n+/g, '\n\n')
-      .trim();
+      .split(/\n\s*\n+/)
+      .map((t) => cleanBlock(t.trim()))
+      .filter((t) => t.length > 0)
+      .join('\n\n');
   }
 
   return {
@@ -214,13 +269,14 @@ export async function GET(req: NextRequest) {
       content: article.content,
       finalUrl,
     });
-  } catch (e: any) {
+  } catch (e) {
+    const err = e as { name?: string; message?: string };
     const message =
-      e?.name === 'TimeoutError' || e?.name === 'AbortError'
+      err?.name === 'TimeoutError' || err?.name === 'AbortError'
         ? '페이지 응답이 너무 늦어요.'
-        : e?.message === 'fetch failed'
+        : err?.message === 'fetch failed'
           ? '페이지에 접속하지 못했어요.'
-          : e?.message || '불러오지 못했어요.';
+          : err?.message || '불러오지 못했어요.';
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }
