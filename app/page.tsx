@@ -86,17 +86,20 @@ const byCreated = (a: { created_at: string }, b: { created_at: string }) =>
 
 /* ---------- Newsprint 디자인 토큰 ----------
    paper #F9F9F7 / ink #111111 / divider #E5E5E0 / accent #CC0000
+   바탕은 회색 + 종이 질감, 패널은 종이색
    둥근 모서리 없음, 검은 1px 테두리, 입력칸은 아래 선만 */
 
 const FOCUS =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2';
 
 // 기본 버튼: 검정 바탕, hover 시 흰 바탕으로 반전
-const BTN = `inline-flex items-center justify-center min-h-[44px] px-3 sm:px-5 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-5 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
 // 보조 버튼: 테두리만, hover 시 검정으로 채워짐
-const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[44px] px-3 sm:px-5 border border-[#111111] bg-transparent text-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-5 border border-[#111111] bg-transparent text-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
 // 작은 버튼
-const BTN_SM = `inline-flex items-center justify-center min-h-[36px] px-3 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] ${FOCUS}`;
+const BTN_SM = `inline-flex items-center justify-center min-h-[28px] px-3 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] ${FOCUS}`;
+// 눌려서 켜진 버튼: 검정 그대로 유지 (hover 해도 흰색으로 안 바뀜)
+const BTN_ACTIVE = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-5 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest ${FOCUS}`;
 // 텍스트 링크형 버튼: hover 시 빨간 밑줄
 const LINK_BTN = `text-xs font-semibold tracking-widest text-[#111111] underline-offset-4 decoration-2 decoration-[#CC0000] hover:underline ${FOCUS}`;
 // 지우기 같은 위험 동작
@@ -108,7 +111,7 @@ const TEXTAREA_BOX = `w-full bg-transparent border-2 border-[#111111] p-3 text-s
 // 작은 대문자 라벨
 const LABEL = 'block text-[11px] font-semibold uppercase tracking-widest text-[#111111]';
 
-// 프리텐다드 폰트 + 신문지 질감 배경 + 직각 모서리
+// 프리텐다드 폰트 + 회색 종이 질감 배경 + 직각 모서리
 function GlobalStyle() {
   return (
     <style>{`
@@ -122,8 +125,8 @@ function GlobalStyle() {
       body {
         overflow-x: clip;
         color: #111111;
-        background-color: #F9F9F7 !important;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23111111' fill-opacity='0.04' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E") !important;
+        background-color: #DCDCD8 !important;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E") !important;
       }
       body * { border-radius: 0 !important; }
       ::selection { background: #111111; color: #F9F9F7; }
@@ -212,7 +215,7 @@ function RatingInput({
   );
 }
 
-// 켜짐/꺼짐을 버튼으로 표현 (켜지면 검정으로 채워짐)
+// 켜짐/꺼짐을 버튼으로 표현 (켜지면 검정으로 채워지고, hover 해도 그대로)
 function ToggleButton({
   pressed,
   onClick,
@@ -229,7 +232,7 @@ function ToggleButton({
       type="button"
       aria-pressed={pressed}
       onClick={onClick}
-      className={`${pressed ? BTN : BTN_OUTLINE} ${className}`}
+      className={`${pressed ? BTN_ACTIVE : BTN_OUTLINE} ${className}`}
     >
       {children}
     </button>
@@ -1144,7 +1147,7 @@ export default function Home() {
   const [clipSaving, setClipSaving] = useState(false);
   const [clipFetching, setClipFetching] = useState(false);
   const [clipFetchError, setClipFetchError] = useState('');
-  const [newKind, setNewKind] = useState<'book' | 'clip'>('book'); // 새 글 만들기: 책 / 스크랩
+  const [clipModalOpen, setClipModalOpen] = useState(false); // 스크랩 쓰기 팝업
   const [selection, setSelection] = useState<{ start: number; end: number; text: string } | null>(null);
   const [notePanelOpen, setNotePanelOpen] = useState(false);
   const [noteDraftText, setNoteDraftText] = useState('');
@@ -1159,6 +1162,16 @@ export default function Home() {
   useEffect(() => {
     setSealImageBroken(false);
   }, [draft.sealImage]);
+
+  // 스크랩 팝업: Esc 로 닫기
+  useEffect(() => {
+    if (!clipModalOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setClipModalOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [clipModalOpen]);
 
   // ---------- 브라우저 뒤로가기 ----------
   // 화면을 옮길 때마다 기록(history)을 남기고, 뒤로가기를 누르면 이전에 머문 화면으로 돌아감
@@ -1509,6 +1522,13 @@ export default function Home() {
     }
   };
 
+  // 검색 결과와 선택한 책을 모두 지우고 패널을 다시 줄임
+  const clearSearch = () => {
+    setSearchResults([]);
+    setSelectedBook(null);
+    setQuery('');
+  };
+
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedBook || !user) return;
@@ -1705,6 +1725,8 @@ export default function Home() {
     setClipTitle('');
     setClipSource('');
     setClipContent('');
+    setClipFetchError('');
+    setClipModalOpen(false);
     await refresh();
     openClip(data.id);
   };
@@ -1974,7 +1996,7 @@ export default function Home() {
     <button
       key={t}
       onClick={() => goTab(t)}
-      className={`min-h-[44px] px-3 text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
+      className={`min-h-[34px] px-3 text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
         tab === t ? 'bg-[#111111] text-[#F9F9F7]' : 'hover:text-[#CC0000]'
       } ${extra}`}
     >
@@ -2003,7 +2025,7 @@ export default function Home() {
           <button
             onClick={() => goTab('profile')}
             title="프로필 편집"
-            className={`inline-flex items-center gap-2 min-h-[44px] px-1 sm:px-2 text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
+            className={`inline-flex items-center gap-2 min-h-[34px] px-1 sm:px-2 text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
               tab === 'profile' ? 'underline decoration-2 decoration-[#CC0000] underline-offset-8' : 'hover:text-[#CC0000]'
             }`}
           >
@@ -2016,7 +2038,7 @@ export default function Home() {
             />
             <span className="hidden sm:inline">{mySeal.nickname}</span>
           </button>
-          <button onClick={handleLogout} className={`${BTN_OUTLINE} !min-h-[40px] !px-3`}>
+          <button onClick={handleLogout} className={`${BTN_OUTLINE} !min-h-[32px] !px-3`}>
             로그아웃
           </button>
         </div>
@@ -2051,7 +2073,7 @@ export default function Home() {
 
   const renderBoard = (rows: CommunityEntry[], showAuthor: boolean) => {
     const col = showAuthor
-      ? { title: 'sm:col-span-4', author: 'sm:col-span-2', nick: 'sm:col-span-3', status: 'sm:col-span-2', date: 'sm:col-span-1' }
+      ? { title: 'sm:col-span-4', author: 'sm:col-span-2', nick: 'sm:col-span-2', status: 'sm:col-span-3', date: 'sm:col-span-1' }
       : { title: 'sm:col-span-6', author: 'sm:col-span-3', nick: '', status: 'sm:col-span-2', date: 'sm:col-span-1' };
     const rowClass =
       'grid grid-cols-12 gap-3 items-center px-5 py-3 border-b border-[#111111] last:border-b-0 hover:bg-[#F5F5F5] cursor-pointer transition-colors duration-200 group';
@@ -2066,7 +2088,7 @@ export default function Home() {
         <div className="hidden sm:grid grid-cols-12 gap-3 px-5 py-2 bg-[#111111] text-[#F9F9F7] text-[11px] font-semibold uppercase tracking-widest">
           <span className={col.title}>책 제목</span>
           <span className={col.author}>저자</span>
-          {showAuthor && <span className={col.nick}>작성자</span>}
+          {showAuthor && <span className={col.nick}>읽은이</span>}
           <span className={`${col.status} text-center`}>상태 / 별점</span>
           <span className={`${col.date} text-right`}>날짜</span>
         </div>
@@ -2169,7 +2191,7 @@ export default function Home() {
         <GlobalStyle />
         {header}
         <main className="max-w-[700px] mx-auto px-4 py-6 md:py-8 space-y-4">
-          <button onClick={goBack} className={`${LINK_BTN} min-h-[44px]`}>
+          <button onClick={goBack} className={`${LINK_BTN} min-h-[34px]`}>
             &larr; 목록으로 돌아가기
           </button>
 
@@ -2183,7 +2205,7 @@ export default function Home() {
                     key={v.volume}
                     pressed={v.reviews.some((r) => r.id === activeReview.id)}
                     onClick={() => openVolume(v)}
-                    className="!min-h-[36px] !px-3"
+                    className="!min-h-[28px] !px-3"
                   >
                     {v.label}
                   </ToggleButton>
@@ -2442,8 +2464,8 @@ export default function Home() {
     ];
     const keepSelection = (e: React.MouseEvent) => e.preventDefault(); // 버튼을 눌러도 선택이 풀리지 않게
 
-    const sideBtn = `flex w-full items-center gap-2 min-h-[44px] px-3 border border-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
-    const barBtn = `flex flex-col items-center justify-center gap-1 min-h-[52px] min-w-0 border border-[#111111] text-[11px] font-semibold transition-all duration-200 active:bg-[#111111] active:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+    const sideBtn = `flex w-full items-center gap-2 min-h-[34px] px-3 border border-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+    const barBtn = `flex flex-col items-center justify-center gap-1 min-h-[44px] min-w-0 border border-[#111111] text-[11px] font-semibold transition-all duration-200 active:bg-[#111111] active:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
 
     // 코멘트 입력창 (PC 옆 패널 / 모바일 하단 막대에서 같이 씀)
     const noteForm = (variant: 'side' | 'bar') =>
@@ -2487,7 +2509,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => setNotePanelOpen(false)}
-              className={`${BTN_OUTLINE} !min-h-[36px] !px-3 flex-1`}
+              className={`${BTN_OUTLINE} !min-h-[28px] !px-3 flex-1`}
             >
               취소
             </button>
@@ -2502,7 +2524,7 @@ export default function Home() {
         <main className="mx-auto max-w-3xl lg:max-w-[66rem] px-4 py-6 md:py-8 pb-56 lg:pb-8">
           <button
             onClick={goBack}
-            className={`${LINK_BTN} min-h-[44px]`}
+            className={`${LINK_BTN} min-h-[34px]`}
           >
             &larr; 내 서재로 돌아가기
           </button>
@@ -2532,11 +2554,11 @@ export default function Home() {
                 </p>
                 <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1">
                   {activeClip.clip_highlights.length > 0 && (
-                    <button onClick={handleClearHighlights} className={`${DANGER_BTN} min-h-[36px]`}>
+                    <button onClick={handleClearHighlights} className={`${DANGER_BTN} min-h-[28px]`}>
                       형광펜 전체 지우기
                     </button>
                   )}
-                  <button onClick={handleDeleteClipping} className={`${DANGER_BTN} min-h-[36px]`}>
+                  <button onClick={handleDeleteClipping} className={`${DANGER_BTN} min-h-[28px]`}>
                     스크랩 삭제
                   </button>
                 </div>
@@ -2801,7 +2823,7 @@ export default function Home() {
                       type="button"
                       aria-pressed={draft.sealColor === key}
                       onClick={() => setDraft({ ...draft, sealColor: key })}
-                      className={`inline-flex items-center gap-2 min-h-[44px] px-4 border border-[#111111] text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
+                      className={`inline-flex items-center gap-2 min-h-[34px] px-4 border border-[#111111] text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
                         draft.sealColor === key ? 'bg-[#111111] text-[#F9F9F7]' : 'hover:bg-[#F5F5F5]'
                       }`}
                     >
@@ -2848,12 +2870,12 @@ export default function Home() {
               <div className="p-5 md:p-6 space-y-6">
                 <div className="flex items-center gap-5">
                   <Seal
- text={previewSeal}
- color={draft.sealColor}
- styleType={draft.sealStyle}
- image={draft.sealImage}
- size={88}
- />
+                    text={previewSeal}
+                    color={draft.sealColor}
+                    styleType={draft.sealStyle}
+                    image={draft.sealImage}
+                    size={88}
+                  />
                   <div className="min-w-0">
                     <p className="text-[11px] uppercase tracking-widest text-[#737373]">Reader</p>
                     <p className="text-3xl font-black tracking-tight truncate">{previewNick}</p>
@@ -2865,22 +2887,22 @@ export default function Home() {
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                     <span className="inline-flex items-center gap-1.5 font-semibold">
                       <Seal
- text={previewSeal}
- color={draft.sealColor}
- styleType={draft.sealStyle}
- image={draft.sealImage}
- size={18}
- />
+                        text={previewSeal}
+                        color={draft.sealColor}
+                        styleType={draft.sealStyle}
+                        image={draft.sealImage}
+                        size={18}
+                      />
                       {previewNick}
                     </span>
                     <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#737373]">
                       <Seal
- text={previewSeal}
- color={draft.sealColor}
- styleType={draft.sealStyle}
- image={draft.sealImage}
- size={22}
- />
+                        text={previewSeal}
+                        color={draft.sealColor}
+                        styleType={draft.sealStyle}
+                        image={draft.sealImage}
+                        size={22}
+                      />
                       <span>
                         {previewNick} &middot; {today}
                       </span>
@@ -2929,8 +2951,8 @@ export default function Home() {
         <div className="min-h-screen text-[#111111]">
           <GlobalStyle />
           {header}
-          <main className="max-w-screen-xl mx-auto px-4 py-8 space-y-4">
-            <button onClick={() => setActiveSeries(null)} className={`${LINK_BTN} min-h-[44px]`}>
+          <main className="max-w-[700px] mx-auto px-4 py-8 space-y-4">
+            <button onClick={() => setActiveSeries(null)} className={`${LINK_BTN} min-h-[34px]`}>
               &larr; 전체 서재로 돌아가기
             </button>
 
@@ -2978,7 +3000,7 @@ export default function Home() {
       <div className="min-h-screen text-[#111111]">
         <GlobalStyle />
         {header}
-        <main className="max-w-screen-xl mx-auto px-4 py-8">
+        <main className="max-w-[700px] mx-auto px-4 py-8">
           <section className="border border-[#111111] bg-[#F9F9F7]">
             <div className="flex flex-wrap justify-between items-end gap-3 px-5 py-4 border-b-4 border-[#111111]">
               <div>
@@ -2992,7 +3014,7 @@ export default function Home() {
                 type="text"
                 value={boardFilter}
                 onChange={(e) => setBoardFilter(e.target.value)}
-                placeholder="책, 저자, 작성자 찾기..."
+                placeholder="책, 저자, 읽은이 찾기..."
                 className={`${INPUT} sm:w-64`}
               />
             </div>
@@ -3023,190 +3045,138 @@ export default function Home() {
     (c) => !filterQ || `${c.title} ${c.source || ''}`.toLowerCase().includes(filterQ)
   );
 
+  // 검색 결과가 있거나 책을 골랐을 때만 왼쪽 칸을 넓힘
+  const searchOpen = searchResults.length > 0 || !!selectedBook;
+
   return (
     <div className="min-h-screen text-[#111111]">
       <GlobalStyle />
       {header}
       <main className="max-w-screen-xl mx-auto px-4 py-6 md:py-8">
         <div className="border border-[#111111] bg-[#F9F9F7] grid grid-cols-1 lg:grid-cols-12">
-          {/* 왼쪽 4칸: 새 글 만들기 (책 / 스크랩) */}
-          <section className="lg:col-span-4 min-w-0 p-4 sm:p-5 border-b lg:border-b-0 lg:border-r border-[#111111] space-y-5">
+          {/* 왼쪽: 책 추가 (검색 전엔 좁게, 검색하면 넓게) */}
+          <section
+            className={`${
+              searchOpen ? 'lg:col-span-4' : 'lg:col-span-3'
+            } min-w-0 p-4 sm:p-5 border-b lg:border-b-0 lg:border-r border-[#111111] space-y-5`}
+          >
             <div className="border-b-2 border-[#111111] pb-2">
               <p className="text-[11px] uppercase tracking-widest text-[#737373]">New Entry</p>
-              <h2 className="text-xl font-black tracking-tight">새 글 만들기</h2>
+              <h2 className="text-xl font-black tracking-tight">책 추가</h2>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <ToggleButton pressed={newKind === 'book'} onClick={() => setNewKind('book')} className="w-full">
-                책 검색
-              </ToggleButton>
-              <ToggleButton pressed={newKind === 'clip'} onClick={() => setNewKind('clip')} className="w-full">
-                스크랩
-              </ToggleButton>
-            </div>
+            <form onSubmit={handleSearch} className="flex gap-2 items-end">
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="책 제목 또는 저자 검색..."
+                className={`${INPUT} flex-1`}
+              />
+              <button type="submit" disabled={searchLoading} className={`${BTN} shrink-0`}>
+                {searchLoading ? '검색 중' : '검색'}
+              </button>
+            </form>
 
-            {newKind === 'book' ? (
+            {searchResults.length > 0 && !selectedBook && (
               <>
-                <form onSubmit={handleSearch} className="flex gap-2 items-end">
-                  <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="책 제목 또는 저자 검색..."
-                    className={`${INPUT} flex-1`}
-                  />
-                  <button type="submit" disabled={searchLoading} className={`${BTN} shrink-0`}>
-                    {searchLoading ? '검색 중' : '검색'}
+                <div className="flex items-center justify-between gap-3">
+                  <span className={LABEL}>검색 결과 {searchResults.length}건</span>
+                  <button type="button" onClick={clearSearch} className={`${DANGER_BTN} shrink-0`}>
+                    결과 지우기
                   </button>
-                </form>
-
-                {searchResults.length > 0 && !selectedBook && (
-                  <div className="divide-y divide-[#E5E5E0] border-y border-[#111111] max-h-96 overflow-y-auto">
-                    {searchResults.map((book, idx) => (
-                      <div key={idx} className="py-3 flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <img
-                            src={book.thumbnail || undefined}
-                            alt={book.title}
-                            className="w-11 h-16 object-cover border border-[#111111] bg-[#E5E5E5] grayscale shrink-0"
-                          />
-                          <div className="min-w-0">
-                            <p className="font-bold text-sm truncate">{book.title}</p>
-                            <p className="text-xs text-[#525252] truncate">{book.authors.join(', ')}</p>
-                          </div>
+                </div>
+                <div className="divide-y divide-[#E5E5E0] border-y border-[#111111] max-h-96 overflow-y-auto">
+                  {searchResults.map((book, idx) => (
+                    <div key={idx} className="py-3 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <img
+                          src={book.thumbnail || undefined}
+                          alt={book.title}
+                          className="w-11 h-16 object-cover border border-[#111111] bg-[#E5E5E5] grayscale shrink-0"
+                        />
+                        <div className="min-w-0">
+                          <p className="font-bold text-sm truncate">{book.title}</p>
+                          <p className="text-xs text-[#525252] truncate">{book.authors.join(', ')}</p>
                         </div>
-                        <button
-                          onClick={() => setSelectedBook(book)}
-                          className={`${BTN_OUTLINE} !min-h-[36px] !px-3 shrink-0`}
-                        >
-                          선택
-                        </button>
                       </div>
-                    ))}
-                  </div>
-                )}
+                      <button
+                        onClick={() => setSelectedBook(book)}
+                        className={`${BTN_OUTLINE} !min-h-[28px] !px-3 shrink-0`}
+                      >
+                        선택
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
 
-                {selectedBook && (
-                  <div className="border-2 border-[#111111] p-4 space-y-5">
-                    <div className="flex items-center justify-between gap-3">
-                      <h3 className="text-sm font-black tracking-tight">새 책 서재에 추가</h3>
-                      <button onClick={() => setSelectedBook(null)} className={`${DANGER_BTN} shrink-0`}>
+            {selectedBook && (
+              <div className="border-2 border-[#111111] p-4 space-y-5">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-sm font-black tracking-tight">새 책 서재에 추가</h3>
+                  <div className="flex items-center gap-3 shrink-0">
+                    {searchResults.length > 0 && (
+                      <button onClick={() => setSelectedBook(null)} className={DANGER_BTN}>
                         다시 선택
                       </button>
-                    </div>
-
-                    <div className="flex items-center gap-3 border-y border-[#111111] py-3">
-                      <img
-                        src={selectedBook.thumbnail || undefined}
-                        alt={selectedBook.title}
-                        className="w-12 h-16 object-cover border border-[#111111] bg-[#E5E5E5] grayscale shrink-0"
-                      />
-                      <div className="min-w-0">
-                        <p className="font-bold text-sm break-words">{selectedBook.title}</p>
-                        <p className="text-xs text-[#525252] truncate">{selectedBook.authors.join(', ')}</p>
-                      </div>
-                    </div>
-
-                    <form onSubmit={handleSubmitReview} className="space-y-5">
-                      <div className="grid grid-cols-2 gap-2">
-                        <ToggleButton
-                          className="w-full"
-                          pressed={regStatus === 'wishlist'}
-                          onClick={() => setRegStatus(regStatus === 'wishlist' ? 'completed' : 'wishlist')}
-                        >
-                          읽고 싶은 책
-                        </ToggleButton>
-                        <ToggleButton
-                          className="w-full"
-                          pressed={regStatus === 'reading'}
-                          onClick={() => setRegStatus(regStatus === 'reading' ? 'completed' : 'reading')}
-                        >
-                          읽는 중
-                        </ToggleButton>
-                      </div>
-
-                      {regStatus === 'completed' && (
-                        <div>
-                          <label className={LABEL}>별점</label>
-                          <div className="mt-2">
-                            <RatingInput value={rating} onChange={setRating} size={26} />
-                          </div>
-                        </div>
-                      )}
-
-                      <button type="submit" className={`${BTN} w-full`}>
-                        {regStatus === 'wishlist' ? '읽고 싶은 책에 담기' : '내 서재에 등록하기'}
-                      </button>
-                    </form>
-                  </div>
-                )}
-              </>
-            ) : (
-              <form onSubmit={handleSaveClipping} className="space-y-5">
-                <div>
-                  <label className={LABEL}>기사 링크 (선택)</label>
-                  <div className="flex gap-2 items-end">
-                    <input
-                      type="text"
-                      inputMode="url"
-                      value={clipSource}
-                      onChange={(e) => setClipSource(e.target.value)}
-                      onPaste={handleClipLinkPaste}
-                      placeholder="링크를 붙여넣으면 본문을 불러와요"
-                      className={`${INPUT} flex-1`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fetchArticle(clipSource)}
-                      disabled={clipFetching || !clipSource.trim()}
-                      className={`${BTN_OUTLINE} shrink-0`}
-                    >
-                      {clipFetching ? '불러오는 중' : '불러오기'}
+                    )}
+                    <button onClick={clearSearch} className={DANGER_BTN}>
+                      취소
                     </button>
                   </div>
-                  {clipFetchError && (
-                    <p className="mt-1 text-xs font-semibold text-[#CC0000] break-words">{clipFetchError}</p>
+                </div>
+
+                <div className="flex items-center gap-3 border-y border-[#111111] py-3">
+                  <img
+                    src={selectedBook.thumbnail || undefined}
+                    alt={selectedBook.title}
+                    className="w-12 h-16 object-cover border border-[#111111] bg-[#E5E5E5] grayscale shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <p className="font-bold text-sm break-words">{selectedBook.title}</p>
+                    <p className="text-xs text-[#525252] truncate">{selectedBook.authors.join(', ')}</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleSubmitReview} className="space-y-5">
+                  <div className="grid grid-cols-2 gap-2">
+                    <ToggleButton
+                      className="w-full"
+                      pressed={regStatus === 'wishlist'}
+                      onClick={() => setRegStatus(regStatus === 'wishlist' ? 'completed' : 'wishlist')}
+                    >
+                      읽고 싶은 책
+                    </ToggleButton>
+                    <ToggleButton
+                      className="w-full"
+                      pressed={regStatus === 'reading'}
+                      onClick={() => setRegStatus(regStatus === 'reading' ? 'completed' : 'reading')}
+                    >
+                      읽는 중
+                    </ToggleButton>
+                  </div>
+
+                  {regStatus === 'completed' && (
+                    <div>
+                      <label className={LABEL}>별점</label>
+                      <div className="mt-2">
+                        <RatingInput value={rating} onChange={setRating} size={26} />
+                      </div>
+                    </div>
                   )}
-                  <p className="mt-1 text-xs text-[#737373]">
-                    링크 대신 매체 이름을 적어도 돼요. 일부 사이트는 불러오지 못할 수 있어요.
-                  </p>
-                </div>
 
-                <div>
-                  <label className={LABEL}>제목</label>
-                  <input
-                    type="text"
-                    value={clipTitle}
-                    onChange={(e) => setClipTitle(e.target.value)}
-                    placeholder="비우면 본문 첫 줄을 제목으로 써요"
-                    className={INPUT}
-                  />
-                </div>
-
-                <div>
-                  <label className={LABEL}>본문</label>
-                  <textarea
-                    rows={12}
-                    value={clipContent}
-                    onChange={(e) => setClipContent(e.target.value)}
-                    placeholder="기사나 칼럼을 복사해서 붙여넣어도 돼요"
-                    className={`${TEXTAREA_BOX} mt-2`}
-                  />
-                  <p className="mt-1 text-xs text-[#737373]">
-                    저장한 뒤에는 본문을 고칠 수 없어요. 형광펜과 각주 위치가 어긋나기 때문이에요. 불필요한
-                    부분은 저장 전에 지워 주세요.
-                  </p>
-                </div>
-
-                <button type="submit" disabled={clipSaving} className={`${BTN} w-full`}>
-                  {clipSaving ? '저장 중...' : '스크랩 저장'}
-                </button>
-              </form>
+                  <button type="submit" className={`${BTN} w-full`}>
+                    {regStatus === 'wishlist' ? '읽고 싶은 책에 담기' : '내 서재에 등록하기'}
+                  </button>
+                </form>
+              </div>
             )}
           </section>
 
-          {/* 오른쪽 8칸: 내 서재 + 읽고 싶은 책 + 스크랩 */}
-          <div className="lg:col-span-8 min-w-0">
+          {/* 오른쪽: 내 서재 + 읽고 싶은 책 + 스크랩 */}
+          <div className={`${searchOpen ? 'lg:col-span-8' : 'lg:col-span-9'} min-w-0`}>
             <section>
               <div className="flex flex-wrap justify-between items-end gap-3 px-4 sm:px-5 py-4 border-b-4 border-[#111111]">
                 <div>
@@ -3229,7 +3199,7 @@ export default function Home() {
                 <div className="flex flex-col items-center justify-center py-16 px-4 text-center text-[#737373]">
                   <p className="text-sm">
                     {myShelf.length === 0
-                      ? '등록된 책이 없습니다. "새 글 만들기"에서 책을 검색해 첫 글을 만들어 보세요.'
+                      ? '등록된 책이 없습니다. "책 추가"에서 책을 검색해 첫 글을 만들어 보세요.'
                       : '검색 결과가 없습니다.'}
                   </p>
                 </div>
@@ -3263,19 +3233,30 @@ export default function Home() {
 
             {/* 스크랩 칸 */}
             <section className="border-t-4 border-[#111111]">
-              <div className="px-4 sm:px-5 py-4 border-b-4 border-[#111111]">
-                <p className="text-[11px] uppercase tracking-widest text-[#737373]">Clippings</p>
-                <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
-                  스크랩{' '}
-                  <span className="text-sm font-semibold text-[#737373]">총 {clippings.length}개</span>
-                </h2>
+              <div className="flex items-end justify-between gap-3 px-4 sm:px-5 py-4 border-b-4 border-[#111111]">
+                <div>
+                  <p className="text-[11px] uppercase tracking-widest text-[#737373]">Clippings</p>
+                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
+                    스크랩{' '}
+                    <span className="text-sm font-semibold text-[#737373]">총 {clippings.length}개</span>
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  aria-label="스크랩 추가"
+                  title="스크랩 추가"
+                  onClick={() => setClipModalOpen(true)}
+                  className={`${BTN} !px-0 w-[34px] text-lg leading-none`}
+                >
+                  +
+                </button>
               </div>
 
               {clipList.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-[#737373]">
                   <p className="text-sm">
                     {clippings.length === 0
-                      ? '스크랩이 없습니다. "새 글 만들기"에서 기사 링크나 칼럼을 추가해 보세요.'
+                      ? '스크랩이 없습니다. 위의 + 버튼으로 기사 링크나 칼럼을 추가해 보세요.'
                       : '검색 결과가 없습니다.'}
                   </p>
                 </div>
@@ -3306,6 +3287,102 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      {/* 스크랩 쓰기 팝업 */}
+      {clipModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setClipModalOpen(false)}
+          className="fixed inset-0 z-50 flex justify-center bg-[#111111]/60 p-4 overflow-y-auto"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-xl my-auto border-4 border-[#111111] bg-[#F9F9F7] p-5 sm:p-6"
+          >
+            <div className="flex items-end justify-between gap-3 border-b-2 border-[#111111] pb-2 mb-5">
+              <div>
+                <p className="text-[11px] uppercase tracking-widest text-[#737373]">New Clipping</p>
+                <h2 className="text-xl font-black tracking-tight">스크랩 만들기</h2>
+              </div>
+              <button type="button" onClick={() => setClipModalOpen(false)} className={LINK_BTN}>
+                닫기
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveClipping} className="space-y-5">
+              <div>
+                <label className={LABEL}>기사 링크 (선택)</label>
+                <div className="flex gap-2 items-end">
+                  <input
+                    type="text"
+                    inputMode="url"
+                    value={clipSource}
+                    onChange={(e) => setClipSource(e.target.value)}
+                    onPaste={handleClipLinkPaste}
+                    placeholder="링크를 붙여넣으면 본문을 불러와요"
+                    className={`${INPUT} flex-1`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fetchArticle(clipSource)}
+                    disabled={clipFetching || !clipSource.trim()}
+                    className={`${BTN_OUTLINE} shrink-0`}
+                  >
+                    {clipFetching ? '불러오는 중' : '불러오기'}
+                  </button>
+                </div>
+                {clipFetchError && (
+                  <p className="mt-1 text-xs font-semibold text-[#CC0000] break-words">{clipFetchError}</p>
+                )}
+                <p className="mt-1 text-xs text-[#737373]">
+                  링크 대신 매체 이름을 적어도 돼요. 일부 사이트는 불러오지 못할 수 있어요.
+                </p>
+              </div>
+
+              <div>
+                <label className={LABEL}>제목</label>
+                <input
+                  type="text"
+                  value={clipTitle}
+                  onChange={(e) => setClipTitle(e.target.value)}
+                  placeholder="비우면 본문 첫 줄을 제목으로 써요"
+                  className={INPUT}
+                />
+              </div>
+
+              <div>
+                <label className={LABEL}>본문</label>
+                <textarea
+                  rows={12}
+                  value={clipContent}
+                  onChange={(e) => setClipContent(e.target.value)}
+                  placeholder="기사나 칼럼을 복사해서 붙여넣어도 돼요"
+                  className={`${TEXTAREA_BOX} mt-2`}
+                />
+                <p className="mt-1 text-xs text-[#737373]">
+                  저장한 뒤에는 본문을 고칠 수 없어요. 형광펜과 각주 위치가 어긋나기 때문이에요. 불필요한
+                  부분은 저장 전에 지워 주세요.
+                </p>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setClipModalOpen(false)}
+                  className={`${BTN_OUTLINE} flex-1`}
+                >
+                  취소
+                </button>
+                <button type="submit" disabled={clipSaving} className={`${BTN} flex-1`}>
+                  {clipSaving ? '저장 중...' : '스크랩 저장'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
