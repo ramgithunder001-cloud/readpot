@@ -49,6 +49,7 @@ interface Profile {
   seal_text: string | null;
   seal_color: string | null;
   seal_style: string | null;
+  seal_image: string | null;
 }
 
 const byCreated = (a: { created_at: string }, b: { created_at: string }) =>
@@ -664,14 +665,29 @@ function Seal({
   color = 'ink',
   styleType = 'solid',
   size = 20,
+  image = '',
 }: {
   text: string;
   color?: string;
   styleType?: string;
   size?: number;
+  image?: string | null;
 }) {
   const hex = (SEAL_COLORS[color] ?? SEAL_COLORS.ink).hex;
   const w = Math.max(1, Math.round(size / 14));
+
+  // 사진 인장: 정사각형, 흑백, 인장 색 테두리
+  if (image) {
+    return (
+      <span
+        aria-hidden="true"
+        className="inline-block shrink-0 overflow-hidden bg-[#E5E5E5]"
+        style={{ width: size, height: size, border: `${w}px solid ${hex}` }}
+      >
+        <img src={image} alt="" className="block w-full h-full object-cover grayscale" />
+      </span>
+    );
+  }
   const chars = Array.from(text || '').slice(0, 2).join('');
   const len = Array.from(chars).length;
 
@@ -977,6 +993,62 @@ const ClipArticle = memo(function ClipArticle({
   );
 });
 
+/* ---------- 인장 사진 ---------- */
+
+// 사진을 가운데 기준 정사각형으로 잘라 작게 줄임 (올리는 용량을 아끼고 인장 모양에 맞추기 위해)
+async function squareImageBlob(file: File, size = 256): Promise<Blob> {
+  let source: ImageBitmap | HTMLImageElement;
+  try {
+    // 휴대폰 사진의 회전 정보를 반영해서 읽음
+    source = await createImageBitmap(file, { imageOrientation: 'from-image' } as any);
+  } catch {
+    source = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve(img);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('이미지를 읽지 못했어요.'));
+      };
+      img.src = url;
+    });
+  }
+
+  const w = source instanceof HTMLImageElement ? source.naturalWidth : source.width;
+  const h = source instanceof HTMLImageElement ? source.naturalHeight : source.height;
+  const side = Math.min(w, h);
+  if (!side) throw new Error('이미지를 읽지 못했어요.');
+
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('이미지를 처리하지 못했어요.');
+  ctx.fillStyle = '#F9F9F7'; // 투명한 PNG 배경
+  ctx.fillRect(0, 0, size, size);
+  ctx.drawImage(source, (w - side) / 2, (h - side) / 2, side, side, 0, 0, size, size);
+
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error('이미지를 처리하지 못했어요.'))),
+      'image/jpeg',
+      0.88
+    );
+  });
+}
+
+// 저장소 주소에서 파일 경로를 꺼냄 (내 폴더 안의 파일일 때만)
+function sealPathFromUrl(url: string, uid: string): string | null {
+  const marker = '/seals/';
+  const i = url.indexOf(marker);
+  if (i === -1) return null;
+  const path = decodeURIComponent(url.slice(i + marker.length).split('?')[0]);
+  return path.startsWith(`${uid}/`) ? path : null;
+}
+
 function Footer() {
   return (
     <footer className="mt-12 border-t-4 border-[#111111]">
@@ -1040,9 +1112,10 @@ export default function Home() {
   const articleRef = useRef<HTMLDivElement>(null);
 
   // 프로필 편집
-  const [draft, setDraft] = useState({ nickname: '', sealText: '', sealColor: 'ink', sealStyle: 'solid' });
+  const [draft, setDraft] = useState({ nickname: '', sealText: '', sealColor: 'ink', sealStyle: 'solid', sealImage: '' });
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileMsg, setProfileMsg] = useState('');
+  const [pendingImage, setPendingImage] = useState<Blob | null>(null);
 
   // 날짜는 브라우저에서만 계산 (서버/브라우저 시간 차이로 인한 오류 방지)
   useEffect(() => {
@@ -1066,6 +1139,7 @@ export default function Home() {
       seal_text: p?.seal_text || Array.from(nickname)[0] || '?',
       seal_color: p?.seal_color || 'ink',
       seal_style: p?.seal_style || 'solid',
+      seal_image: p?.seal_image || '',
     };
   };
   const nameOf = (userId: string) => profileOf(userId).nickname;
@@ -1089,7 +1163,12 @@ export default function Home() {
     // 인장 컬럼이 아직 없으면 닉네임만 불러옴
     let profilesRes: any = await supabase
       .from('profiles')
-      .select('id, nickname, seal_text, seal_color, seal_style');
+      .select('id, nickname, seal_text, seal_color, seal_style, seal_image');
+    if (profilesRes.error) {
+      profilesRes = await supabase
+        .from('profiles')
+        .select('id, nickname, seal_text, seal_color, seal_style');
+    }
     if (profilesRes.error) {
       profilesRes = await supabase.from('profiles').select('id, nickname');
     }
@@ -1104,6 +1183,7 @@ export default function Home() {
         seal_text: p.seal_text ?? null,
         seal_color: p.seal_color ?? null,
         seal_style: p.seal_style ?? null,
+        seal_image: p.seal_image ?? null,
       };
     });
 
@@ -1113,7 +1193,7 @@ export default function Home() {
       await supabase
         .from('profiles')
         .upsert({ id: u.id, nickname: nick }, { onConflict: 'id', ignoreDuplicates: true });
-      map[u.id] = { nickname: nick, seal_text: null, seal_color: null, seal_style: null };
+      map[u.id] = { nickname: nick, seal_text: null, seal_color: null, seal_style: null, seal_image: null };
     }
     setProfiles(map);
 
@@ -1236,6 +1316,32 @@ export default function Home() {
     setActiveId(null);
   };
 
+  // 인장 사진 고르기: 정사각형으로 잘라 미리보기만 보여주고, 저장할 때 올림
+  const handlePickSealImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return alert('이미지 파일만 올릴 수 있어요.');
+    if (file.size > 10 * 1024 * 1024) return alert('10MB 이하의 사진을 골라 주세요.');
+
+    try {
+      const blob = await squareImageBlob(file);
+      if (draft.sealImage.startsWith('blob:')) URL.revokeObjectURL(draft.sealImage);
+      setPendingImage(blob);
+      setDraft({ ...draft, sealImage: URL.createObjectURL(blob) });
+      setProfileMsg('');
+    } catch (err: any) {
+      alert(err.message || '이미지를 처리하지 못했어요.');
+    }
+  };
+
+  const handleRemoveSealImage = () => {
+    if (draft.sealImage.startsWith('blob:')) URL.revokeObjectURL(draft.sealImage);
+    setPendingImage(null);
+    setDraft({ ...draft, sealImage: '' });
+    setProfileMsg('');
+  };
+
   const handleSaveProfile = async () => {
     if (!user) return;
     setProfileMsg('');
@@ -1250,25 +1356,59 @@ export default function Home() {
     if (taken) return alert('이미 사용 중인 닉네임이에요.');
 
     const sealText = Array.from(draft.sealText.trim()).slice(0, 2).join('');
+    const oldImage = profiles[user.id]?.seal_image || '';
+    const imageChanged = !!pendingImage || draft.sealImage !== oldImage;
 
     setProfileSaving(true);
-    const { error } = await supabase.from('profiles').upsert(
-      {
-        id: user.id,
-        nickname: nick,
-        seal_text: sealText || null,
-        seal_color: draft.sealColor,
-        seal_style: draft.sealStyle,
-      },
-      { onConflict: 'id' }
-    );
+
+    // 새 사진은 저장할 때 올림
+    let newImageUrl = '';
+    let newPath = '';
+    if (pendingImage) {
+      newPath = `${user.id}/${Date.now()}.jpg`;
+      const { error: upErr } = await supabase.storage
+        .from('seals')
+        .upload(newPath, pendingImage, { contentType: 'image/jpeg', cacheControl: '31536000' });
+      if (upErr) {
+        setProfileSaving(false);
+        return alert(
+          `사진 올리기 실패: ${upErr.message}\nSupabase에서 안내드린 SQL로 'seals' 저장소를 먼저 만들어 주세요.`
+        );
+      }
+      newImageUrl = supabase.storage.from('seals').getPublicUrl(newPath).data.publicUrl;
+    }
+
+    const payload: Record<string, any> = {
+      id: user.id,
+      nickname: nick,
+      seal_text: sealText || null,
+      seal_color: draft.sealColor,
+      seal_style: draft.sealStyle,
+    };
+    // 사진을 건드렸을 때만 사진 컬럼을 보냄 (컬럼이 아직 없어도 다른 저장은 되게)
+    if (imageChanged) payload.seal_image = pendingImage ? newImageUrl : draft.sealImage || null;
+
+    const { error } = await supabase.from('profiles').upsert(payload, { onConflict: 'id' });
     setProfileSaving(false);
 
     if (error) {
+      if (newPath) await supabase.storage.from('seals').remove([newPath]);
       if (error.message.includes('seal_')) {
         return alert('인장 저장에 필요한 컬럼이 아직 없어요. Supabase에서 안내드린 SQL을 먼저 실행해 주세요.');
       }
       return alert(`프로필 저장 실패: ${error.message}`);
+    }
+
+    // 바꾸기 전의 예전 사진 파일은 정리
+    if (imageChanged && oldImage) {
+      const oldPath = sealPathFromUrl(oldImage, user.id);
+      if (oldPath) await supabase.storage.from('seals').remove([oldPath]);
+    }
+
+    if (pendingImage) {
+      if (draft.sealImage.startsWith('blob:')) URL.revokeObjectURL(draft.sealImage);
+      setDraft((d) => ({ ...d, sealImage: newImageUrl }));
+      setPendingImage(null);
     }
     await refresh();
     setProfileMsg('저장했어요.');
@@ -1643,7 +1783,9 @@ export default function Home() {
         sealText: p?.seal_text ?? '',
         sealColor: p?.seal_color || 'ink',
         sealStyle: p?.seal_style || 'solid',
+        sealImage: p?.seal_image ?? '',
       });
+      setPendingImage(null);
       setProfileMsg('');
     }
   };
@@ -1722,7 +1864,7 @@ export default function Home() {
     const p = profileOf(userId);
     return (
       <span className={`inline-flex items-center gap-1.5 min-w-0 ${className}`}>
-        <Seal text={p.seal_text} color={p.seal_color} styleType={p.seal_style} size={size} />
+        <Seal text={p.seal_text} color={p.seal_color} styleType={p.seal_style} image={p.seal_image} size={size} />
         <span className="truncate">{p.nickname}</span>
       </span>
     );
@@ -1769,7 +1911,13 @@ export default function Home() {
               tab === 'profile' ? 'underline decoration-2 decoration-[#CC0000] underline-offset-8' : 'hover:text-[#CC0000]'
             }`}
           >
-            <Seal text={mySeal.seal_text} color={mySeal.seal_color} styleType={mySeal.seal_style} size={26} />
+            <Seal
+              text={mySeal.seal_text}
+              color={mySeal.seal_color}
+              styleType={mySeal.seal_style}
+              image={mySeal.seal_image}
+              size={26}
+            />
             <span className="hidden sm:inline">{mySeal.nickname}</span>
           </button>
           <button onClick={handleLogout} className={`${BTN_OUTLINE} !min-h-[40px] !px-3`}>
@@ -2452,6 +2600,41 @@ export default function Home() {
               </div>
 
               <div>
+                <label className={LABEL}>인장 사진 (선택)</label>
+                <div className="mt-2 flex items-center gap-4">
+                  <Seal
+                    text={previewSeal}
+                    color={draft.sealColor}
+                    styleType={draft.sealStyle}
+                    image={draft.sealImage}
+                    size={64}
+                  />
+                  <div className="flex flex-wrap gap-2 min-w-0">
+                    <label
+                      className={`${BTN_OUTLINE} cursor-pointer focus-within:ring-2 focus-within:ring-neutral-950 focus-within:ring-offset-2`}
+                    >
+                      {draft.sealImage ? '사진 바꾸기' : '사진 올리기'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePickSealImage}
+                        className="sr-only"
+                      />
+                    </label>
+                    {draft.sealImage && (
+                      <button type="button" onClick={handleRemoveSealImage} className={DANGER_BTN}>
+                        사진 빼기
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-[#737373]">
+                  가운데를 정사각형으로 잘라 흑백으로 보여줘요. 사진을 쓰면 인장 글자와 모양은 쓰이지 않고, 색은
+                  테두리에만 쓰여요. 저장해야 올라가요.
+                </p>
+              </div>
+
+              <div>
                 <label className={LABEL}>인장 글자</label>
                 <input
                   type="text"
@@ -2520,7 +2703,13 @@ export default function Home() {
 
               <div className="p-5 md:p-6 space-y-6">
                 <div className="flex items-center gap-5">
-                  <Seal text={previewSeal} color={draft.sealColor} styleType={draft.sealStyle} size={88} />
+                  <Seal
+ text={previewSeal}
+ color={draft.sealColor}
+ styleType={draft.sealStyle}
+ image={draft.sealImage}
+ size={88}
+ />
                   <div className="min-w-0">
                     <p className="text-[11px] uppercase tracking-widest text-[#737373]">Reader</p>
                     <p className="text-3xl font-black tracking-tight truncate">{previewNick}</p>
@@ -2531,11 +2720,23 @@ export default function Home() {
                   <p className={LABEL}>이렇게 보여요</p>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                     <span className="inline-flex items-center gap-1.5 font-semibold">
-                      <Seal text={previewSeal} color={draft.sealColor} styleType={draft.sealStyle} size={18} />
+                      <Seal
+ text={previewSeal}
+ color={draft.sealColor}
+ styleType={draft.sealStyle}
+ image={draft.sealImage}
+ size={18}
+ />
                       {previewNick}
                     </span>
                     <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#737373]">
-                      <Seal text={previewSeal} color={draft.sealColor} styleType={draft.sealStyle} size={22} />
+                      <Seal
+ text={previewSeal}
+ color={draft.sealColor}
+ styleType={draft.sealStyle}
+ image={draft.sealImage}
+ size={22}
+ />
                       <span>
                         {previewNick} &middot; {today}
                       </span>
