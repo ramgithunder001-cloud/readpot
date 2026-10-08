@@ -85,7 +85,7 @@ const byCreated = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
 
 /* ---------- Newsprint 디자인 토큰 ----------
-   paper #F0F1F2 (바탕과 모든 칸이 같은 푸른빛 회색 종이) / ink #111111 / divider #D3DAE3 / accent #CC0000
+   paper #E8E8E8 (바탕과 모든 칸이 같은 푸른빛 회색 종이) / ink #111111 / divider #D3DAE3 / accent #CC0000
    바탕은 회색 + 종이 질감, 패널은 종이색
    둥근 모서리 없음, 검은 1px 테두리, 입력칸은 아래 선만 */
 
