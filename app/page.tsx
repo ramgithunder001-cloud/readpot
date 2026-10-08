@@ -112,7 +112,7 @@ const TEXTAREA_BOX = `w-full bg-transparent border-2 border-[#111111] p-3 text-s
 const LABEL = 'block text-[11px] font-semibold uppercase tracking-widest text-[#111111]';
 
 // 종이색: 바탕과 모든 칸이 같은 색 (바꾸고 싶으면 여기 한 줄만 고치면 됨)
-const PAPER = '#F0F1F2';
+const PAPER = '#E8E8E8';
 // 종이 질감: 고운 입자 + 가로로 긴 섬유 (진하게 하려면 opacity 값을 올리세요)
 const PAPER_TEXTURE =
   'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27300%27%20height%3D%27300%27%3E%3Cfilter%20id%3D%27f%27%20x%3D%270%27%20y%3D%270%27%20width%3D%27100%25%27%20height%3D%27100%25%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.02%200.6%27%20numOctaves%3D%272%27%20seed%3D%278%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27matrix%27%20values%3D%270%200%200%200%200.22%20%200%200%200%200%200.30%20%200%200%200%200%200.42%20%200%200%200%201.2%20-0.52%27%2F%3E%3C%2Ffilter%3E%3Cfilter%20id%3D%27g%27%20x%3D%270%27%20y%3D%270%27%20width%3D%27100%25%27%20height%3D%27100%25%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.8%27%20numOctaves%3D%273%27%20seed%3D%273%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27matrix%27%20values%3D%270%200%200%200%200.20%20%200%200%200%200%200.27%20%200%200%200%200%200.38%20%200%200%200%201.1%20-0.38%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url(%23f)%27%20opacity%3D%270.26%27%2F%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url(%23g)%27%20opacity%3D%270.36%27%2F%3E%3C%2Fsvg%3E")';
