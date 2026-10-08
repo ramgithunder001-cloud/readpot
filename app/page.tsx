@@ -85,7 +85,7 @@ const byCreated = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
 
 /* ---------- Newsprint 디자인 토큰 ----------
-   paper #F9F9F7 / ink #111111 / divider #E5E5E0 / accent #CC0000
+   paper #EDF1F6 (바탕과 모든 칸이 같은 푸른빛 회색 종이) / ink #111111 / divider #D3DAE3 / accent #CC0000
    바탕은 회색 + 종이 질감, 패널은 종이색
    둥근 모서리 없음, 검은 1px 테두리, 입력칸은 아래 선만 */
 
@@ -93,25 +93,31 @@ const FOCUS =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950 focus-visible:ring-offset-2';
 
 // 기본 버튼: 검정 바탕, hover 시 흰 바탕으로 반전
-const BTN = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-5 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-5 border border-[#111111] bg-[#111111] text-[#F7F9FC] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
 // 보조 버튼: 테두리만, hover 시 검정으로 채워짐
-const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-5 border border-[#111111] bg-transparent text-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-5 border border-[#111111] bg-transparent text-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F7F9FC] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
 // 작은 버튼
-const BTN_SM = `inline-flex items-center justify-center min-h-[28px] px-3 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] ${FOCUS}`;
+const BTN_SM = `inline-flex items-center justify-center min-h-[28px] px-3 border border-[#111111] bg-[#111111] text-[#F7F9FC] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-white hover:text-[#111111] ${FOCUS}`;
 // 눌려서 켜진 버튼: 검정 그대로 유지 (hover 해도 흰색으로 안 바뀜)
-const BTN_ACTIVE = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-5 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest ${FOCUS}`;
+const BTN_ACTIVE = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-5 border border-[#111111] bg-[#111111] text-[#F7F9FC] text-xs font-semibold tracking-widest ${FOCUS}`;
 // 텍스트 링크형 버튼: hover 시 빨간 밑줄
 const LINK_BTN = `text-xs font-semibold tracking-widest text-[#111111] underline-offset-4 decoration-2 decoration-[#CC0000] hover:underline ${FOCUS}`;
 // 지우기 같은 위험 동작
 const DANGER_BTN = `text-xs text-[#737373] underline-offset-4 decoration-2 decoration-[#CC0000] hover:text-[#CC0000] hover:underline ${FOCUS}`;
 // 입력칸: 아래 2px 선만
-const INPUT = `w-full min-w-0 bg-transparent border-b-2 border-[#111111] px-1 py-2 text-sm placeholder:text-[#A3A3A3] focus:bg-[#F0F0F0] focus:outline-none`;
+const INPUT = `w-full min-w-0 bg-transparent border-b-2 border-[#111111] px-1 py-2 text-sm placeholder:text-[#A3A3A3] focus:bg-[#111111]/5 focus:outline-none`;
 // 큰 입력 영역(독후감)
-const TEXTAREA_BOX = `w-full bg-transparent border-2 border-[#111111] p-3 text-sm leading-relaxed placeholder:text-[#A3A3A3] focus:bg-[#F0F0F0] focus:outline-none`;
+const TEXTAREA_BOX = `w-full bg-transparent border-2 border-[#111111] p-3 text-sm leading-relaxed placeholder:text-[#A3A3A3] focus:bg-[#111111]/5 focus:outline-none`;
 // 작은 대문자 라벨
 const LABEL = 'block text-[11px] font-semibold uppercase tracking-widest text-[#111111]';
 
-// 프리텐다드 폰트 + 회색 종이 질감 배경 + 직각 모서리
+// 종이색: 바탕과 모든 칸이 같은 색 (바꾸고 싶으면 여기 한 줄만 고치면 됨)
+const PAPER = '#EDF1F6';
+// 종이 질감: 고운 입자 + 가로로 긴 섬유 (진하게 하려면 opacity 값을 올리세요)
+const PAPER_TEXTURE =
+  'url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27300%27%20height%3D%27300%27%3E%3Cfilter%20id%3D%27f%27%20x%3D%270%27%20y%3D%270%27%20width%3D%27100%25%27%20height%3D%27100%25%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.02%200.6%27%20numOctaves%3D%272%27%20seed%3D%278%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27matrix%27%20values%3D%270%200%200%200%200.22%20%200%200%200%200%200.30%20%200%200%200%200%200.42%20%200%200%200%201.2%20-0.52%27%2F%3E%3C%2Ffilter%3E%3Cfilter%20id%3D%27g%27%20x%3D%270%27%20y%3D%270%27%20width%3D%27100%25%27%20height%3D%27100%25%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.8%27%20numOctaves%3D%273%27%20seed%3D%273%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27matrix%27%20values%3D%270%200%200%200%200.20%20%200%200%200%200%200.27%20%200%200%200%200%200.38%20%200%200%200%201.1%20-0.38%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url(%23f)%27%20opacity%3D%270.26%27%2F%3E%3Crect%20width%3D%27100%25%27%20height%3D%27100%25%27%20filter%3D%27url(%23g)%27%20opacity%3D%270.36%27%2F%3E%3C%2Fsvg%3E")';
+
+// 프리텐다드 폰트 + 푸른빛 회색 종이 질감 + 직각 모서리
 function GlobalStyle() {
   return (
     <style>{`
@@ -125,11 +131,16 @@ function GlobalStyle() {
       body {
         overflow-x: clip;
         color: #111111;
-        background-color: #DCDCD8 !important;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.28'/%3E%3C/svg%3E") !important;
+        background-color: ${PAPER} !important;
+        background-image: ${PAPER_TEXTURE} !important;
+      }
+      /* 위에 겹쳐 떠 있는 칸(고정 헤더, 하단 막대, 팝업)도 바탕과 같은 종이 */
+      .paper {
+        background-color: ${PAPER};
+        background-image: ${PAPER_TEXTURE};
       }
       body * { border-radius: 0 !important; }
-      ::selection { background: #111111; color: #F9F9F7; }
+      ::selection { background: #111111; color: #F7F9FC; }
     `}</style>
   );
 }
@@ -147,7 +158,7 @@ function Star({ fill, size = 20 }: { fill: number; size?: number }) {
         viewBox="0 0 24 24"
         width={size}
         height={size}
-        className="absolute inset-0 text-[#E5E5E0]"
+        className="absolute inset-0 text-[#D3DAE3]"
         fill="currentColor"
       >
         <path d={STAR_PATH} />
@@ -279,7 +290,7 @@ function Spoiler({ children }: { children: React.ReactNode }) {
         e.stopPropagation();
         setShown(true);
       }}
-      className={`px-0.5 ${shown ? 'bg-[#E5E5E0]' : 'bg-[#111111] cursor-pointer select-none'}`}
+      className={`px-0.5 ${shown ? 'bg-[#D3DAE3]' : 'bg-[#111111] cursor-pointer select-none'}`}
     >
       <span className={shown ? '' : 'invisible'}>{children}</span>
     </span>
@@ -304,7 +315,7 @@ const INLINE: InlinePattern[] = [
     render: (m, key) => (
       <code
         key={key}
-        className="px-1 py-0.5 bg-[#E5E5E0] text-[0.85em] font-normal not-italic text-[#111111]"
+        className="px-1 py-0.5 bg-[#D3DAE3] text-[0.85em] font-normal not-italic text-[#111111]"
       >
         {m[2]}
       </code>
@@ -457,7 +468,7 @@ function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
         out.push(
           <pre
             key={key()}
-            className="my-1 p-3 border border-[#111111] bg-[#E5E5E0] text-xs font-normal not-italic text-[#111111] whitespace-pre overflow-x-auto"
+            className="my-1 p-3 border border-[#111111] bg-[#D3DAE3] text-xs font-normal not-italic text-[#111111] whitespace-pre overflow-x-auto"
           >
             <code>{body.join('\n')}</code>
           </pre>
@@ -621,7 +632,7 @@ function QuoteList({
   };
 
   return (
-    <div className="divide-y divide-[#E5E5E0]">
+    <div className="divide-y divide-[#D3DAE3]">
       {quotes.map((q) => (
         <div key={q.id} className="py-4 first:pt-0">
           <div className="flex justify-between items-start gap-3">
@@ -708,15 +719,15 @@ function Seal({
   onImageError?: () => void;
 }) {
   const hex = (SEAL_COLORS[color] ?? SEAL_COLORS.ink).hex;
-  const w = Math.max(1, Math.round(size / 14));
+  const w = Math.max(1, Math.round(size / 28)); // 테두리는 얇게
 
-  // 사진 인장: 정사각형, 흑백, 인장 색 테두리
+  // 사진 인장: 원래 색 그대로, 글자 인장처럼 살짝 기울어진 정사각형, 인장 색 테두리
   if (image) {
     return (
       <span
         aria-hidden="true"
-        className="inline-block shrink-0 overflow-hidden bg-[#E5E5E5]"
-        style={{ width: size, height: size, border: `${w}px solid ${hex}` }}
+        className="inline-block shrink-0 overflow-hidden bg-[#D3DAE3]"
+        style={{ width: size, height: size, border: `${w}px solid ${hex}`, transform: 'rotate(-4deg)' }}
       >
         <img
           src={image}
@@ -725,7 +736,7 @@ function Seal({
             console.warn('인장 사진을 불러오지 못했어요:', image);
             onImageError?.();
           }}
-          className="block w-full h-full object-cover grayscale"
+          className="block w-full h-full object-cover"
         />
       </span>
     );
@@ -751,10 +762,10 @@ function Seal({
       color: hex,
       border: `${w}px solid ${hex}`,
       background: 'transparent',
-      boxShadow: `inset 0 0 0 ${w}px #F9F9F7, inset 0 0 0 ${w * 2}px ${hex}`,
+      boxShadow: `inset 0 0 0 ${w}px ${PAPER}, inset 0 0 0 ${w * 2}px ${hex}`,
     };
   } else {
-    extra = { color: '#F9F9F7', background: hex, border: `${w}px solid ${hex}` };
+    extra = { color: '#F7F9FC', background: hex, border: `${w}px solid ${hex}` };
   }
 
   return (
@@ -1037,11 +1048,12 @@ const ClipArticle = memo(function ClipArticle({
 
 /* ---------- 인장 사진 ---------- */
 
-// 사진을 가운데 기준 정사각형으로 잘라 작게 줄임 (올리는 용량을 아끼고 인장 모양에 맞추기 위해)
-async function squareImageBlob(file: File, size = 256): Promise<Blob> {
+const CROP_VIEW = 220; // 드래그해서 자르는 네모 화면 크기(px)
+
+// 사진을 읽어서 휴대폰 사진의 회전을 바로잡고, 너무 크면 줄여서 canvas 로 돌려줌
+async function loadOrientedCanvas(file: File, maxSide = 1200): Promise<HTMLCanvasElement> {
   let source: ImageBitmap | HTMLImageElement;
   try {
-    // 휴대폰 사진의 회전 정보를 반영해서 읽음
     source = await createImageBitmap(file, { imageOrientation: 'from-image' } as unknown as ImageBitmapOptions);
   } catch {
     source = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -1061,25 +1073,236 @@ async function squareImageBlob(file: File, size = 256): Promise<Blob> {
 
   const w = source instanceof HTMLImageElement ? source.naturalWidth : source.width;
   const h = source instanceof HTMLImageElement ? source.naturalHeight : source.height;
-  const side = Math.min(w, h);
-  if (!side) throw new Error('이미지를 읽지 못했어요.');
+  if (!w || !h) throw new Error('이미지를 읽지 못했어요.');
 
+  const k = Math.min(1, maxSide / Math.max(w, h));
   const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
+  canvas.width = Math.max(1, Math.round(w * k));
+  canvas.height = Math.max(1, Math.round(h * k));
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('이미지를 처리하지 못했어요.');
-  ctx.fillStyle = '#F9F9F7'; // 투명한 PNG 배경
-  ctx.fillRect(0, 0, size, size);
-  ctx.drawImage(source, (w - side) / 2, (h - side) / 2, side, side, 0, 0, size, size);
+  ctx.fillStyle = PAPER; // 투명한 PNG 배경
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+  return canvas;
+}
 
-  return new Promise<Blob>((resolve, reject) => {
-    canvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new Error('이미지를 처리하지 못했어요.'))),
+// 확대 비율과 위치로부터 '원본에서 잘라낼 정사각형'을 계산
+function cropRectOf(natW: number, natH: number, zoom: number, ox: number, oy: number) {
+  const s = (CROP_VIEW / Math.min(natW, natH)) * zoom; // 원본 1px 이 화면에서 차지하는 크기
+  return {
+    s,
+    size: CROP_VIEW / s,
+    sx: ((natW * s) / 2 - CROP_VIEW / 2 - ox) / s,
+    sy: ((natH * s) / 2 - CROP_VIEW / 2 - oy) / s,
+  };
+}
+
+// 사진이 네모 화면 밖으로 밀려나 빈틈이 생기지 않게 위치를 제한
+function clampCropOffset(natW: number, natH: number, zoom: number, o: { x: number; y: number }) {
+  const s = (CROP_VIEW / Math.min(natW, natH)) * zoom;
+  const maxX = Math.max(0, (natW * s - CROP_VIEW) / 2);
+  const maxY = Math.max(0, (natH * s - CROP_VIEW) / 2);
+  return { x: Math.min(maxX, Math.max(-maxX, o.x)), y: Math.min(maxY, Math.max(-maxY, o.y)) };
+}
+
+function renderCrop(
+  source: HTMLCanvasElement,
+  r: { sx: number; sy: number; size: number },
+  out: number
+): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = out;
+  canvas.height = out;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = PAPER;
+    ctx.fillRect(0, 0, out, out);
+    ctx.drawImage(source, r.sx, r.sy, r.size, r.size, 0, 0, out, out);
+  }
+  return canvas;
+}
+
+// 사진 자르기: 드래그로 위치, 슬라이더/휠/두 손가락으로 확대, 기울어진 도장 미리보기
+function SealCropper({
+  source,
+  sealColor,
+  onConfirm,
+  onCancel,
+}: {
+  source: HTMLCanvasElement;
+  sealColor: string;
+  onConfirm: (blob: Blob) => void;
+  onCancel: () => void;
+}) {
+  const natW = source.width;
+  const natH = source.height;
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [previewUrl, setPreviewUrl] = useState('');
+  const displaySrc = useMemo(() => source.toDataURL('image/jpeg', 0.92), [source]);
+  const viewRef = useRef<HTMLDivElement>(null);
+  const pointers = useRef(new Map<number, { x: number; y: number }>());
+  const lastDist = useRef(0);
+
+  // 확대/축소하면 사진이 화면 밖으로 밀리지 않게 위치를 다시 맞춤
+  useEffect(() => {
+    setOffset((o) => clampCropOffset(natW, natH, zoom, o));
+  }, [zoom, natW, natH]);
+
+  // 마우스 휠로 확대 (페이지가 같이 스크롤되지 않게 막아야 해서 직접 등록)
+  useEffect(() => {
+    const el = viewRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setZoom((z) => Math.min(4, Math.max(1, +(z - e.deltaY * 0.002).toFixed(3))));
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+
+  // 미리보기 갱신
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      const r = cropRectOf(natW, natH, zoom, offset.x, offset.y);
+      setPreviewUrl(renderCrop(source, r, 160).toDataURL('image/jpeg', 0.85));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [source, natW, natH, zoom, offset.x, offset.y]);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    lastDist.current = 0;
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const prev = pointers.current.get(e.pointerId);
+    if (!prev) return;
+    const cur = { x: e.clientX, y: e.clientY };
+    pointers.current.set(e.pointerId, cur);
+
+    if (pointers.current.size === 1) {
+      setOffset((o) => clampCropOffset(natW, natH, zoom, { x: o.x + (cur.x - prev.x), y: o.y + (cur.y - prev.y) }));
+    } else {
+      // 두 손가락: 벌리면 확대, 오므리면 축소
+      const [a, b] = Array.from(pointers.current.values());
+      const dist = Math.hypot(a.x - b.x, a.y - b.y);
+      if (lastDist.current > 0) {
+        setZoom((z) => Math.min(4, Math.max(1, +(z * (dist / lastDist.current)).toFixed(3))));
+      }
+      lastDist.current = dist;
+    }
+  };
+  const onPointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    pointers.current.delete(e.pointerId);
+    lastDist.current = 0;
+  };
+
+  const confirm = () => {
+    const r = cropRectOf(natW, natH, zoom, offset.x, offset.y);
+    renderCrop(source, r, 256).toBlob(
+      (blob) => (blob ? onConfirm(blob) : alert('이미지를 처리하지 못했어요.')),
       'image/jpeg',
       0.88
     );
-  });
+  };
+
+  const s = (CROP_VIEW / Math.min(natW, natH)) * zoom;
+  const dispW = natW * s;
+  const dispH = natH * s;
+  const guide = 'rgba(255,255,255,0.55)';
+  const thirds = `linear-gradient(to right, transparent calc(33.33% - 0.5px), ${guide} calc(33.33% - 0.5px), ${guide} calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px), transparent calc(66.66% - 0.5px), ${guide} calc(66.66% - 0.5px), ${guide} calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px)), linear-gradient(to bottom, transparent calc(33.33% - 0.5px), ${guide} calc(33.33% - 0.5px), ${guide} calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px), transparent calc(66.66% - 0.5px), ${guide} calc(66.66% - 0.5px), ${guide} calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px))`;
+
+  return (
+    <div className="mt-3 border-2 border-[#111111] p-3 space-y-3">
+      <p className={LABEL}>사진 자르기</p>
+
+      <div className="flex flex-wrap items-start gap-4">
+        <div
+          ref={viewRef}
+          className="relative shrink-0 overflow-hidden border border-[#111111] bg-[#D3DAE3] cursor-grab active:cursor-grabbing select-none"
+          style={{ width: CROP_VIEW, height: CROP_VIEW, touchAction: 'none' }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerEnd}
+          onPointerCancel={onPointerEnd}
+        >
+          <img
+            src={displaySrc}
+            alt=""
+            draggable={false}
+            style={{
+              position: 'absolute',
+              left: CROP_VIEW / 2 - dispW / 2 + offset.x,
+              top: CROP_VIEW / 2 - dispH / 2 + offset.y,
+              width: dispW,
+              height: dispH,
+              maxWidth: 'none',
+              pointerEvents: 'none',
+            }}
+          />
+          <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: thirds }} />
+        </div>
+
+        <div className="min-w-0 space-y-2">
+          <p className={LABEL}>미리보기</p>
+          <div className="flex items-end gap-3">
+            <Seal text="" color={sealColor} image={previewUrl} size={88} />
+            <Seal text="" color={sealColor} image={previewUrl} size={48} />
+            <Seal text="" color={sealColor} image={previewUrl} size={26} />
+          </div>
+          <p className="text-xs text-[#737373]">실제로 이렇게 기울어진 도장으로 보여요.</p>
+        </div>
+      </div>
+
+      <div>
+        <label className={LABEL}>확대</label>
+        <div className="mt-1 flex items-center gap-2">
+          <button
+            type="button"
+            aria-label="축소"
+            onClick={() => setZoom((z) => Math.max(1, +(z - 0.25).toFixed(2)))}
+            className={`${BTN_OUTLINE} !min-w-[36px] !px-0 shrink-0`}
+          >
+            -
+          </button>
+          <input
+            type="range"
+            min={1}
+            max={4}
+            step={0.01}
+            value={zoom}
+            onChange={(e) => setZoom(Number(e.target.value))}
+            aria-label="확대 비율"
+            className="flex-1 min-w-0 accent-[#111111]"
+          />
+          <button
+            type="button"
+            aria-label="확대"
+            onClick={() => setZoom((z) => Math.min(4, +(z + 0.25).toFixed(2)))}
+            className={`${BTN_OUTLINE} !min-w-[36px] !px-0 shrink-0`}
+          >
+            +
+          </button>
+          <span className="w-11 shrink-0 text-right text-xs font-semibold">{Math.round(zoom * 100)}%</span>
+        </div>
+      </div>
+
+      <p className="text-xs text-[#737373]">
+        사진을 드래그해서 위치를 맞추고, 슬라이더나 마우스 휠(휴대폰은 두 손가락)로 확대해요.
+      </p>
+
+      <div className="flex justify-end gap-2">
+        <button type="button" onClick={onCancel} className={BTN_OUTLINE}>
+          취소
+        </button>
+        <button type="button" onClick={confirm} className={BTN}>
+          적용
+        </button>
+      </div>
+    </div>
+  );
 }
 
 // 저장소 주소에서 파일 경로를 꺼냄 (내 폴더 안의 파일일 때만)
@@ -1158,6 +1381,7 @@ export default function Home() {
   const [profileSaving, setProfileSaving] = useState(false);
   const [profileMsg, setProfileMsg] = useState('');
   const [pendingImage, setPendingImage] = useState<Blob | null>(null);
+  const [cropSource, setCropSource] = useState<HTMLCanvasElement | null>(null); // 사진 자르기 화면에 띄울 사진
   const [sealImageBroken, setSealImageBroken] = useState(false);
   useEffect(() => {
     setSealImageBroken(false);
@@ -1406,7 +1630,7 @@ export default function Home() {
     applyNav(NAV_HOME);
   };
 
-  // 인장 사진 고르기: 정사각형으로 잘라 미리보기만 보여주고, 저장할 때 올림
+  // 인장 사진 고르기: 먼저 자르기 화면(드래그/확대/미리보기)을 띄우고, '적용'하면 미리보기에 반영, 저장할 때 올림
   const handlePickSealImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -1415,14 +1639,18 @@ export default function Home() {
     if (file.size > 10 * 1024 * 1024) return alert('10MB 이하의 사진을 골라 주세요.');
 
     try {
-      const blob = await squareImageBlob(file);
-      if (draft.sealImage.startsWith('blob:')) URL.revokeObjectURL(draft.sealImage);
-      setPendingImage(blob);
-      setDraft({ ...draft, sealImage: URL.createObjectURL(blob) });
-      setProfileMsg('');
+      setCropSource(await loadOrientedCanvas(file));
     } catch (err) {
       alert(errMsg(err) || '이미지를 처리하지 못했어요.');
     }
+  };
+
+  const handleCropConfirm = (blob: Blob) => {
+    if (draft.sealImage.startsWith('blob:')) URL.revokeObjectURL(draft.sealImage);
+    setPendingImage(blob);
+    setDraft({ ...draft, sealImage: URL.createObjectURL(blob) });
+    setCropSource(null);
+    setProfileMsg('');
   };
 
   const handleRemoveSealImage = () => {
@@ -1904,6 +2132,7 @@ export default function Home() {
         sealImage: p?.seal_image ?? '',
       });
       setPendingImage(null);
+      setCropSource(null);
       setProfileMsg('');
     }
   };
@@ -1923,7 +2152,7 @@ export default function Home() {
     return (
       <main className="min-h-screen flex items-center justify-center p-4 text-[#111111]">
         <GlobalStyle />
-        <div className="w-full max-w-md border-4 border-[#111111] bg-[#F9F9F7] p-8">
+        <div className="w-full max-w-md border-4 border-[#111111] p-8">
           <p className="text-center text-[11px] uppercase tracking-widest text-[#737373] mb-3">
             Vol. 1 &middot; The Reading Edition
           </p>
@@ -1997,7 +2226,7 @@ export default function Home() {
       key={t}
       onClick={() => goTab(t)}
       className={`min-h-[34px] px-3 text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
-        tab === t ? 'bg-[#111111] text-[#F9F9F7]' : 'hover:text-[#CC0000]'
+        tab === t ? 'bg-[#111111] text-[#F7F9FC]' : 'hover:text-[#CC0000]'
       } ${extra}`}
     >
       {label}
@@ -2005,8 +2234,8 @@ export default function Home() {
   );
 
   const header = (
-    <header className="md:sticky md:top-0 z-40 bg-[#F9F9F7] border-b-4 border-[#111111]">
-      <div className="bg-[#111111] text-[#F9F9F7]">
+    <header className="md:sticky md:top-0 z-40 paper border-b-4 border-[#111111]">
+      <div className="bg-[#111111] text-[#F7F9FC]">
         <div className="max-w-screen-xl mx-auto px-4 py-1 flex justify-between gap-3 text-[11px] uppercase tracking-widest">
           <span className="truncate">Vol. 1 &middot; {today}</span>
           <span className="hidden sm:inline shrink-0">The Reading Edition</span>
@@ -2076,16 +2305,16 @@ export default function Home() {
       ? { title: 'sm:col-span-4', author: 'sm:col-span-2', nick: 'sm:col-span-2', status: 'sm:col-span-3', date: 'sm:col-span-1' }
       : { title: 'sm:col-span-6', author: 'sm:col-span-3', nick: '', status: 'sm:col-span-2', date: 'sm:col-span-1' };
     const rowClass =
-      'grid grid-cols-12 gap-3 items-center px-5 py-3 border-b border-[#111111] last:border-b-0 hover:bg-[#F5F5F5] cursor-pointer transition-colors duration-200 group';
+      'grid grid-cols-12 gap-3 items-center px-5 py-3 border-b border-[#111111] last:border-b-0 hover:bg-[#111111]/5 cursor-pointer transition-colors duration-200 group';
     const coverClass =
-      'w-9 h-12 object-cover border border-[#111111] bg-[#E5E5E5] grayscale transition duration-200 group-hover:sepia-[50%] shrink-0';
+      'w-9 h-12 object-cover border border-[#111111] bg-[#D3DAE3] grayscale transition duration-200 group-hover:sepia-[50%] shrink-0';
     const titleClass =
       'font-bold text-sm truncate underline-offset-4 decoration-2 decoration-[#CC0000] group-hover:underline';
 
     return (
       <>
         {/* 검정으로 반전된 표 머리글 */}
-        <div className="hidden sm:grid grid-cols-12 gap-3 px-5 py-2 bg-[#111111] text-[#F9F9F7] text-[11px] font-semibold uppercase tracking-widest">
+        <div className="hidden sm:grid grid-cols-12 gap-3 px-5 py-2 bg-[#111111] text-[#F7F9FC] text-[11px] font-semibold uppercase tracking-widest">
           <span className={col.title}>책 제목</span>
           <span className={col.author}>저자</span>
           {showAuthor && <span className={col.nick}>읽은이</span>}
@@ -2124,7 +2353,7 @@ export default function Home() {
                     </span>
                   )}
                   <div className={`col-span-6 ${col.status} flex sm:justify-center`}>
-                    <span className="inline-block bg-[#111111] px-2 py-0.5 text-[11px] font-semibold tracking-widest text-[#F9F9F7]">
+                    <span className="inline-block bg-[#111111] px-2 py-0.5 text-[11px] font-semibold tracking-widest text-[#F7F9FC]">
                       시리즈
                     </span>
                   </div>
@@ -2196,7 +2425,7 @@ export default function Home() {
           </button>
 
           {seriesEntry && (
-            <div className="border border-[#111111] bg-[#F9F9F7] px-4 py-3">
+            <div className="border border-[#111111] px-4 py-3">
               <p className="text-[11px] uppercase tracking-widest text-[#737373]">Series</p>
               <p className="font-black tracking-tight break-words">{seriesEntry.base}</p>
               <div className="mt-2 flex flex-wrap gap-2">
@@ -2214,14 +2443,14 @@ export default function Home() {
             </div>
           )}
 
-          <article className="border border-[#111111] bg-[#F9F9F7]">
+          <article className="border border-[#111111]">
             {/* 책 정보 블록: 우측 상단에 읽고 싶은 책 / 읽는 중 / 독후감 추가 버튼 */}
             <section className="p-5 md:p-6 border-b-4 border-[#111111]">
               <div className="flex gap-4 sm:gap-5">
                 <img
                   src={activeReview.books.cover_url || undefined}
                   alt={activeReview.books.title}
-                  className="w-20 h-28 sm:w-24 sm:h-36 object-cover border border-[#111111] bg-[#E5E5E5] grayscale transition duration-200 hover:sepia-[50%] shrink-0"
+                  className="w-20 h-28 sm:w-24 sm:h-36 object-cover border border-[#111111] bg-[#D3DAE3] grayscale transition duration-200 hover:sepia-[50%] shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-start justify-between gap-3">
@@ -2464,8 +2693,8 @@ export default function Home() {
     ];
     const keepSelection = (e: React.MouseEvent) => e.preventDefault(); // 버튼을 눌러도 선택이 풀리지 않게
 
-    const sideBtn = `flex w-full items-center gap-2 min-h-[34px] px-3 border border-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
-    const barBtn = `flex flex-col items-center justify-center gap-1 min-h-[44px] min-w-0 border border-[#111111] text-[11px] font-semibold transition-all duration-200 active:bg-[#111111] active:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+    const sideBtn = `flex w-full items-center gap-2 min-h-[34px] px-3 border border-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F7F9FC] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+    const barBtn = `flex flex-col items-center justify-center gap-1 min-h-[44px] min-w-0 border border-[#111111] text-[11px] font-semibold transition-all duration-200 active:bg-[#111111] active:text-[#F7F9FC] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
 
     // 코멘트 입력창 (PC 옆 패널 / 모바일 하단 막대에서 같이 씀)
     const noteForm = (variant: 'side' | 'bar') =>
@@ -2530,7 +2759,7 @@ export default function Home() {
           </button>
 
           <div className="mt-2 lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-6">
-            <article className="min-w-0 border border-[#111111] bg-[#F9F9F7]">
+            <article className="min-w-0 border border-[#111111]">
               <section className="p-5 md:p-8 border-b-4 border-[#111111] space-y-3">
                 <p className="text-[11px] uppercase tracking-widest text-[#737373]">Clipping</p>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight break-words">
@@ -2580,7 +2809,7 @@ export default function Home() {
                     각주{' '}
                     <span className="text-sm font-semibold text-[#737373]">({notes.length})</span>
                   </h3>
-                  <div className="mt-4 divide-y divide-[#E5E5E0]">
+                  <div className="mt-4 divide-y divide-[#D3DAE3]">
                     {notes.map((n, i) => (
                       <div key={n.id} id={`note-${n.id}`} className="py-4 first:pt-0">
                         <div className="flex justify-between items-start gap-3">
@@ -2605,8 +2834,8 @@ export default function Home() {
 
             {/* PC: 본문 옆에 떠서 스크롤을 따라옴 */}
             <aside className="hidden lg:block lg:self-start lg:sticky lg:top-28">
-              <div className="border border-[#111111] bg-[#F9F9F7]">
-                <div className="px-4 py-2 bg-[#111111] text-[#F9F9F7] text-[11px] font-semibold uppercase tracking-widest">
+              <div className="border border-[#111111]">
+                <div className="px-4 py-2 bg-[#111111] text-[#F7F9FC] text-[11px] font-semibold uppercase tracking-widest">
                   도구
                 </div>
                 <div className="p-4 space-y-4">
@@ -2660,7 +2889,7 @@ export default function Home() {
         </main>
 
         {/* 모바일: 화면 아래에 고정 */}
-        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-[#F9F9F7] border-t-4 border-[#111111] pb-[env(safe-area-inset-bottom)]">
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 paper border-t-4 border-[#111111] pb-[env(safe-area-inset-bottom)]">
           {noteForm('bar')}
           <div className="px-3 pt-2 flex items-center gap-3 text-xs">
             <span className="flex-1 min-w-0 truncate text-[#737373]">
@@ -2691,7 +2920,7 @@ export default function Home() {
               disabled={!selection}
               onMouseDown={keepSelection}
               onClick={() => setNotePanelOpen(true)}
-              className={`${barBtn} bg-[#111111] text-[#F9F9F7]`}
+              className={`${barBtn} bg-[#111111] text-[#F7F9FC]`}
             >
               <span className="text-base font-black leading-none">+</span>
               <span>코멘트</span>
@@ -2725,7 +2954,7 @@ export default function Home() {
         <GlobalStyle />
         {header}
         <main className="max-w-screen-xl mx-auto px-4 py-8">
-          <div className="border border-[#111111] bg-[#F9F9F7] grid grid-cols-1 lg:grid-cols-12">
+          <div className="border border-[#111111] grid grid-cols-1 lg:grid-cols-12">
             {/* 왼쪽 5칸: 편집 */}
             <section className="lg:col-span-5 p-5 md:p-6 border-b lg:border-b-0 lg:border-r border-[#111111] space-y-6">
               <div className="border-b-2 border-[#111111] pb-2">
@@ -2779,6 +3008,14 @@ export default function Home() {
                     )}
                   </div>
                 </div>
+                {cropSource && (
+                  <SealCropper
+                    source={cropSource}
+                    sealColor={draft.sealColor}
+                    onConfirm={handleCropConfirm}
+                    onCancel={() => setCropSource(null)}
+                  />
+                )}
                 {sealImageBroken && draft.sealImage.startsWith('http') && (
                   <p className="mt-2 text-xs font-semibold text-[#CC0000] break-words">
                     저장된 사진을 불러오지 못했어요. Supabase Storage의 seals 버킷이 Public(공개)인지 확인해 주세요.
@@ -2795,8 +3032,9 @@ export default function Home() {
                   </a>
                 )}
                 <p className="mt-2 text-xs text-[#737373]">
-                  가운데를 정사각형으로 잘라 흑백으로 보여줘요. 사진을 쓰면 인장 글자와 모양은 쓰이지 않고, 색은
-                  테두리에만 쓰여요. 저장해야 올라가요.
+                  사진을 고르면 드래그하고 확대해서 보여줄 부분을 정할 수 있어요. 사진은 원래 색 그대로, 기울어진
+                  도장 모양으로 보여요. 사진을 쓰면 인장 글자와 모양은 쓰이지 않고, 색은 테두리에만 쓰여요. 저장해야
+                  올라가요.
                 </p>
               </div>
 
@@ -2824,7 +3062,7 @@ export default function Home() {
                       aria-pressed={draft.sealColor === key}
                       onClick={() => setDraft({ ...draft, sealColor: key })}
                       className={`inline-flex items-center gap-2 min-h-[34px] px-4 border border-[#111111] text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
-                        draft.sealColor === key ? 'bg-[#111111] text-[#F9F9F7]' : 'hover:bg-[#F5F5F5]'
+                        draft.sealColor === key ? 'bg-[#111111] text-[#F7F9FC]' : 'hover:bg-[#111111]/5'
                       }`}
                     >
                       <span
@@ -2956,12 +3194,12 @@ export default function Home() {
               &larr; 전체 서재로 돌아가기
             </button>
 
-            <section className="border border-[#111111] bg-[#F9F9F7]">
+            <section className="border border-[#111111]">
               <div className="px-5 py-4 border-b-4 border-[#111111] flex items-center gap-4">
                 <img
                   src={series.cover || undefined}
                   alt={series.base}
-                  className="w-14 h-20 object-cover border border-[#111111] bg-[#E5E5E5] grayscale shrink-0"
+                  className="w-14 h-20 object-cover border border-[#111111] bg-[#D3DAE3] grayscale shrink-0"
                 />
                 <div className="min-w-0">
                   <p className="text-[11px] uppercase tracking-widest text-[#737373]">Series</p>
@@ -3001,7 +3239,7 @@ export default function Home() {
         <GlobalStyle />
         {header}
         <main className="max-w-[700px] mx-auto px-4 py-8">
-          <section className="border border-[#111111] bg-[#F9F9F7]">
+          <section className="border border-[#111111]">
             <div className="flex flex-wrap justify-between items-end gap-3 px-5 py-4 border-b-4 border-[#111111]">
               <div>
                 <p className="text-[11px] uppercase tracking-widest text-[#737373]">Everyone&apos;s Shelf</p>
@@ -3053,7 +3291,7 @@ export default function Home() {
       <GlobalStyle />
       {header}
       <main className="max-w-screen-xl mx-auto px-4 py-6 md:py-8">
-        <div className="border border-[#111111] bg-[#F9F9F7] grid grid-cols-1 lg:grid-cols-12">
+        <div className="border border-[#111111] grid grid-cols-1 lg:grid-cols-12">
           {/* 왼쪽: 책 추가 (검색 전엔 좁게, 검색하면 넓게) */}
           <section
             className={`${
@@ -3086,14 +3324,14 @@ export default function Home() {
                     결과 지우기
                   </button>
                 </div>
-                <div className="divide-y divide-[#E5E5E0] border-y border-[#111111] max-h-96 overflow-y-auto">
+                <div className="divide-y divide-[#D3DAE3] border-y border-[#111111] max-h-96 overflow-y-auto">
                   {searchResults.map((book, idx) => (
                     <div key={idx} className="py-3 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3 min-w-0">
                         <img
                           src={book.thumbnail || undefined}
                           alt={book.title}
-                          className="w-11 h-16 object-cover border border-[#111111] bg-[#E5E5E5] grayscale shrink-0"
+                          className="w-11 h-16 object-cover border border-[#111111] bg-[#D3DAE3] grayscale shrink-0"
                         />
                         <div className="min-w-0">
                           <p className="font-bold text-sm truncate">{book.title}</p>
@@ -3132,7 +3370,7 @@ export default function Home() {
                   <img
                     src={selectedBook.thumbnail || undefined}
                     alt={selectedBook.title}
-                    className="w-12 h-16 object-cover border border-[#111111] bg-[#E5E5E5] grayscale shrink-0"
+                    className="w-12 h-16 object-cover border border-[#111111] bg-[#D3DAE3] grayscale shrink-0"
                   />
                   <div className="min-w-0">
                     <p className="font-bold text-sm break-words">{selectedBook.title}</p>
@@ -3266,7 +3504,7 @@ export default function Home() {
                     <li
                       key={c.id}
                       onClick={() => openClip(c.id)}
-                      className="px-4 sm:px-5 py-4 border-b border-[#111111] last:border-b-0 hover:bg-[#F5F5F5] cursor-pointer transition-colors duration-200 group"
+                      className="px-4 sm:px-5 py-4 border-b border-[#111111] last:border-b-0 hover:bg-[#111111]/5 cursor-pointer transition-colors duration-200 group"
                     >
                       <p className="font-bold text-base break-words underline-offset-4 decoration-2 decoration-[#CC0000] group-hover:underline">
                         {c.title}
@@ -3298,7 +3536,7 @@ export default function Home() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-xl my-auto border-4 border-[#111111] bg-[#F9F9F7] p-5 sm:p-6"
+            className="w-full max-w-xl my-auto border-4 border-[#111111] paper p-5 sm:p-6"
           >
             <div className="flex items-end justify-between gap-3 border-b-2 border-[#111111] pb-2 mb-5">
               <div>
