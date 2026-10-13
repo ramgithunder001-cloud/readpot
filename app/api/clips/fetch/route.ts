@@ -1,6 +1,3 @@
-// 위치: app/api/clips/fetch/route.ts
-// 필요한 패키지: npm i @mozilla/readability linkedom
-// 환경변수: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY (이미 쓰고 있는 값)
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
@@ -12,12 +9,10 @@ import net from 'node:net';
 export const runtime = 'nodejs';
 export const maxDuration = 30;
 
-const MAX_BYTES = 3_000_000; // 페이지는 최대 3MB까지만 읽음
+const MAX_BYTES = 3_000_000;
 const MAX_REDIRECTS = 4;
 const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
-
-/* ---------- 안전장치: 내부망 주소는 읽지 않음 ---------- */
 
 function isPrivateIp(ip: string): boolean {
   if (net.isIPv4(ip)) {
@@ -72,8 +67,6 @@ async function assertPublicUrl(raw: string): Promise<URL> {
   return url;
 }
 
-/* ---------- 페이지 가져오기 ---------- */
-
 async function readLimited(res: Response): Promise<Uint8Array> {
   const reader = res.body?.getReader();
   if (!reader) return new Uint8Array(await res.arrayBuffer());
@@ -99,7 +92,6 @@ async function readLimited(res: Response): Promise<Uint8Array> {
   return out;
 }
 
-// 오래된 한국 언론사 페이지(EUC-KR 등)도 읽을 수 있게 문자셋을 확인
 function decodeHtml(bytes: Uint8Array, contentType: string): string {
   let charset = /charset=([\w-]+)/i.exec(contentType)?.[1];
   if (!charset) {
@@ -127,7 +119,6 @@ async function fetchHtml(startUrl: string): Promise<{ html: string; finalUrl: st
       signal: AbortSignal.timeout(12000),
     });
 
-    // 이동할 때마다 새 주소도 안전한지 다시 확인
     if (res.status >= 300 && res.status < 400) {
       const location = res.headers.get('location');
       if (!location) throw new Error('페이지를 불러오지 못했어요.');
@@ -145,14 +136,10 @@ async function fetchHtml(startUrl: string): Promise<{ html: string; finalUrl: st
   throw new Error('이동이 너무 많은 링크예요.');
 }
 
-/* ---------- 본문 정리 (광고, 플레이어 문구, 기자 이름/이메일 지우기) ---------- */
-
-// 본문이 아닌 요소는 미리 통째로 지움
 const NOISE_SELECTOR = [
   'audio', 'video', 'source', 'track', 'iframe', 'noscript', 'button', 'svg',
   'ins.adsbygoogle', '[class*="adsbygoogle"]', '[id^="google_ads"]',
   '[class*="advertisement"]', '[class~="ad"]', '[class~="ads"]', '[data-ad-slot]',
-  // ad_wrap, ad-box, ads_area, top_ad 처럼 이름이 ad / ads 로 시작하거나 끝나는 영역
   '[class^="ad_"]', '[class*=" ad_"]', '[class^="ad-"]', '[class*=" ad-"]',
   '[class^="ads_"]', '[class*=" ads_"]', '[class^="ads-"]', '[class*=" ads-"]',
   '[class$="_ad"]', '[class*="_ad "]', '[class$="-ad"]', '[class*="-ad "]',
@@ -162,16 +149,13 @@ const NOISE_SELECTOR = [
 const EMAIL_RE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+/g;
 const EMAIL_LABEL_RE = /\s*(?:이메일|E-?mail|메일)\s*[:：]?\s*$/i;
 const AUDIO_NOTE_RE = /(?:\d{1,2}:\d{2}\s*)?your browser does not support[^.]*\.?/gi;
-// 문단 전체가 "광고" 표시뿐일 때만 광고로 봄 (본문 속 '광고'라는 단어는 그대로 둠)
 const AD_LABEL_RE =
   /^[\s\[\(<【▶▷■□◆◇\-–—]*(?:광고|AD|ADVERTISEMENT|SPONSORED|스폰서|제휴\s*광고|PR)[\s\]\)>】\-–—]*$/i;
 const TIMESTAMP_RE = /^\d{1,2}:\d{2}(?::\d{2})?(?:\s*[\/-]\s*\d{1,2}:\d{2}(?::\d{2})?)?$/;
 const PLAYER_WORD_RE = /^(?:재생|일시정지|음소거|전체화면|다시 재생)$/;
-// "(서울=연합뉴스) 홍길동 기자 = 본문" 에서 앞부분만 떼어냄
 const WIRE_LEAD_RE =
   /^\s*[\(\[]?[가-힣A-Za-z0-9]{1,8}\s*=\s*[가-힣A-Za-z0-9 ]{1,12}[\)\]]\s*(?:[가-힣]{2,4}\s*(?:선임|수석)?\s*(?:기자|특파원|통신원)\s*)?(?:=\s*)?/;
 const REPORTER_LEAD_RE = /^[가-힣]{2,4}\s*(?:선임|수석)?\s*(?:기자|특파원)\s*=\s*/;
-// "홍길동 기자", "글·사진 홍길동 기자", "홍길동 논설위원" 처럼 이름 줄만 있는 경우
 const BYLINE_RE =
   /^(?:[가-힣A-Za-z·=,\/\s]{0,12})?[가-힣]{2,4}\s*(?:선임|수석|논설|편집|전문|객원|인턴)?\s*(?:기자|특파원|논설위원|통신원|칼럼니스트|에디터|PD)(?:\s*[=,·\/]?\s*[가-힣]{2,4}\s*(?:기자|특파원))*\s*$|^(?:기자|특파원)\s*[가-힣]{2,4}\s*$/;
 
@@ -184,7 +168,6 @@ function cleanBlock(raw: string): string {
     .replace(/[\(\[<（]\s*[\)\]>）]/g, '')
     .replace(/\s{2,}/g, ' ')
     .trim();
-  // 이메일이 붙어 있던 문단 끝의 "홍길동 기자"도 같이 지움 (이메일이 없던 문장은 건드리지 않음)
   if (hadEmail) {
     t = t.replace(/\s*[가-힣]{2,4}\s*(?:선임|수석)?\s*(?:기자|특파원|논설위원|통신원)\s*$/, '').trim();
   }
@@ -195,8 +178,6 @@ function cleanBlock(raw: string): string {
   }
   return t;
 }
-
-/* ---------- 본문 뽑기 ---------- */
 
 function extractArticle(html: string, pageUrl: string) {
   const { document } = parseHTML(html);
@@ -210,7 +191,6 @@ function extractArticle(html: string, pageUrl: string) {
   const article = new Readability(document as unknown as Document, { charThreshold: 200 }).parse();
   if (!article || !article.content) return null;
 
-  // 문단 단위로 나눠서 빈 줄로 이어 붙임
   const { document: body } = parseHTML(`<div>${article.content}</div>`);
   const blockSel = 'p, h1, h2, h3, h4, li, blockquote, pre';
   const blocks = Array.from(body.querySelectorAll(blockSel) as unknown as ArrayLike<Element>)
@@ -219,7 +199,6 @@ function extractArticle(html: string, pageUrl: string) {
     .filter((t) => t.length > 0);
 
   const title = (article.title || ogTitle || docTitle).trim();
-  // 본문 맨 앞에 제목이 또 나오면 뺌
   if (blocks.length > 0 && (blocks[0] === title || blocks[0] === ogTitle)) blocks.shift();
 
   let content = blocks.join('\n\n');
@@ -239,11 +218,8 @@ function extractArticle(html: string, pageUrl: string) {
   };
 }
 
-/* ---------- API ---------- */
-
 export async function GET(req: NextRequest) {
   try {
-    // 로그인한 사용자만 쓸 수 있게 해서, 아무나 이 서버로 다른 사이트를 읽어오지 못하게 함
     const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
     if (!token) return NextResponse.json({ error: '로그인이 필요해요.' }, { status: 401 });
 

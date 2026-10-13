@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react';
+import { useEditor, useEditorState, EditorContent } from '@tiptap/react';
+import type { JSONContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
 
@@ -31,6 +34,7 @@ interface Review {
   book_isbn: string;
   rating: number;
   content: string;
+  content_json?: JSONContent | null;
   status: Status;
   created_at: string;
   books: {
@@ -97,7 +101,6 @@ function GlobalStyle() {
   return (
     <style>{`
       @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
-      @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap');
       :root {
         --paper: #f4efe5; --paper-light: #fbf8f1; --paper-deep: #e9dfce;
         --ink: #332e27; --ink-soft: #71675a; --ink-faint: #9f9382;
@@ -105,7 +108,7 @@ function GlobalStyle() {
         --olive: #666b4c; --olive-light: #e4e4d4; --blue: #586778; --blue-light: #dce3e7;
         --shadow: 0 12px 35px rgba(61,47,31,.07);
         --sans: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-        --serif: 'Nanum Myeongjo', 'Batang', '바탕', 'AppleMyungjo', Georgia, serif;
+        --serif: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
       }
       html { scroll-behavior: smooth; }
       body {
@@ -127,7 +130,7 @@ function GlobalStyle() {
       .bs-brand{display:flex;align-items:center;gap:11px;padding:0 10px 27px;border-bottom:1px solid var(--line)}
       .bs-brand-mark{width:39px;height:43px;border:1px solid #9e8b70;display:grid;place-items:center;background:var(--paper-light);color:var(--rust);font-family:var(--serif);font-size:20px;position:relative;box-shadow:3px 3px 0 #d5c7b2}
       .bs-brand-mark:before{content:"";position:absolute;left:5px;top:0;bottom:0;border-left:1px solid #d4c5ae}
-      .bs-brand-title{font-family:var(--serif);font-size:20px;letter-spacing:-.07em;font-weight:700;line-height:1.2}
+      .bs-brand-title{font-family:var(--serif);font-size:20px;letter-spacing:-.035em;font-weight:700;line-height:1.2}
       .bs-brand-sub{font-family:var(--serif);font-size:9px;letter-spacing:.17em;color:var(--ink-soft);margin-top:5px}
       .bs-side-label{font-size:10px;letter-spacing:.12em;color:#91836f;margin:26px 11px 9px;text-transform:uppercase}
       .bs-nav{display:grid;gap:5px}
@@ -167,7 +170,7 @@ function GlobalStyle() {
       .bs-btn-small{height:31px;padding:0 11px;font-size:11px}
       .bs-link-button{background:transparent;border:0;padding:0;color:var(--rust);font-size:12px}
       .bs-section-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:15px}
-      .bs-section-title{font-family:var(--serif);font-size:18px;letter-spacing:-.04em;display:flex;align-items:center;gap:10px}
+      .bs-section-title{font-family:var(--serif);font-size:18px;letter-spacing:-.025em;display:flex;align-items:center;gap:10px}
       .bs-section-title small{font-family:var(--sans);font-size:10px;letter-spacing:.11em;color:#9d8e79;font-weight:400}
       .bs-rule{height:1px;background:var(--line);flex:1;margin-left:5px}
       .bs-paper-panel{background:rgba(251,248,241,.72);border:1px solid var(--line);box-shadow:var(--shadow)}
@@ -182,13 +185,13 @@ function GlobalStyle() {
       .bs-stat-card{padding:16px 17px;background:#f8f3e9;border:1px solid var(--line);position:relative;min-height:104px;overflow:hidden}
       .bs-stat-card:after{content:"";position:absolute;width:54px;height:54px;border:1px solid rgba(163,143,113,.18);border-radius:50%;right:-15px;bottom:-16px}
       .bs-stat-label{font-size:11px;color:var(--ink-soft);display:flex;align-items:center;gap:7px}
-      .bs-stat-number{font-family:var(--serif);font-size:29px;margin-top:7px;line-height:1.1;letter-spacing:-.05em}
+      .bs-stat-number{font-family:var(--serif);font-size:29px;margin-top:7px;line-height:1.1;letter-spacing:-.025em}
       .bs-stat-note{font-size:10px;color:#9a8c78;margin-top:6px}
       .bs-home-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.85fr);gap:26px;align-items:start}
       .bs-records{border-top:1px solid var(--line)}
       .bs-record-row{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:15px;align-items:center;padding:17px 4px;border-bottom:1px solid var(--line)}
       .bs-record-row:hover .bs-record-title{color:var(--rust)}
-      .bs-record-title{font-family:var(--serif);font-size:17px;letter-spacing:-.04em;margin-bottom:4px;transition:color .18s;cursor:pointer}
+      .bs-record-title{font-family:var(--serif);font-size:17px;letter-spacing:-.025em;margin-bottom:4px;transition:color .18s;cursor:pointer}
       .bs-record-excerpt{font-family:var(--serif);font-size:12px;color:#776c5b;line-height:1.8;margin-bottom:8px;max-width:570px}
       .bs-record-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:#958671;font-size:10px}
       .bs-meta-dot{width:3px;height:3px;border-radius:50%;background:#b9a991}
@@ -306,9 +309,9 @@ function GlobalStyle() {
       @media(max-width:900px){.bs-sidebar{width:206px;padding-left:12px;padding-right:12px}.bs-main{margin-left:206px}.bs-topbar{padding:0 20px}.bs-content{padding:25px 20px 45px}.bs-home-intro{grid-template-columns:1fr}.bs-archive-stamp{display:none}.bs-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.bs-home-grid{grid-template-columns:1fr}.bs-right-stack{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.bs-right-stack .bs-mini-calendar{grid-column:1/-1}.bs-review-layout{grid-template-columns:1fr}.bs-review-side{grid-template-columns:repeat(2,minmax(0,1fr));grid-row:1}.bs-review-side .bs-file-card{grid-column:span 1}.bs-books-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
       @media(max-width:620px){.bs-sidebar{width:100%;height:auto;position:sticky;inset:0 0 auto;padding:10px 14px 9px;display:block;border-right:0;border-bottom:1px solid var(--line)}.bs-brand{padding:0 2px 8px;border:0}.bs-brand-mark{width:31px;height:34px;font-size:16px}.bs-brand-title{font-size:17px}.bs-brand-sub{font-size:8px;margin-top:2px}.bs-sidebar .bs-side-label,.bs-sidebar .bs-side-spacer,.bs-sidebar .bs-shelf-note,.bs-sidebar .bs-side-bottom{display:none}.bs-nav{display:flex;gap:4px;overflow:auto;padding-top:7px}.bs-nav button{flex:1;justify-content:center;gap:5px;padding:8px 7px;white-space:nowrap;font-size:11px}.bs-nav-ico{font-size:13px;width:auto}.bs-nav-count{display:none}.bs-main{margin-left:0}.bs-topbar{height:54px;padding:0 14px}.bs-breadcrumb{font-size:11px}.bs-top-actions{gap:6px}.bs-search{width:min(38vw,180px);height:32px}.bs-icon-button{width:32px;height:32px}.bs-content{padding:25px 14px 35px}.bs-page-head{align-items:flex-start;flex-direction:column;margin-bottom:22px;gap:15px}.bs-page-head h1{font-size:29px}.bs-page-head .bs-head-mark{display:none}.bs-home-intro h1{font-size:30px}.bs-lead{font-size:12px}.bs-intro-buttons{margin-top:16px}.bs-stats-grid{gap:8px}.bs-stat-card{padding:13px;min-height:91px}.bs-stat-number{font-size:25px}.bs-record-row{grid-template-columns:48px minmax(0,1fr) auto;gap:10px;padding:14px 0}.bs-record-row .bs-book-cover{width:48px;height:65px}.bs-record-title{font-size:15px}.bs-record-excerpt{font-size:11px;line-height:1.7}.bs-row-action{padding:4px}.bs-right-stack{grid-template-columns:1fr}.bs-right-stack .bs-mini-calendar{grid-column:auto}.bs-books-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bs-book-card{padding:12px 9px}.bs-book-card .bs-book-cover{width:78px;height:105px}.bs-book-card h3{font-size:13px}.bs-shelf-toolbar{align-items:flex-start}.bs-filter-group{width:100%}.bs-shelf-count{margin-left:auto}.bs-review-paper{padding:36px 23px 30px 31px}.bs-review-paper:before{left:17px}.bs-review-paper h1{font-size:25px}.bs-review-body{font-size:14px;line-height:2}.bs-review-side{grid-template-columns:1fr 1fr;gap:9px}.bs-file-card,.bs-margin-note{padding:13px}.bs-file-book{gap:8px}.bs-file-book .bs-book-cover{width:42px;height:60px}.bs-file-book-title{font-size:12px}.bs-file-book-author{font-size:9px}.bs-comment-form{flex-wrap:wrap}.bs-comment-form .bs-btn{flex:0 0 100%}.bs-page-footer{font-size:9px}.bs-hide-mobile{display:none}}
       .bs-h1,.bs-h2,.bs-h3,.bs-serif{font-family:var(--serif)}
-      .bs-h1{font-size:35px;letter-spacing:-.075em;line-height:1.32;font-weight:700;margin:0 0 12px}
-      .bs-h2{font-size:23px;letter-spacing:-.055em;margin:0}
-      .bs-h3{font-size:17px;letter-spacing:-.04em;margin:0}
+      .bs-h1{font-size:35px;letter-spacing:-.035em;line-height:1.32;font-weight:700;margin:0 0 12px}
+      .bs-h2{font-size:23px;letter-spacing:-.035em;margin:0}
+      .bs-h3{font-size:17px;letter-spacing:-.025em;margin:0}
       .bs-page-head .bs-h1{margin-bottom:12px}
       @media(max-width:620px){.bs-h1{font-size:29px}}
       .bs-cover-img{object-fit:cover;box-shadow:2px 3px 0 rgba(62,47,29,.13);border-left:4px solid rgba(20,20,15,.14);flex-shrink:0;display:block;background:#e9dfce}
@@ -324,6 +327,19 @@ function GlobalStyle() {
       .bs-quote-mark{font-family:var(--serif);font-size:42px;line-height:.9;color:#c9b79b}
       .bs-quote-comment{font-size:12px;color:#7a6a55;margin:-2px 0 6px 2px}
       .bs-cover-wrap{display:flex;justify-content:center}
+      .bs-prose .ProseMirror{outline:none;font-size:15px;line-height:1.85;color:var(--ink)}
+      .bs-prose .ProseMirror>*:first-child{margin-top:0}
+      .bs-prose .ProseMirror p{margin:0 0 .9em}
+      .bs-prose .ProseMirror h2{font-size:21px;font-weight:700;margin:1.3em 0 .5em;letter-spacing:-.02em}
+      .bs-prose .ProseMirror h3{font-size:17px;font-weight:700;margin:1.2em 0 .45em}
+      .bs-prose .ProseMirror blockquote{margin:1em 0;padding:2px 0 2px 14px;border-left:3px solid var(--line-dark);color:#5c5245}
+      .bs-prose .ProseMirror ul{list-style:disc;padding-left:1.4em;margin:0 0 .9em}
+      .bs-prose .ProseMirror ol{list-style:decimal;padding-left:1.5em;margin:0 0 .9em}
+      .bs-prose .ProseMirror li p{margin:0 0 .3em}
+      .bs-prose .ProseMirror strong{font-weight:700}
+      .bs-prose .ProseMirror em{font-style:italic}
+      .bs-editor-box .ProseMirror{padding:14px 16px;background:#f8f3e9;border:1px solid var(--line);border-radius:2px;min-height:260px}
+      .bs-editor-box .ProseMirror:focus{border-color:var(--rust)}
     `}</style>
   );
 }
@@ -1541,6 +1557,291 @@ const STATUS_LABEL: Record<Status, string> = {
   completed: '완독',
 };
 
+const TIPTAP_EXTENSIONS = [
+  StarterKit.configure({
+    heading: { levels: [2, 3] },
+    link: false,
+    underline: false,
+    strike: false,
+    code: false,
+    codeBlock: false,
+    horizontalRule: false,
+  }),
+];
+
+interface DraftRow {
+  review_id: string;
+  content_json: JSONContent | null;
+  content_text: string;
+  updated_at: string;
+}
+
+const textToDoc = (text: string): JSONContent => {
+  const lines = text.replace(/\r\n/g, '\n').split('\n');
+  return {
+    type: 'doc',
+    content: lines.map((l) => (l.trim() ? { type: 'paragraph', content: [{ type: 'text', text: l }] } : { type: 'paragraph' })),
+  };
+};
+
+function RichView({ json }: { json: JSONContent }) {
+  const editor = useEditor(
+    { extensions: TIPTAP_EXTENSIONS, content: json, editable: false, immediatelyRender: false },
+    [JSON.stringify(json)]
+  );
+  return <EditorContent editor={editor} className="bs-prose" />;
+}
+
+function ReviewBody({ review }: { review: Review }) {
+  if (review.content_json) return <RichView json={review.content_json} />;
+  return <DiscordText text={review.content} className="text-sm leading-relaxed text-[#4b4439]" />;
+}
+
+type SaveState = 'saved' | 'dirty' | 'saving' | 'error';
+
+function ReviewEditorPanel({
+  review,
+  userId,
+  draft,
+  onDraftChange,
+  onDone,
+}: {
+  review: Review;
+  userId: string;
+  draft: DraftRow | null;
+  onDraftChange: (reviewId: string, draft: DraftRow | null) => void;
+  onDone: (published: boolean) => void;
+}) {
+  const [initial] = useState<JSONContent>(
+    () => draft?.content_json ?? review.content_json ?? textToDoc(review.content || '')
+  );
+  const [saveState, setSaveState] = useState<SaveState>('saved');
+  const [savedAt, setSavedAt] = useState<string | null>(draft?.updated_at ?? null);
+  const [preview, setPreview] = useState(false);
+  const [previewDoc, setPreviewDoc] = useState<JSONContent>(initial);
+  const [busy, setBusy] = useState(false);
+
+  const docRef = useRef<{ json: JSONContent; text: string } | null>(null);
+  const dirty = useRef(false);
+  const timer = useRef<number | undefined>(undefined);
+  const mounted = useRef(true);
+
+  const saveDraft = useCallback(async (): Promise<boolean> => {
+    const doc = docRef.current;
+    if (!doc || !dirty.current) return true;
+    if (mounted.current) setSaveState('saving');
+    const row: DraftRow = {
+      review_id: review.id,
+      content_json: doc.json,
+      content_text: doc.text,
+      updated_at: new Date().toISOString(),
+    };
+    const { error } = await supabase
+      .from('review_drafts')
+      .upsert({ ...row, user_id: userId }, { onConflict: 'review_id' });
+    if (error) {
+      console.error('임시 저장 실패:', error.message);
+      if (mounted.current) setSaveState('error');
+      return false;
+    }
+    if (docRef.current === doc) dirty.current = false;
+    onDraftChange(review.id, row);
+    if (mounted.current) {
+      setSaveState(dirty.current ? 'dirty' : 'saved');
+      setSavedAt(row.updated_at);
+    }
+    return true;
+  }, [review.id, userId, onDraftChange]);
+
+  const saveRef = useRef(saveDraft);
+  useEffect(() => {
+    saveRef.current = saveDraft;
+  }, [saveDraft]);
+
+  const editor = useEditor({
+    extensions: TIPTAP_EXTENSIONS,
+    content: initial,
+    immediatelyRender: false,
+    shouldRerenderOnTransaction: false,
+    editorProps: { attributes: { 'aria-label': '독후감 본문' } },
+    onUpdate: ({ editor: ed }) => {
+      docRef.current = { json: ed.getJSON(), text: ed.getText({ blockSeparator: '\n' }) };
+      dirty.current = true;
+      setSaveState('dirty');
+      window.clearTimeout(timer.current);
+      timer.current = window.setTimeout(() => saveRef.current(), 1500);
+    },
+  });
+
+  const active = useEditorState({
+    editor,
+    selector: ({ editor: ed }) => ({
+      h2: !!ed?.isActive('heading', { level: 2 }),
+      h3: !!ed?.isActive('heading', { level: 3 }),
+      bold: !!ed?.isActive('bold'),
+      italic: !!ed?.isActive('italic'),
+      quote: !!ed?.isActive('blockquote'),
+      bullet: !!ed?.isActive('bulletList'),
+      ordered: !!ed?.isActive('orderedList'),
+      canUndo: !!ed?.can().undo(),
+      canRedo: !!ed?.can().redo(),
+    }),
+  });
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      window.clearTimeout(timer.current);
+      if (dirty.current) saveRef.current();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (saveState === 'saved') return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [saveState]);
+
+  const saveNow = async () => {
+    window.clearTimeout(timer.current);
+    await saveDraft();
+  };
+
+  const publish = async () => {
+    if (!editor) return;
+    const json = editor.getJSON();
+    const text = editor.getText({ blockSeparator: '\n' });
+    if (!text.trim()) return alert('내용을 입력한 뒤 발행해 주세요.');
+
+    setBusy(true);
+    window.clearTimeout(timer.current);
+    const { error } = await supabase.from('reviews').update({ content: text, content_json: json }).eq('id', review.id);
+    if (error) {
+      setBusy(false);
+      return alert(
+        error.message.includes('content_json')
+          ? '발행에 필요한 컬럼이 아직 없어요. Supabase에서 안내드린 SQL을 먼저 실행해 주세요.'
+          : `발행 실패: ${error.message}`
+      );
+    }
+    await supabase.from('review_drafts').delete().eq('review_id', review.id);
+    dirty.current = false;
+    onDraftChange(review.id, null);
+    setBusy(false);
+    onDone(true);
+  };
+
+  const close = async () => {
+    window.clearTimeout(timer.current);
+    if (dirty.current) await saveDraft();
+    onDone(false);
+  };
+
+  const discard = async () => {
+    if (!confirm('임시 저장한 글을 지우시겠습니까?')) return;
+    window.clearTimeout(timer.current);
+    dirty.current = false;
+    await supabase.from('review_drafts').delete().eq('review_id', review.id);
+    onDraftChange(review.id, null);
+    onDone(false);
+  };
+
+  const togglePreview = () => {
+    if (!preview && editor) setPreviewDoc(editor.getJSON());
+    setPreview(!preview);
+  };
+
+  const tool = (on: boolean, label: string, run: () => void, disabled = false) => (
+    <button
+      type="button"
+      key={label}
+      disabled={disabled || !editor}
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={run}
+      className={`${on ? BTN_ACTIVE : BTN_OUTLINE} !min-h-[30px] !px-2.5 disabled:opacity-40`}
+    >
+      {label}
+    </button>
+  );
+
+  const statusText =
+    saveState === 'saving'
+      ? '저장 중…'
+      : saveState === 'dirty'
+        ? '변경 사항이 있어요'
+        : saveState === 'error'
+          ? '저장 실패'
+          : savedAt
+            ? `임시 저장 완료 · ${new Date(savedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}`
+            : '아직 저장하지 않았어요';
+
+  return (
+    <div className="space-y-3">
+      {review.content && (
+        <p className="text-xs text-[#71675a]">
+          발행된 글을 고치는 중이에요. 발행하기 전까지는 다른 멤버에게 이전에 발행한 글이 보여요.
+        </p>
+      )}
+
+      <div className="flex flex-wrap gap-1.5">
+        {tool(active.h2, '제목', () => editor?.chain().focus().toggleHeading({ level: 2 }).run())}
+        {tool(active.h3, '소제목', () => editor?.chain().focus().toggleHeading({ level: 3 }).run())}
+        {tool(active.bold, '굵게', () => editor?.chain().focus().toggleBold().run())}
+        {tool(active.italic, '기울임', () => editor?.chain().focus().toggleItalic().run())}
+        {tool(active.quote, '인용문', () => editor?.chain().focus().toggleBlockquote().run())}
+        {tool(active.bullet, '목록', () => editor?.chain().focus().toggleBulletList().run())}
+        {tool(active.ordered, '번호 목록', () => editor?.chain().focus().toggleOrderedList().run())}
+        {tool(false, '되돌리기', () => editor?.chain().focus().undo().run(), !active.canUndo)}
+        {tool(false, '다시 하기', () => editor?.chain().focus().redo().run(), !active.canRedo)}
+      </div>
+
+      <div className={preview ? 'hidden' : 'bs-prose bs-editor-box'}>
+        <EditorContent editor={editor} />
+      </div>
+      {preview && (
+        <div className="bs-prose border border-[#d9cdbb] p-4 min-h-[240px]">
+          <RichView json={previewDoc} />
+        </div>
+      )}
+
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <span
+          className={`text-xs ${saveState === 'error' ? 'font-semibold text-[#8d4d38]' : 'text-[#71675a]'}`}
+          role="status"
+        >
+          {statusText}
+          {saveState === 'error' && (
+            <button type="button" onClick={saveNow} className={`${LINK_BTN} ml-2`}>
+              다시 시도
+            </button>
+          )}
+        </span>
+        <div className="ml-auto flex flex-wrap gap-2">
+          {draft && (
+            <button type="button" onClick={discard} className={DANGER_BTN}>
+              임시 저장 삭제
+            </button>
+          )}
+          <button type="button" onClick={togglePreview} className={BTN_OUTLINE}>
+            {preview ? '편집으로' : '미리보기'}
+          </button>
+          <button type="button" onClick={saveNow} disabled={saveState === 'saving'} className={BTN_OUTLINE}>
+            임시 저장
+          </button>
+          <button type="button" onClick={close} className={BTN_OUTLINE}>
+            닫기
+          </button>
+          <button type="button" onClick={publish} disabled={busy} className={BTN}>
+            {busy ? '발행 중…' : '발행'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Footer({ label = 'A PRIVATE READING ARCHIVE' }: { label?: string }) {
   return (
     <div className="bs-footer-wrap">
@@ -1575,7 +1876,6 @@ export default function Home() {
   const [showOthers, setShowOthers] = useState(true);
   const [newQuoteInput, setNewQuoteInput] = useState('');
   const [isEditingContent, setIsEditingContent] = useState(false);
-  const [editContentText, setEditContentText] = useState('');
   const [today, setToday] = useState('');
 
   const [activeSeries, setActiveSeries] = useState<string | null>(null);
@@ -1590,6 +1890,15 @@ export default function Home() {
   const [clipFetchError, setClipFetchError] = useState('');
   const [clipModalOpen, setClipModalOpen] = useState(false);
   const [shelfFilter, setShelfFilter] = useState<'all' | Status>('all');
+  const [drafts, setDrafts] = useState<Record<string, DraftRow>>({});
+  const handleDraftChange = useCallback((reviewId: string, d: DraftRow | null) => {
+    setDrafts((prev) => {
+      const next = { ...prev };
+      if (d) next[reviewId] = d;
+      else delete next[reviewId];
+      return next;
+    });
+  }, []);
   const [selection, setSelection] = useState<{ start: number; end: number; text: string } | null>(null);
   const [notePanelOpen, setNotePanelOpen] = useState(false);
   const [noteDraftText, setNoteDraftText] = useState('');
@@ -1680,12 +1989,15 @@ export default function Home() {
     : [];
 
   const loadData = useCallback(async (u: User) => {
-    const reviewsRes = await supabase
-      .from('reviews')
-      .select(
-        'id, user_id, book_isbn, rating, status, content, created_at, books(title, author, cover_url), quotes(id, content, created_at, quote_comments(id, content, created_at))'
-      )
-      .order('created_at', { ascending: false });
+    const reviewSelect = (withJson: boolean) =>
+      supabase
+        .from('reviews')
+        .select(
+          `id, user_id, book_isbn, rating, status, content, ${withJson ? 'content_json, ' : ''}created_at, books(title, author, cover_url), quotes(id, content, created_at, quote_comments(id, content, created_at))`
+        )
+        .order('created_at', { ascending: false });
+    let reviewsRes = await reviewSelect(true);
+    if (reviewsRes.error) reviewsRes = await reviewSelect(false);
 
     const queryProfiles = async (cols: string) =>
       (await supabase.from('profiles').select(cols)) as unknown as ProfilesResult;
@@ -1719,6 +2031,16 @@ export default function Home() {
       map[u.id] = { nickname: nick, seal_text: null, seal_color: null, seal_style: null, seal_image: null };
     }
     setProfiles(map);
+
+    const draftsRes = await supabase
+      .from('review_drafts')
+      .select('review_id, content_json, content_text, updated_at')
+      .eq('user_id', u.id);
+    if (draftsRes.error) {
+      console.error('review_drafts 에러:', draftsRes.error.message);
+    } else {
+      setDrafts(Object.fromEntries(((draftsRes.data as unknown as DraftRow[]) || []).map((d) => [d.review_id, d])));
+    }
 
     const clipRes = await supabase
       .from('clippings')
@@ -2007,7 +2329,6 @@ export default function Home() {
       await loadData(user);
 
       navigate({ tab: 'mine', activeId: reviewData.id });
-      setEditContentText('');
     } catch (err) {
       alert(`저장 실패: ${errMsg(err)}`);
     }
@@ -2084,26 +2405,10 @@ export default function Home() {
   };
 
   const startWritingReview = () => {
-    setEditContentText('');
     setIsEditingContent(true);
     setTimeout(() => {
       document.getElementById('review-editor')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 50);
-  };
-
-  const handleSaveContentEdit = async () => {
-    if (!activeReview || !isOwner) return;
-    try {
-      const { error } = await supabase
-        .from('reviews')
-        .update({ content: editContentText.trim() })
-        .eq('id', activeReview.id);
-      if (error) throw error;
-      setIsEditingContent(false);
-      refresh();
-    } catch (err) {
-      alert(`독후감 저장 실패: ${errMsg(err)}`);
-    }
   };
 
   const handleDeleteReview = async (reviewId: string) => {
@@ -2296,7 +2601,6 @@ export default function Home() {
 
   const openReview = (rev: Review) => {
     navigate({ activeId: rev.id });
-    setEditContentText(rev.content || '');
     window.scrollTo({ top: 0 });
   };
 
@@ -2614,7 +2918,7 @@ export default function Home() {
 
   if (activeReview) {
     const hasQuotes = (activeReview.quotes?.length || 0) > 0;
-    const showReview = (isEditingContent && isOwner) || !!activeReview.content;
+    const showReview = (isEditingContent && isOwner) || !!activeReview.content || (isOwner && !!drafts[activeReview.id]);
     const showQuotes = isOwner || hasQuotes;
     const readers = otherReviews.filter((r) => r.status !== 'wishlist');
     const hasSidebar = readers.length > 0;
@@ -2699,7 +3003,7 @@ export default function Home() {
                         </ToggleButton>
                         {!activeReview.content && !isEditingContent && (
                           <button onClick={startWritingReview} className={BTN_OUTLINE}>
-                            독후감 추가
+                            {drafts[activeReview.id] ? '이어서 쓰기' : '독후감 추가'}
                           </button>
                         )}
                       </div>
@@ -2782,46 +3086,45 @@ export default function Home() {
                 {isEditingContent && isOwner ? (
                   <section id="review-editor" className="p-5 md:p-6 space-y-3">
                     <h3 className="text-xl font-black tracking-tight">독후감</h3>
-                    <textarea
-                      rows={10}
-                      autoFocus
-                      value={editContentText}
-                      onChange={(e) => setEditContentText(e.target.value)}
-                      placeholder="이 책을 읽고 느낀 점을 자유롭게 적어 보세요."
-                      className={TEXTAREA_BOX}
+                    <ReviewEditorPanel
+                      key={activeReview.id}
+                      review={activeReview}
+                      userId={user.id}
+                      draft={drafts[activeReview.id] ?? null}
+                      onDraftChange={handleDraftChange}
+                      onDone={(published) => {
+                        setIsEditingContent(false);
+                        if (published) refresh();
+                      }}
                     />
-                    <p className="text-xs text-[#71675a]">
-                      {'디스코드 마크다운 사용 가능: **굵게** *기울임* __밑줄__ ~~취소선~~ ||스포일러|| `코드` > 인용 # 제목 - 목록'}
-                    </p>
-                    <div className="flex justify-end gap-2">
-                      <button onClick={() => setIsEditingContent(false)} className={BTN_OUTLINE}>
-                        취소
-                      </button>
-                      <button onClick={handleSaveContentEdit} className={BTN}>
-                        저장
-                      </button>
-                    </div>
                   </section>
                 ) : activeReview.content ? (
                   <section className="p-5 md:p-6 space-y-3">
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-wrap justify-between items-center gap-2">
                       <h3 className="text-xl font-black tracking-tight">독후감</h3>
                       {isOwner && (
-                        <button
-                          onClick={() => {
-                            setEditContentText(activeReview.content || '');
-                            setIsEditingContent(true);
-                          }}
-                          className={LINK_BTN}
-                        >
-                          수정하기
-                        </button>
+                        <div className="flex items-center gap-3">
+                          {drafts[activeReview.id] && <span className="bs-tag bs-green">임시 저장본 있음</span>}
+                          <button onClick={() => setIsEditingContent(true)} className={LINK_BTN}>
+                            {drafts[activeReview.id] ? '이어서 쓰기' : '수정하기'}
+                          </button>
+                        </div>
                       )}
                     </div>
-                    <DiscordText
-                      text={activeReview.content}
-                      className="text-sm leading-relaxed text-[#4b4439]"
-                    />
+                    <ReviewBody review={activeReview} />
+                  </section>
+                ) : isOwner && drafts[activeReview.id] ? (
+                  <section className="p-5 md:p-6 space-y-3">
+                    <div className="flex flex-wrap justify-between items-center gap-2">
+                      <h3 className="text-xl font-black tracking-tight">독후감</h3>
+                      <span className="bs-tag bs-green">임시 저장</span>
+                    </div>
+                    <p className="text-sm text-[#71675a]">
+                      아직 발행하지 않은 글이 임시 저장되어 있어요. 나만 볼 수 있어요.
+                    </p>
+                    <button onClick={() => setIsEditingContent(true)} className={BTN}>
+                      이어서 쓰기
+                    </button>
                   </section>
                 ) : null}
               </div>
@@ -2851,10 +3154,7 @@ export default function Home() {
                         {o.content && (
                           <div className="space-y-1">
                             <p className={LABEL}>독후감</p>
-                            <DiscordText
-                              text={o.content}
-                              className="text-sm leading-relaxed text-[#4b4439]"
-                            />
+                            <ReviewBody review={o} />
                           </div>
                         )}
 
