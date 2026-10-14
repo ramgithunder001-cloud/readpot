@@ -54,7 +54,7 @@ interface NavState {
   activeClipId: string | null;
 }
 const NAV_DEFAULT: NavState = {
-  tab: 'shelf',
+  tab: 'mine',
   activeId: null,
   activeSeries: null,
   activeClipId: null,
@@ -85,14 +85,14 @@ const byCreated = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
 
 const FOCUS =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111111] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F9F9F7]';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111111] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F2F2F2]';
 
-const BTN = `inline-flex items-center justify-center min-h-[44px] px-4 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#F9F9F7] hover:text-[#111111] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
-const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[44px] px-4 border border-[#111111] bg-transparent text-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
-const BTN_SM = `inline-flex items-center justify-center min-h-[36px] px-3 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold transition-all duration-200 hover:bg-[#F9F9F7] hover:text-[#111111] ${FOCUS}`;
-const BTN_ACTIVE = `inline-flex items-center justify-center min-h-[44px] px-4 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest ${FOCUS}`;
-const LINK_BTN = `text-xs text-[#111111] underline-offset-4 decoration-2 decoration-[#CC0000] hover:underline ${FOCUS}`;
-const DANGER_BTN = `text-xs text-[#525252] underline-offset-4 decoration-2 decoration-[#CC0000] hover:text-[#CC0000] hover:underline ${FOCUS}`;
+const BTN = `inline-flex items-center justify-center min-h-[44px] px-4 border border-[#111111] bg-[#111111] text-[#F2F2F2] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#F2F2F2] hover:text-[#111111] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[44px] px-4 border border-[#111111] bg-transparent text-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F2F2F2] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN_SM = `inline-flex items-center justify-center min-h-[36px] px-3 border border-[#111111] bg-[#111111] text-[#F2F2F2] text-xs font-semibold transition-all duration-200 hover:bg-[#F2F2F2] hover:text-[#111111] ${FOCUS}`;
+const BTN_ACTIVE = `inline-flex items-center justify-center min-h-[44px] px-4 border border-[#111111] bg-[#111111] text-[#F2F2F2] text-xs font-semibold tracking-widest ${FOCUS}`;
+const LINK_BTN = `text-xs text-[#111111] underline-offset-4 decoration-2 decoration-[#555555] hover:underline ${FOCUS}`;
+const DANGER_BTN = `text-xs text-[#525252] underline-offset-4 decoration-2 decoration-[#555555] hover:text-[#555555] hover:underline ${FOCUS}`;
 const INPUT = `w-full min-w-0 bg-transparent border-0 border-b-2 border-[#111111] px-3 py-2 text-sm text-[#111111] placeholder:text-[#737373] focus:bg-[#F0F0F0] focus:outline-none`;
 const TEXTAREA_BOX = `w-full bg-transparent border-0 border-b-2 border-[#111111] p-3 text-sm leading-relaxed text-[#111111] placeholder:text-[#737373] focus:bg-[#F0F0F0] focus:outline-none`;
 const LABEL = 'block text-xs font-semibold uppercase tracking-widest text-[#525252]';
@@ -102,10 +102,10 @@ function GlobalStyle() {
     <style>{`
       @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
       :root {
-        --paper: #F9F9F7; --paper-light: #F9F9F7; --paper-deep: #E5E5E0;
+        --paper: #F2F2F2; --paper-light: #F2F2F2; --paper-deep: #E5E5E5;
         --ink: #111111; --ink-soft: #525252; --ink-faint: #737373;
-        --line: #111111; --line-dark: #111111; --rust: #CC0000; --rust-light: #E5E5E0;
-        --olive: #111111; --olive-light: #E5E5E0; --blue: #111111; --blue-light: #E5E5E0;
+        --line: #111111; --line-dark: #111111; --rust: #555555; --rust-light: #E5E5E5;
+        --olive: #111111; --olive-light: #E5E5E5; --blue: #111111; --blue-light: #E5E5E5;
         --shadow: none;
         --sans: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
         --serif: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
@@ -350,43 +350,43 @@ function GlobalStyle() {
       @media(max-width:620px){.bs-books-grid{grid-template-columns:minmax(0,1fr);gap:10px}.bs-book-card{padding:13px}.bs-book-card-main{grid-template-columns:78px minmax(0,1fr);gap:13px}.bs-book-card-cover{width:78px;min-width:78px}.bs-book-card .bs-book-cover,.bs-book-card .bs-cover-img{width:78px;height:106px}.bs-book-card h3.bs-book-title{font-size:14px}}
 
       /* Newsprint design system — Pretendard is intentionally used for every text role. */
-      html { background: #F9F9F7; }
+      html { background: #F2F2F2; }
       body, body * , body *::before, body *::after {
         font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
         border-radius: 0 !important;
       }
       body {
         color: #111111 !important;
-        background-color: #F9F9F7 !important;
+        background-color: #F2F2F2 !important;
         background-image: radial-gradient(rgba(17,17,17,.07) .55px, transparent .55px) !important;
         background-size: 5px 5px !important;
       }
-      ::selection { background: #CC0000; color: #F9F9F7; }
-      img { filter: grayscale(100%); transition: filter .2s ease-out; }
-      a:hover img, button:hover img, .bs-book-card:hover img { filter: grayscale(100%) sepia(50%); }
+      ::selection { background: #555555; color: #F2F2F2; }
+      img { filter: none !important; }
+      a:hover img, button:hover img, .bs-book-card:hover img { filter: none !important; }
       button, input, select, textarea { border-radius: 0 !important; }
       .bs-main { background: transparent; }
       .bs-sidebar {
-        background: #F9F9F7; border-right: 1px solid #111111; box-shadow: none;
+        background: #F2F2F2; border-right: 1px solid #111111; box-shadow: none;
       }
       .bs-brand { border-bottom: 2px solid #111111; }
-      .bs-brand-mark { border: 1px solid #111111; background: #F9F9F7; color: #111111; box-shadow: 3px 3px 0 #111111; }
+      .bs-brand-mark { border: 1px solid #111111; background: #F2F2F2; color: #111111; box-shadow: 3px 3px 0 #111111; }
       .bs-brand-mark:before { border-color: #111111; }
       .bs-brand-title { color: #111111; letter-spacing: -.05em; }
       .bs-side-label, .bs-brand-sub { color: #525252; }
       .bs-nav { gap: 0; }
       .bs-nav button { min-height: 44px; border: 1px solid transparent; color: #111111; transition: background-color .2s, color .2s; }
-      .bs-nav button:hover { background: #E5E5E0; }
-      .bs-nav button.bs-active { color: #F9F9F7; background: #111111; box-shadow: inset 4px 0 #CC0000; font-weight: 700; }
-      .bs-nav button.bs-active .bs-nav-ico { color: #F9F9F7; }
+      .bs-nav button:hover { background: #E5E5E5; }
+      .bs-nav button.bs-active { color: #F2F2F2; background: #111111; box-shadow: inset 4px 0 #555555; font-weight: 700; }
+      .bs-nav button.bs-active .bs-nav-ico { color: #F2F2F2; }
       .bs-nav-ico, .bs-nav-count, .bs-side-bottom { color: #525252; }
-      .bs-seal { border-color: #111111; color: #111111; background: #F9F9F7; }
-      .bs-topbar { background: #F9F9F7; border-bottom: 2px solid #111111; }
+      .bs-seal { border-color: #111111; color: #111111; background: #F2F2F2; }
+      .bs-topbar { background: #F2F2F2; border-bottom: 2px solid #111111; }
       .bs-search { background: transparent; border: 1px solid #111111; color: #111111; border-radius: 0; }
       .bs-search:focus { outline: 2px solid #111111; outline-offset: 2px; }
       .bs-icon-button { background: transparent; color: #111111; border: 1px solid #111111; }
-      .bs-icon-button:hover { color: #F9F9F7; background: #111111; }
-      .bs-avatar { background: #E5E5E0; color: #111111; border: 1px solid #111111; box-shadow: none; }
+      .bs-icon-button:hover { color: #F2F2F2; background: #111111; }
+      .bs-avatar { background: #E5E5E5; color: #111111; border: 1px solid #111111; box-shadow: none; }
       .bs-content { max-width: 1280px; padding-top: 32px; }
       .bs-page-head { border-bottom: 4px solid #111111; padding-bottom: 18px; margin-bottom: 26px; }
       .bs-h1 { color: #111111; font-size: clamp(38px, 4.7vw, 62px); line-height: .98; font-weight: 800; letter-spacing: -.065em; }
@@ -394,11 +394,11 @@ function GlobalStyle() {
       .bs-h3 { color: #111111; font-weight: 750; letter-spacing: -.035em; }
       .bs-head-mark { color: #525252; border-top: 2px solid #111111; }
       .bs-btn { min-height: 44px; border: 1px solid #111111; background: transparent; color: #111111; transition: all .2s ease-out; }
-      .bs-btn:hover { background: #111111; color: #F9F9F7; }
-      .bs-btn-primary { background: #111111; color: #F9F9F7; border-color: #111111; font-weight: 700; letter-spacing: .06em; }
-      .bs-btn-primary:hover { background: #F9F9F7; color: #111111; border-color: #111111; }
-      .bs-link-button { color: #111111; text-decoration: underline; text-decoration-color: #CC0000; text-decoration-thickness: 2px; text-underline-offset: 4px; }
-      .bs-link-button:hover { color: #CC0000; }
+      .bs-btn:hover { background: #111111; color: #F2F2F2; }
+      .bs-btn-primary { background: #111111; color: #F2F2F2; border-color: #111111; font-weight: 700; letter-spacing: .06em; }
+      .bs-btn-primary:hover { background: #F2F2F2; color: #111111; border-color: #111111; }
+      .bs-link-button { color: #111111; text-decoration: underline; text-decoration-color: #555555; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+      .bs-link-button:hover { color: #555555; }
       .bs-section-title { color: #111111; font-weight: 800; }
       .bs-section-title small, .bs-lead, .bs-stat-note { color: #525252; }
       .bs-rule { background: #111111; height: 1px; }
@@ -406,7 +406,7 @@ function GlobalStyle() {
       .bs-paper-panel, .bs-comment-input, .bs-editor-box .ProseMirror, .bs-file-detail, .bs-comment {
         box-shadow: none; border-color: #111111;
       }
-      .bs-paper-panel, .bs-member-list, .bs-mini-calendar, .bs-stat-card, .bs-review-paper, .bs-file-card { background: #F9F9F7; }
+      .bs-paper-panel, .bs-member-list, .bs-mini-calendar, .bs-stat-card, .bs-review-paper, .bs-file-card { background: #F2F2F2; }
       .bs-stat-card { border: 1px solid #111111; }
       .bs-stat-card:after { border-color: rgba(17,17,17,.18); }
       .bs-stat-number { color: #111111; font-weight: 800; letter-spacing: -.055em; }
@@ -414,15 +414,15 @@ function GlobalStyle() {
       .bs-archive-stamp { border-color: #111111; outline-color: #111111; color: #111111; border-radius: 50% !important; }
       .bs-stats-grid { gap: 0; border-top: 1px solid #111111; border-left: 1px solid #111111; }
       .bs-stats-grid > * { border-top: 0; border-left: 0; border-right: 1px solid #111111; border-bottom: 1px solid #111111; }
-      .bs-shelf-toolbar { background: #F9F9F7; border: 1px solid #111111; border-left: 4px solid #111111; padding: 10px 12px; }
+      .bs-shelf-toolbar { background: #F2F2F2; border: 1px solid #111111; border-left: 4px solid #111111; padding: 10px 12px; }
       .bs-filter-group { gap: 0; }
       .bs-filter-btn { min-height: 44px; border: 1px solid transparent; color: #525252; padding: 8px 12px; }
-      .bs-filter-btn:hover { color: #111111; background: #E5E5E0; }
-      .bs-filter-btn.bs-active { background: #111111; border-color: #111111; color: #F9F9F7; }
+      .bs-filter-btn:hover { color: #111111; background: #E5E5E5; }
+      .bs-filter-btn.bs-active { background: #111111; border-color: #111111; color: #F2F2F2; }
       .bs-shelf-count { color: #111111; font-weight: 600; }
       .bs-books-grid { grid-template-columns: repeat(auto-fit, minmax(285px, 1fr)); gap: 0; border-top: 1px solid #111111; border-left: 1px solid #111111; }
       .bs-book-card {
-        background: #F9F9F7; border: 0; border-right: 1px solid #111111; border-bottom: 1px solid #111111;
+        background: #F2F2F2; border: 0; border-right: 1px solid #111111; border-bottom: 1px solid #111111;
         padding: 18px; gap: 14px; box-shadow: none; transition: transform .2s ease-out, box-shadow .2s ease-out, background-color .2s ease-out;
       }
       .bs-book-card:hover { background: #F5F5F5; transform: translate(-2px, -2px); box-shadow: 4px 4px 0 #111111; z-index: 2; }
@@ -430,29 +430,29 @@ function GlobalStyle() {
       .bs-book-card-main { grid-template-columns: 82px minmax(0,1fr); gap: 16px; }
       .bs-book-card .bs-book-cover, .bs-book-card .bs-cover-img { border: 1px solid #111111; box-shadow: 3px 3px 0 #111111; }
       .bs-book-card h3.bs-book-title { color: #111111; font-size: 17px; font-weight: 750; line-height: 1.45; letter-spacing: -.035em; }
-      .bs-book-card h3.bs-book-title:hover { color: #CC0000; }
+      .bs-book-card h3.bs-book-title:hover { color: #555555; }
       .bs-book-card .bs-book-author { color: #525252; font-size: 12px; }
       .bs-book-card-foot { border-top: 1px solid #111111; padding-top: 12px; }
       .bs-reader-label { color: #737373; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
       .bs-book-reader { color: #111111; }
-      .bs-member-avatar { background: #E5E5E0; color: #111111; border-color: #111111; }
+      .bs-member-avatar { background: #E5E5E5; color: #111111; border-color: #111111; }
       .bs-empty-state { border: 1px dashed #111111; color: #525252; }
       .bs-empty-state strong { color: #111111; }
       .bs-records { border-top: 2px solid #111111; }
       .bs-record-row { border-bottom: 1px solid #111111; }
       .bs-record-title { color: #111111; font-weight: 700; }
-      .bs-record-row:hover .bs-record-title { color: #CC0000; }
+      .bs-record-row:hover .bs-record-title { color: #555555; }
       .bs-record-excerpt, .bs-review-body, .bs-comment-text { color: #222222; }
-      .bs-tag, .bs-tag.bs-green, .bs-tag.bs-blue { border-color: #111111; background: #E5E5E0; color: #111111; }
+      .bs-tag, .bs-tag.bs-green, .bs-tag.bs-blue { border-color: #111111; background: #E5E5E5; color: #111111; }
       .bs-review-paper { border: 1px solid #111111; }
       .bs-review-paper:after { background: repeating-linear-gradient(90deg,#111111 0 15px,transparent 15px 25px); }
-      .bs-review-paper:before { border-color: #E5E5E0; }
-      .bs-review-body blockquote { border-left: 3px solid #CC0000; background: #E5E5E0; color: #111111; }
+      .bs-review-paper:before { border-color: #E5E5E5; }
+      .bs-review-body blockquote { border-left: 3px solid #555555; background: #E5E5E5; color: #111111; }
       .bs-review-byline, .bs-review-tags, .bs-comments-panel, .bs-page-footer { border-color: #111111; }
       .bs-back-link, .bs-danger-btn { color: #525252; }
       .bs-page-footer { color: #525252; }
       .bs-footer-wrap { max-width: 1280px; }
-      input, select, textarea { accent-color: #CC0000; }
+      input, select, textarea { accent-color: #555555; }
       input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible {
         outline: 2px solid #111111; outline-offset: 2px;
       }
@@ -471,6 +471,131 @@ function GlobalStyle() {
         .bs-book-card { padding: 14px; }
         .bs-book-card-main { grid-template-columns: 78px minmax(0,1fr); gap: 14px; }
         .bs-book-card .bs-book-cover, .bs-book-card .bs-cover-img { width: 78px; height: 106px; }
+      }
+
+      /* 독-서팟: neutral grayscale refinement */
+      :root {
+        --paper: #F2F2F2 !important;
+        --paper-light: #FFFFFF !important;
+        --paper-deep: #E5E5E5 !important;
+        --ink: #222222 !important;
+        --ink-soft: #666666 !important;
+        --ink-faint: #888888 !important;
+        --line: #D0D0D0 !important;
+        --line-dark: #AFAFAF !important;
+        --rust: #555555 !important;
+        --rust-light: #E5E5E5 !important;
+        --shadow: none !important;
+      }
+      html, body {
+        background: #F2F2F2 !important;
+        color: #222222 !important;
+      }
+      body {
+        background-image: radial-gradient(rgba(0,0,0,.025) .5px, transparent .5px) !important;
+        background-size: 5px 5px !important;
+      }
+      .bs-sidebar {
+        background: #F2F2F2 !important;
+        border-right: 1px solid #D0D0D0 !important;
+        box-shadow: none !important;
+      }
+      .bs-brand {
+        border-bottom: 1px solid #D0D0D0 !important;
+        padding-left: 10px !important;
+      }
+      .bs-brand-title { color: #222222 !important; font-size: 22px !important; }
+      .bs-sidebar-search { padding: 18px 10px 10px; }
+      .bs-sidebar-search-label {
+        display: block; margin-bottom: 7px; font-size: 11px; color: #666666;
+        letter-spacing: .04em; font-weight: 600;
+      }
+      .bs-sidebar-search .bs-search {
+        display: block; width: 100%; height: 40px; padding: 0 10px;
+        border: 1px solid #C8C8C8 !important; background: #FFFFFF !important;
+        color: #222222 !important; font-family: 'Pretendard', sans-serif !important;
+      }
+      .bs-sidebar-search .bs-search::placeholder { color: #888888 !important; }
+      .bs-nav { gap: 2px !important; margin-top: 8px; }
+      .bs-nav button {
+        min-height: 42px !important; border: 1px solid transparent !important;
+        padding: 10px 12px !important; color: #444444 !important;
+        background: transparent !important; box-shadow: none !important;
+        justify-content: flex-start !important; transition: background-color .15s ease !important;
+      }
+      .bs-nav button:hover { background: #E6E6E6 !important; color: #222222 !important; }
+      .bs-nav button.bs-active {
+        background: #DCDCDC !important; border-color: #D0D0D0 !important;
+        color: #222222 !important; box-shadow: none !important; font-weight: 700 !important;
+      }
+      .bs-nav-secondary { margin-top: 16px; padding-top: 12px; border-top: 1px solid #D0D0D0; }
+      .bs-side-bottom { justify-content: flex-start !important; padding-left: 20px !important; }
+      .bs-link-button, .bs-link-button:hover {
+        color: #444444 !important; text-decoration-color: #888888 !important;
+      }
+      .bs-topbar { display: none !important; }
+      .bs-content { max-width: 1280px; background: transparent; }
+      .bs-page-head { border-bottom: 0 !important; padding-bottom: 0 !important; }
+      .bs-h1, .bs-h2, .bs-h3, .bs-section-title { color: #222222 !important; }
+      .bs-btn, .bs-btn-primary, .bs-btn:hover, .bs-btn-primary:hover {
+        border-color: #333333 !important; background: #333333 !important; color: #FFFFFF !important;
+        box-shadow: none !important; transform: none !important;
+      }
+      .bs-btn:not(.bs-btn-primary) { background: transparent !important; color: #333333 !important; }
+      .bs-btn:not(.bs-btn-primary):hover { background: #E5E5E5 !important; }
+      .bs-book-card {
+        background: #FFFFFF !important; border-color: #D0D0D0 !important;
+        transition: background-color .15s ease !important; transform: none !important; box-shadow: none !important;
+      }
+      .bs-book-card:hover {
+        background: #F0F0F0 !important; transform: none !important;
+        box-shadow: none !important; z-index: auto !important;
+      }
+      .bs-book-card-main { align-items: stretch !important; }
+      .bs-book-card-info {
+        display: flex !important; flex-direction: column !important; align-items: stretch !important;
+        min-width: 0; min-height: 112px; padding: 0 !important;
+      }
+      .bs-book-card h3.bs-book-title,
+      .bs-book-card h3.bs-book-title:hover { color: #222222 !important; }
+      .bs-book-card .bs-book-cover, .bs-book-card .bs-cover-img {
+        box-shadow: none !important; border: 1px solid #D0D0D0 !important;
+      }
+      .bs-book-card-readers {
+        display: flex !important; justify-content: flex-end !important; align-items: center !important;
+        flex-wrap: wrap !important; gap: 7px 10px !important; margin-top: auto !important;
+        padding-top: 8px !important; min-width: 0;
+      }
+      .bs-book-reader { justify-content: flex-end !important; gap: 5px !important; }
+      .bs-reader-label, .bs-book-card-foot { display: none !important; }
+      .bs-reader-name { max-width: 105px; color: #555555 !important; }
+      .bs-empty-state { border-color: #BFBFBF !important; }
+      .bs-record-row:hover .bs-record-title { color: #222222 !important; }
+      .bs-record-title { color: #222222 !important; }
+      .bs-quote-full-text {
+        display: block !important; max-height: none !important; height: auto !important;
+        overflow: visible !important; white-space: pre-wrap !important; overflow-wrap: anywhere !important;
+        word-break: break-word !important; line-clamp: unset !important; -webkit-line-clamp: unset !important;
+        color: #333333 !important; font-size: 15px !important; line-height: 1.9 !important;
+      }
+      .bs-footer-wrap, .bs-page-footer { display: none !important; }
+      img, a:hover img, button:hover img, .bs-book-card:hover img { filter: none !important; }
+      .bs-book-card:hover *, .bs-record-row:hover, .bs-paper-panel:hover {
+        transform: none !important; box-shadow: none !important;
+      }
+      input, select, textarea { accent-color: #666666 !important; }
+      ::selection { background: #D2D2D2 !important; color: #222222 !important; }
+      @media(max-width:620px) {
+        .bs-sidebar { border-bottom: 1px solid #D0D0D0 !important; }
+        .bs-brand { padding: 0 2px 10px !important; }
+        .bs-sidebar-search { padding: 10px 2px 7px; }
+        .bs-nav { gap: 3px !important; }
+        .bs-nav button { flex: 0 0 auto !important; padding: 8px 10px !important; }
+        .bs-nav-secondary { margin-top: 7px; padding-top: 7px; }
+        .bs-content { padding-top: 20px !important; }
+        .bs-book-card-info { min-height: 106px; }
+        .bs-book-card-readers { gap: 5px !important; }
+        .bs-reader-name { max-width: 90px; }
       }
     `}</style>
   );
@@ -987,7 +1112,7 @@ function QuoteList({
 
 const SEAL_COLORS: Record<string, { label: string; hex: string }> = {
   ink: { label: '먹색', hex: '#202328' },
-  red: { label: '붉은색', hex: '#CC0000' },
+  red: { label: '진회색', hex: '#555555' },
   grey: { label: '회색', hex: '#555a62' },
 };
 
@@ -1985,13 +2110,7 @@ function ReviewEditorPanel({
 }
 
 function Footer() {
-  return (
-    <div className="bs-footer-wrap">
-      <footer className="bs-page-footer">
-        <span className="bs-footer-brand">책장 사이</span>
-      </footer>
-    </div>
-  );
+  return null;
 }
 
 export default function Home() {
@@ -2000,6 +2119,10 @@ export default function Home() {
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
+
+  useEffect(() => {
+    document.title = '독-서팟';
+  }, []);
 
   const [query, setQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Book[]>([]);
@@ -2011,7 +2134,7 @@ export default function Home() {
   const [allReviews, setAllReviews] = useState<Review[]>([]);
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
 
-  const [tab, setTab] = useState<Tab>('shelf');
+  const [tab, setTab] = useState<Tab>('mine');
   const [activeId, setActiveId] = useState<string | null>(null);
   const [boardFilter, setBoardFilter] = useState('');
   const [showOthers, setShowOthers] = useState(true);
@@ -2781,7 +2904,7 @@ export default function Home() {
         <GlobalStyle />
         <div className="w-full max-w-md border border-[#d5d7da] bg-[#fafafa] p-8">
           <h1 className="text-center text-5xl font-black tracking-tighter leading-none border-b border-[#d5d7da] pb-4">
-            책장 사이
+            독-서팟
           </h1>
           {isSignUp && (
             <p className="text-center text-sm text-[#555a62] mt-4 mb-8">
@@ -2829,8 +2952,6 @@ export default function Home() {
     );
   }
 
-  const mySeal = profileOf(user.id);
-
   const renderByline = (userId: string, size = 18, className = '') => {
     const p = profileOf(userId);
     return (
@@ -2844,85 +2965,45 @@ export default function Home() {
   const writtenAll = allReviews.filter((r) => r.content.trim());
   const pad2 = (n: number) => String(n).padStart(2, '0');
 
-  const pageName = activeClip
-    ? '스크랩'
-    : activeReview
-      ? '독후감 상세'
-      : ({ shelf: '서고', reviews: '독후감 기록', quotes: '문장 수집장', mine: '나의 기록', profile: '프로필' } as Record<Tab, string>)[tab];
-
-  const navItem = (t: Tab, icon: string, label: string, count?: number) => (
-    <button key={t} className={tab === t ? 'bs-active' : ''} onClick={() => goTab(t)}>
-      <span className="bs-nav-ico">{icon}</span> {label}
-      {count !== undefined && <span className="bs-nav-count">{pad2(count)}</span>}
+  const navItem = (t: Tab, label: string) => (
+    <button key={t} type="button" className={tab === t ? 'bs-active' : ''} onClick={() => goTab(t)}>
+      {label}
     </button>
   );
 
   const header = (
-    <>
-      <aside className="bs-sidebar">
-        <div className="bs-brand">
-          <div className="bs-brand-mark">間</div>
-          <div>
-            <div className="bs-brand-title">책장 사이</div>
-            </div>
-        </div>
-        <nav className="bs-nav" aria-label="주 메뉴">
-          {navItem('shelf', '▤', '서고')}
-        </nav>
-        <nav className="bs-nav" aria-label="개인 메뉴">
-          {navItem('quotes', '≡', '문장 수집장')}
-          {navItem('mine', '▦', '나의 기록')}
-        </nav>
-        <div className="bs-side-spacer" />
-        <div className="bs-side-bottom">
-          <button onClick={handleLogout} className="bs-link-button" style={{ marginLeft: 'auto' }}>
-            로그아웃
-          </button>
-        </div>
-      </aside>
-
-      <header className="bs-topbar">
-        <div className="bs-breadcrumb">
-          {pageName}
-        </div>
-        <div className="bs-top-actions">
-          <label className="bs-search-wrap" aria-label="아카이브 검색">
-            <span className="bs-search-icon">⌕</span>
-            <input
-              className="bs-search"
-              type="search"
-              value={boardFilter}
-              onChange={(e) => setBoardFilter(e.target.value)}
-              placeholder="책, 문장, 기록 찾기…"
-            />
-          </label>
-          <button
-            className="bs-icon-button"
-            title="책 · 스크랩 추가"
-            aria-label="책 · 스크랩 추가"
-            onClick={() => {
-              goTab('mine');
-            }}
-          >
-            ＋
-          </button>
-          <button
-            onClick={() => goTab('profile')}
-            title="프로필 편집"
-            aria-label="프로필 편집"
-            className="bs-avatar-btn"
-          >
-            <Seal
-              text={mySeal.seal_text}
-              color={mySeal.seal_color}
-              styleType={mySeal.seal_style}
-              image={mySeal.seal_image}
-              size={32}
-            />
-          </button>
-        </div>
-      </header>
-    </>
+    <aside className="bs-sidebar">
+      <div className="bs-brand">
+        <div className="bs-brand-title">독-서팟</div>
+      </div>
+      <div className="bs-sidebar-search">
+        <label htmlFor="archive-search" className="bs-sidebar-search-label">검색</label>
+        <input
+          id="archive-search"
+          className="bs-search"
+          type="search"
+          value={boardFilter}
+          onChange={(e) => setBoardFilter(e.target.value)}
+          placeholder="책·문장·기록 찾기"
+          aria-label="책, 문장, 기록 검색"
+        />
+      </div>
+      <nav className="bs-nav" aria-label="주 메뉴">
+        {navItem('mine', '나의 기록')}
+        {navItem('shelf', '서고')}
+      </nav>
+      <nav className="bs-nav bs-nav-secondary" aria-label="기록 및 설정">
+        {navItem('quotes', '문장 수집장')}
+        {navItem('reviews', '독후감 기록')}
+        {navItem('profile', '프로필 설정')}
+      </nav>
+      <div className="bs-side-spacer" />
+      <div className="bs-side-bottom">
+        <button onClick={handleLogout} className="bs-link-button">
+          로그아웃
+        </button>
+      </div>
+    </aside>
   );
 
   const asRows = (list: Review[]): CommunityEntry[] =>
@@ -3314,8 +3395,8 @@ export default function Home() {
     const notes = sortNotes(activeClip.clip_notes);
     const isUrl = !!activeClip.source && /^https?:\/\//i.test(activeClip.source);
     const swatches: { key: 'red' | 'blue' | 'erase'; label: string; color: string }[] = [
-      { key: 'red', label: '빨간색', color: '#CC0000' },
-      { key: 'blue', label: '파란색', color: '#0047CC' },
+      { key: 'red', label: '진회색', color: '#555555' },
+      { key: 'blue', label: '중간 회색', color: '#777777' },
       { key: 'erase', label: '지우개', color: '#FFFFFF' },
     ];
     const keepSelection = (e: React.MouseEvent) => e.preventDefault();
@@ -3857,9 +3938,6 @@ export default function Home() {
                 누가 읽고 있는지, 어떤 기록이 남아 있는지 천천히 둘러보세요.
               </p>
             </div>
-            <button className="bs-btn bs-btn-primary" onClick={goWrite}>
-              ＋ &nbsp; 책 등록
-            </button>
           </div>
 
           <div className="bs-shelf-toolbar">
@@ -3900,27 +3978,24 @@ export default function Home() {
                       <div className="bs-book-card-info">
                         <h3 className="bs-h3 bs-book-title">{title}</h3>
                         <div className="bs-book-author">{author}</div>
+                        {readingUsers.length > 0 && (
+                          <div className="bs-book-readers bs-book-card-readers" aria-label="현재 읽는 사람">
+                            {readingUsers.map((uid) => (
+                              <span key={uid} className="bs-book-reader" title={nameOf(uid)}>
+                                <Seal
+                                  text={profileOf(uid).seal_text}
+                                  color={profileOf(uid).seal_color}
+                                  styleType={profileOf(uid).seal_style}
+                                  image={profileOf(uid).seal_image}
+                                  size={22}
+                                />
+                                <span className="bs-reader-name">{nameOf(uid)}</span>
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
-                    {readingUsers.length > 0 && (
-                      <div className="bs-book-card-foot">
-                        <span className="bs-reader-label">읽는 사람</span>
-                        <div className="bs-book-readers">
-                          {readingUsers.map((uid) => (
-                            <span key={uid} className="bs-book-reader" title={nameOf(uid)}>
-                              <Seal
-                                text={profileOf(uid).seal_text}
-                                color={profileOf(uid).seal_color}
-                                styleType={profileOf(uid).seal_style}
-                                image={profileOf(uid).seal_image}
-                                size={22}
-                              />
-                              <span className="bs-reader-name">{nameOf(uid)}</span>
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </article>
                 );
               })
@@ -4014,8 +4089,8 @@ export default function Home() {
                 list.map(({ q, r }) => (
                   <article key={q.id} className="bs-record-row bs-quote-row" onClick={() => openReview(r)}>
                     <div className="min-w-0">
-                      <div className="bs-record-excerpt" style={{ fontSize: 15, color: '#484848', marginBottom: 8 }}>
-                        {plainText(q.content)}
+                      <div className="bs-record-excerpt bs-quote-full-text">
+                        <DiscordText text={q.content} wrapQuotes />
                       </div>
                       {q.quote_comments.map((c) => (
                         <div key={c.id} className="bs-quote-comment">
@@ -4063,22 +4138,6 @@ export default function Home() {
               내가 고른 책과 남긴 기록, 붙여 둔 스크랩을 한곳에서 정리합니다.
             </p>
           </div>
-        </div>
-        <div className="bs-stats-grid" style={{ marginBottom: 22 }}>
-          {[
-            ['내가 읽은 책', myReviews.filter((r) => r.status === 'completed').length, '권'],
-            ['읽는 중', myReviews.filter((r) => r.status === 'reading').length, '권'],
-            ['읽고 싶은 책', myReviews.filter((r) => r.status === 'wishlist').length, '권'],
-            ['모은 문장', myReviews.reduce((n, r) => n + (r.quotes?.length || 0), 0), '개'],
-          ].map(([label, n, unit]) => (
-            <div key={label as string} className="bs-stat-card">
-              <div className="bs-stat-label">{label}</div>
-              <div className="bs-stat-number">
-                {pad2(n as number)}
-                <span style={{ fontSize: 13 }}> {unit}</span>
-              </div>
-            </div>
-          ))}
         </div>
         <div className="border border-[#d5d7da] bg-[#fafafa] grid grid-cols-1 lg:grid-cols-12">
           <section
