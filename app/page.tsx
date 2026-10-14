@@ -45,7 +45,7 @@ interface Review {
   quotes?: QuoteItem[];
 }
 
-type Tab = 'home' | 'shelf' | 'reviews' | 'quotes' | 'mine' | 'profile';
+type Tab = 'shelf' | 'reviews' | 'quotes' | 'mine' | 'profile';
 
 interface NavState {
   tab: Tab;
@@ -53,8 +53,8 @@ interface NavState {
   activeSeries: string | null;
   activeClipId: string | null;
 }
-const NAV_HOME: NavState = {
-  tab: 'home',
+const NAV_DEFAULT: NavState = {
+  tab: 'shelf',
   activeId: null,
   activeSeries: null,
   activeClipId: null,
@@ -325,6 +325,29 @@ function GlobalStyle() {
       .bs-prose .ProseMirror em{font-style:italic}
       .bs-editor-box .ProseMirror{padding:14px 16px;background:#f4f5f6;border:1px solid var(--line);border-radius:2px;min-height:260px}
       .bs-editor-box .ProseMirror:focus{border-color:var(--rust)}
+
+      /* Simplified archive labels and minimal page chrome */
+      .bs-brand-sub,.bs-side-label,.bs-eyebrow,.bs-lead,.bs-stat-note{display:none !important}
+      .bs-sidebar .bs-side-bottom{justify-content:flex-end}
+      .bs-breadcrumb{display:none}
+      .bs-topbar{justify-content:flex-end}
+      .bs-page-head{margin-bottom:22px}
+      .bs-heading-copy{max-width:none}
+      .bs-books-grid{grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:14px}
+      .bs-book-card{display:flex;flex-direction:column;gap:12px;padding:15px;background:#f8f8f8;border-color:#d5d7da;cursor:pointer}
+      .bs-book-card-top{display:flex;justify-content:flex-start;align-items:center;margin-bottom:0}
+      .bs-book-card-main{display:grid;grid-template-columns:82px minmax(0,1fr);gap:15px;align-items:start;min-width:0}
+      .bs-book-card-cover{width:82px;min-width:82px;display:flex;justify-content:center}
+      .bs-book-card .bs-book-cover,.bs-book-card .bs-cover-img{width:82px;height:112px;margin:0;object-fit:cover}
+      .bs-book-card-info{min-width:0;padding-top:2px}
+      .bs-book-card h3.bs-book-title{text-align:left;font-size:15px;line-height:1.55;min-height:0;margin:0 0 5px;overflow-wrap:anywhere;color:#202328}
+      .bs-book-card .bs-book-author{text-align:left;font-size:11px;line-height:1.6;color:#777b82;margin:0}
+      .bs-book-card-foot{display:flex;flex-direction:column;align-items:flex-start;gap:7px;border-top:1px solid #dedfe2;padding-top:10px;margin-top:1px}
+      .bs-reader-label{font-size:10px;letter-spacing:.02em;color:#777b82}
+      .bs-book-readers{display:flex;flex-wrap:wrap;align-items:center;gap:12px;min-width:0}
+      .bs-book-reader{display:inline-flex;align-items:center;gap:6px;min-width:0;font-size:11px;color:#34373d}
+      .bs-reader-name{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      @media(max-width:620px){.bs-books-grid{grid-template-columns:minmax(0,1fr);gap:10px}.bs-book-card{padding:13px}.bs-book-card-main{grid-template-columns:78px minmax(0,1fr);gap:13px}.bs-book-card-cover{width:78px;min-width:78px}.bs-book-card .bs-book-cover,.bs-book-card .bs-cover-img{width:78px;height:106px}.bs-book-card h3.bs-book-title{font-size:14px}}
     `}</style>
   );
 }
@@ -1837,12 +1860,11 @@ function ReviewEditorPanel({
   );
 }
 
-function Footer({ label = 'A PRIVATE READING ARCHIVE' }: { label?: string }) {
+function Footer() {
   return (
     <div className="bs-footer-wrap">
       <footer className="bs-page-footer">
-        <span className="bs-footer-brand">책장 사이 · {label}</span>
-        <span>우리의 작은 기록실</span>
+        <span className="bs-footer-brand">책장 사이</span>
       </footer>
     </div>
   );
@@ -1865,7 +1887,7 @@ export default function Home() {
   const [allReviews, setAllReviews] = useState<Review[]>([]);
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
 
-  const [tab, setTab] = useState<Tab>('mine');
+  const [tab, setTab] = useState<Tab>('shelf');
   const [activeId, setActiveId] = useState<string | null>(null);
   const [boardFilter, setBoardFilter] = useState('');
   const [showOthers, setShowOthers] = useState(true);
@@ -1932,7 +1954,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    window.history.replaceState({ ...window.history.state, rp: true, idx: 0, nav: NAV_HOME }, '');
+    window.history.replaceState({ ...window.history.state, rp: true, idx: 0, nav: NAV_DEFAULT }, '');
     navIdx.current = 0;
 
     const onPop = (e: PopStateEvent) => {
@@ -1943,7 +1965,7 @@ export default function Home() {
         setTimeout(() => window.scrollTo(0, st.scroll ?? 0), 50);
       } else {
         navIdx.current = 0;
-        applyNav(NAV_HOME);
+        applyNav(NAV_DEFAULT);
       }
     };
     window.addEventListener('popstate', onPop);
@@ -2149,7 +2171,7 @@ export default function Home() {
     await supabase.auth.signOut();
     setAllReviews([]);
     setClippings([]);
-    applyNav(NAV_HOME);
+    applyNav(NAV_DEFAULT);
   };
 
   const handlePickSealImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2634,15 +2656,14 @@ export default function Home() {
       <main className="min-h-screen flex items-center justify-center p-4 text-[#202328]">
         <GlobalStyle />
         <div className="w-full max-w-md border border-[#d5d7da] bg-[#fafafa] p-8">
-          <p className="text-center text-[11px] uppercase tracking-widest text-[#666b73] mb-3">
-            A PRIVATE READING ARCHIVE
-          </p>
           <h1 className="text-center text-5xl font-black tracking-tighter leading-none border-b border-[#d5d7da] pb-4">
             책장 사이
           </h1>
-          <p className="text-center text-sm text-[#555a62] mt-4 mb-8">
-            {isSignUp ? '새로운 계정 생성하기' : '읽고, 남기고, 다시 꺼내 보는 일'}
-          </p>
+          {isSignUp && (
+            <p className="text-center text-sm text-[#555a62] mt-4 mb-8">
+              새로운 계정 생성하기
+            </p>
+          )}
 
           <form onSubmit={handleAuth} className="space-y-5">
             <div>
@@ -2696,7 +2717,6 @@ export default function Home() {
     );
   };
 
-  const countBooks = new Set(allReviews.map((r) => r.book_isbn)).size;
   const writtenAll = allReviews.filter((r) => r.content.trim());
   const pad2 = (n: number) => String(n).padStart(2, '0');
 
@@ -2704,7 +2724,7 @@ export default function Home() {
     ? '스크랩'
     : activeReview
       ? '독후감 상세'
-      : ({ home: '홈', shelf: '공동 서재', reviews: '독후감 기록', quotes: '문장 수집장', mine: '나의 기록', profile: '프로필' } as Record<Tab, string>)[tab];
+      : ({ shelf: '서고', reviews: '독후감 기록', quotes: '문장 수집장', mine: '나의 기록', profile: '프로필' } as Record<Tab, string>)[tab];
 
   const navItem = (t: Tab, icon: string, label: string, count?: number) => (
     <button key={t} className={tab === t ? 'bs-active' : ''} onClick={() => goTab(t)}>
@@ -2720,22 +2740,17 @@ export default function Home() {
           <div className="bs-brand-mark">間</div>
           <div>
             <div className="bs-brand-title">책장 사이</div>
-            <div className="bs-brand-sub">A PRIVATE READING ARCHIVE</div>
-          </div>
+            </div>
         </div>
-        <div className="bs-side-label">ARCHIVE MENU</div>
         <nav className="bs-nav" aria-label="주 메뉴">
-          {navItem('home', '⌂', '기록실 홈')}
-          {navItem('shelf', '▤', '공동 서재', countBooks)}
+          {navItem('shelf', '▤', '서고')}
         </nav>
-        <div className="bs-side-label">MY DESK</div>
         <nav className="bs-nav" aria-label="개인 메뉴">
           {navItem('quotes', '≡', '문장 수집장')}
           {navItem('mine', '▦', '나의 기록')}
         </nav>
         <div className="bs-side-spacer" />
         <div className="bs-side-bottom">
-          <span>함께 읽는 작은 서재</span>
           <button onClick={handleLogout} className="bs-link-button" style={{ marginLeft: 'auto' }}>
             로그아웃
           </button>
@@ -2744,7 +2759,7 @@ export default function Home() {
 
       <header className="bs-topbar">
         <div className="bs-breadcrumb">
-          기록실 <span>/</span> {pageName}
+          {pageName}
         </div>
         <div className="bs-top-actions">
           <label className="bs-search-wrap" aria-label="아카이브 검색">
@@ -3687,200 +3702,6 @@ export default function Home() {
     goTab('mine');
   };
 
-  if (tab === 'home') {
-    const now = new Date();
-    const y = now.getFullYear();
-    const m = now.getMonth();
-    const recent = writtenAll.filter(matchesFilter).slice(0, 4);
-    const allQuotes = allReviews
-      .flatMap((r) => (r.quotes || []).map((q) => ({ q, r })))
-      .sort((a, b) => b.q.created_at.localeCompare(a.q.created_at));
-    const pinned = allQuotes[0];
-    const memberIds = Array.from(new Set([user.id, ...Object.keys(profiles)]));
-    const lastOf = (uid: string) => {
-      const dates = allReviews
-        .filter((r) => r.user_id === uid)
-        .flatMap((r) => [r.created_at, ...(r.quotes || []).map((q) => q.created_at)]);
-      return dates.sort().pop();
-    };
-
-    const marked = new Set<number>();
-    myReviews
-      .flatMap((r) => [r.created_at, ...(r.quotes || []).map((q) => q.created_at)])
-      .forEach((iso) => {
-        const d = new Date(iso);
-        if (d.getFullYear() === y && d.getMonth() === m) marked.add(d.getDate());
-      });
-    const firstDow = new Date(y, m, 1).getDay();
-    const daysInMonth = new Date(y, m + 1, 0).getDate();
-    const prevDays = new Date(y, m, 0).getDate();
-    const cells: { label: number; muted: boolean }[] = [];
-    for (let i = firstDow - 1; i >= 0; i--) cells.push({ label: prevDays - i, muted: true });
-    for (let d = 1; d <= daysInMonth; d++) cells.push({ label: d, muted: false });
-    for (let d = 1; cells.length % 7 !== 0; d++) cells.push({ label: d, muted: true });
-
-    const stats: [string, number, string, string][] = [
-      ['▤ 함께 모은 책', countBooks, '권', '모두의 책장에서'],
-      ['▧ 쌓인 독후감', writtenAll.length, '편', '생각의 기록들'],
-      ['▤ 모아둔 문장', allQuotes.length, '개', '다시 읽고 싶은 구절'],
-      ['⌁ 함께한 멤버', memberIds.length, '명', '작은 서재 식구'],
-    ];
-
-    return (
-      <div className="bs-main">
-        <GlobalStyle />
-        {header}
-        <div className="bs-content">
-          <div className="bs-home-intro">
-            <div>
-              <div className="bs-eyebrow">
-                PRIVATE ARCHIVE · {now.toLocaleString('en-US', { month: 'long' }).toUpperCase()} {y}
-              </div>
-              <h1 className="bs-h1">
-                읽고, 남기고,
-                <br />
-                <em>다시 꺼내 보는 일.</em>
-              </h1>
-              <p className="bs-lead">
-                우리가 읽은 책과 오래 마음에 남은 문장들을 모아두는 작은 기록실입니다.
-                <br />
-                잘 정리된 서가처럼, 생각도 천천히 자리를 찾아가도록.
-              </p>
-              <div className="bs-intro-buttons">
-                <button className="bs-btn bs-btn-primary" onClick={goWrite}>
-                  ✎ &nbsp; 독후감 남기기
-                </button>
-                <button className="bs-btn" onClick={() => goTab('shelf')}>
-                  서가 둘러보기 &nbsp; ↗
-                </button>
-              </div>
-            </div>
-            <div className="bs-archive-stamp">
-              <div className="bs-stamp-symbol">書</div>
-              <strong>OUR READING ROOM</strong>
-              <small>NO. {pad2(memberIds.length)}</small>
-            </div>
-          </div>
-
-          <div className="bs-stats-grid">
-            {stats.map(([label, n, unit, note]) => (
-              <div key={label} className="bs-stat-card">
-                <div className="bs-stat-label">{label}</div>
-                <div className="bs-stat-number">
-                  {pad2(n)}
-                  <span style={{ fontSize: 14, marginLeft: 3 }}>{unit}</span>
-                </div>
-                <div className="bs-stat-note">{note}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="bs-home-grid">
-            <div>
-              <div className="bs-section-head">
-                <div className="bs-section-title">
-                  최근에 남긴 기록 <small>RECENT ENTRIES</small>
-                </div>
-                <div className="bs-rule" />
-                <button className="bs-link-button" onClick={() => goTab('reviews')}>
-                  모두 보기 ↗
-                </button>
-              </div>
-              <div className="bs-records">
-                {recent.length === 0 ? (
-                  <div className="bs-empty-state">
-                    <strong>아직 남긴 독후감이 없어요.</strong>
-                    <span>책을 고르고 첫 기록을 남겨 보세요.</span>
-                  </div>
-                ) : (
-                  recent.map(renderEntryRow)
-                )}
-              </div>
-            </div>
-
-            <aside className="bs-right-stack">
-              {pinned && (
-                <div className="bs-paper-panel" style={{ padding: 16 }}>
-                  <div className="bs-file-label">RECENT QUOTE</div>
-                  <p className="text-sm leading-relaxed text-[#555a62]">
-                    {plainText(pinned.q.content).slice(0, 120)}
-                    {plainText(pinned.q.content).length > 120 ? '…' : ''}
-                  </p>
-                  <div className="bs-file-detail">
-                    <span>{pinned.r.books.title}</span>
-                    <span>{fmtMD(pinned.q.created_at)}</span>
-                  </div>
-                </div>
-              )}
-              <div className="bs-member-list">
-                <div className="bs-section-head" style={{ margin: 0 }}>
-                  <div className="bs-section-title" style={{ fontSize: 16 }}>
-                    함께 읽는 사람
-                  </div>
-                  <span className="bs-tag bs-green">{memberIds.length} MEMBERS</span>
-                </div>
-                {memberIds.map((uid) => {
-                  const last = lastOf(uid);
-                  return (
-                    <div key={uid} className="bs-member">
-                      <Seal
-                        text={profileOf(uid).seal_text}
-                        color={profileOf(uid).seal_color}
-                        styleType={profileOf(uid).seal_style}
-                        image={profileOf(uid).seal_image}
-                        size={30}
-                      />
-                      <div className="min-w-0">
-                        <div className="bs-member-name">
-                          {nameOf(uid)}
-                          {uid === user.id && <span style={{ fontWeight: 400, color: '#949494' }}> (나)</span>}
-                        </div>
-                        <div className="bs-member-sub">
-                          {last ? `최근 기록 · ${fmtMD(last)}` : '아직 기록이 없어요'}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="bs-mini-calendar">
-                <div className="bs-calendar-head">
-                  <div className="bs-calendar-month">
-                    {y}년 {m + 1}월
-                  </div>
-                  <span style={{ fontSize: 10, color: '#8c8c8c' }}>READING LOG</span>
-                </div>
-                <div className="bs-calendar-week">
-                  {['일', '월', '화', '수', '목', '금', '토'].map((d) => (
-                    <span key={d}>{d}</span>
-                  ))}
-                </div>
-                <div className="bs-calendar-days">
-                  {cells.map((c, i) => (
-                    <span
-                      key={i}
-                      className={`bs-calendar-day${c.muted ? ' bs-muted' : ''}${
-                        !c.muted && marked.has(c.label) ? ' bs-marked' : ''
-                      }${!c.muted && c.label === now.getDate() ? ' bs-today' : ''}`}
-                    >
-                      {c.label}
-                    </span>
-                  ))}
-                </div>
-                <div className="bs-calendar-foot">
-                  <i className="bs-tiny-dot" /> 내가 기록을 남긴 날
-                  <span style={{ marginLeft: 'auto' }}>이번 달 {marked.size}일</span>
-                </div>
-              </div>
-            </aside>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-
   if (tab === 'shelf') {
     const filterKey = shelfFilter;
     const entries = buildShelfEntries(allReviews.filter(matchesFilter));
@@ -3889,7 +3710,6 @@ export default function Home() {
     const visible = entries.filter((e) => filterKey === 'all' || hasStatus(e, filterKey));
     const books = buildShelfEntries(allReviews);
     const countOf = (s: Status) => books.filter((e) => statusOf(e) === s).length;
-    const withReview = books.filter((e) => e.reviews.some((r) => r.content.trim())).length;
 
     const filters: ['all' | Status, string, number][] = [
       ['all', '전체 서가', books.length],
@@ -3906,7 +3726,7 @@ export default function Home() {
           <div className="bs-page-head">
             <div className="bs-heading-copy">
               <div className="bs-eyebrow">THE SHARED LIBRARY · {pad2(books.length)} VOLUMES</div>
-              <h1 className="bs-h1">우리의 공동 서재</h1>
+              <h1 className="bs-h1">서고</h1>
               <p className="bs-lead">
                 서로의 책장에 놓인 책들을 한곳에 모았습니다.
                 <br />
@@ -3916,24 +3736,6 @@ export default function Home() {
             <button className="bs-btn bs-btn-primary" onClick={goWrite}>
               ＋ &nbsp; 책 등록
             </button>
-          </div>
-
-          <div className="bs-stats-grid" style={{ marginBottom: 22 }}>
-            {[
-              ['읽고 싶은 책', countOf('wishlist'), '언젠가 펼쳐 볼 페이지'],
-              ['읽는 중', countOf('reading'), '서가 위에 펼쳐 둔 책'],
-              ['완독한 책', countOf('completed'), '각자의 감상이 남아 있어요'],
-              ['독후감이 있는 책', withReview, '기록으로 이어진 책'],
-            ].map(([label, n, note]) => (
-              <div key={label as string} className="bs-stat-card">
-                <div className="bs-stat-label">{label}</div>
-                <div className="bs-stat-number">
-                  {pad2(n as number)}
-                  <span style={{ fontSize: 13 }}> 권</span>
-                </div>
-                <div className="bs-stat-note">{note}</div>
-              </div>
-            ))}
           </div>
 
           <div className="bs-shelf-toolbar">
@@ -3959,8 +3761,9 @@ export default function Home() {
               </div>
             ) : (
               visible.map((e, i) => {
-                const uids = Array.from(new Set(e.reviews.map((r) => r.user_id)));
-                const isSeries = e.type === 'series';
+                const readingUsers = Array.from(
+                  new Set(e.reviews.filter((r) => r.status === 'reading').map((r) => r.user_id))
+                );
                 const title = e.type === 'series' ? e.base : e.book.title;
                 const author = e.type === 'series' ? e.author : e.book.author;
                 const cover = e.type === 'series' ? e.cover : e.book.cover_url;
@@ -3968,38 +3771,42 @@ export default function Home() {
                   <article key={e.type === 'series' ? e.key : e.isbn} className="bs-book-card" onClick={() => openBook(e)}>
                     <div className="bs-book-card-top">
                       <span className="bs-book-ref">NO. {String(i + 1).padStart(3, '0')}</span>
-                      <span className="bs-book-ref">{isSeries ? 'SERIES' : STATUS_LABEL[statusOf(e)]}</span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 17 }}>
-                      <BookCover title={title} author={author} src={cover} width={87} />
-                    </div>
-                    <h3 className="bs-h3 bs-book-title">{title}</h3>
-                    <div className="bs-book-author">{author}</div>
-                    <div className="bs-book-divider" />
-                    <div className="bs-book-card-foot">
-                      <div className="bs-mini-avatars">
-                        {uids.slice(0, 4).map((uid) => (
-                          <Seal
-                            key={uid}
-                            text={profileOf(uid).seal_text}
-                            color={profileOf(uid).seal_color}
-                            styleType={profileOf(uid).seal_style}
-                            image={profileOf(uid).seal_image}
-                            size={22}
-                          />
-                        ))}
+                    <div className="bs-book-card-main">
+                      <div className="bs-book-card-cover">
+                        <BookCover title={title} author={author} src={cover} width={82} />
                       </div>
-                      <span>
-                        {e.type === 'series' ? `기록된 ${e.volumes.length}권` : STATUS_LABEL[statusOf(e)]}
-                      </span>
+                      <div className="bs-book-card-info">
+                        <h3 className="bs-h3 bs-book-title">{title}</h3>
+                        <div className="bs-book-author">{author}</div>
+                      </div>
                     </div>
+                    {readingUsers.length > 0 && (
+                      <div className="bs-book-card-foot">
+                        <span className="bs-reader-label">읽는 사람</span>
+                        <div className="bs-book-readers">
+                          {readingUsers.map((uid) => (
+                            <span key={uid} className="bs-book-reader" title={nameOf(uid)}>
+                              <Seal
+                                text={profileOf(uid).seal_text}
+                                color={profileOf(uid).seal_color}
+                                styleType={profileOf(uid).seal_style}
+                                image={profileOf(uid).seal_image}
+                                size={22}
+                              />
+                              <span className="bs-reader-name">{nameOf(uid)}</span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </article>
                 );
               })
             )}
           </div>
         </div>
-        <Footer label="CATALOGUE" />
+        <Footer />
       </div>
     );
   }
@@ -4042,7 +3849,7 @@ export default function Home() {
             )}
           </div>
         </div>
-        <Footer label="INDEX" />
+        <Footer />
       </div>
     );
   }
@@ -4106,7 +3913,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <Footer label="LOOSE LEAVES" />
+        <Footer />
       </div>
     );
   }
