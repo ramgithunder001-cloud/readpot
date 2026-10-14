@@ -85,28 +85,28 @@ const byCreated = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
 
 const FOCUS =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8d4d38] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4efe5]';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#26292e] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f1f2f4]';
 
-const BTN = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-4 rounded-[3px] border border-[#4c4939] bg-[#4c4939] text-[#fbf7ee] text-xs transition-colors duration-200 hover:bg-[#373528] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
-const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-4 rounded-[3px] border border-[#b7a78e] bg-transparent text-[#332e27] text-xs transition-colors duration-200 hover:bg-[#ece2d1] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
-const BTN_SM = `inline-flex items-center justify-center min-h-[28px] px-3 rounded-[3px] border border-[#4c4939] bg-[#4c4939] text-[#fbf7ee] text-xs transition-colors duration-200 hover:bg-[#373528] ${FOCUS}`;
-const BTN_ACTIVE = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-4 rounded-[3px] border border-[#4c4939] bg-[#4c4939] text-[#fbf7ee] text-xs ${FOCUS}`;
-const LINK_BTN = `text-xs text-[#8d4d38] underline-offset-4 hover:underline ${FOCUS}`;
-const DANGER_BTN = `text-xs text-[#9f9382] underline-offset-4 hover:text-[#8d4d38] hover:underline ${FOCUS}`;
-const INPUT = `w-full min-w-0 bg-[#f8f3e9] border border-[#d9cdbb] rounded-[2px] px-3 py-2 text-sm text-[#332e27] placeholder:text-[#a79b88] focus:border-[#8d4d38] focus:outline-none`;
-const TEXTAREA_BOX = `w-full bg-[#f8f3e9] border border-[#d9cdbb] rounded-[2px] p-3 text-sm leading-relaxed text-[#332e27] placeholder:text-[#a79b88] focus:border-[#8d4d38] focus:outline-none`;
-const LABEL = 'block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#71675a]';
+const BTN = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-4 rounded-[3px] border border-[#34373d] bg-[#34373d] text-[#fbfbfc] text-xs transition-colors duration-200 hover:bg-[#191b1f] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-4 rounded-[3px] border border-[#b7bbc1] bg-transparent text-[#202328] text-xs transition-colors duration-200 hover:bg-[#e9ebee] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN_SM = `inline-flex items-center justify-center min-h-[28px] px-3 rounded-[3px] border border-[#34373d] bg-[#34373d] text-[#fbfbfc] text-xs transition-colors duration-200 hover:bg-[#191b1f] ${FOCUS}`;
+const BTN_ACTIVE = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-4 rounded-[3px] border border-[#34373d] bg-[#34373d] text-[#fbfbfc] text-xs ${FOCUS}`;
+const LINK_BTN = `text-xs text-[#26292e] underline-offset-4 hover:underline ${FOCUS}`;
+const DANGER_BTN = `text-xs text-[#969ba2] underline-offset-4 hover:text-[#26292e] hover:underline ${FOCUS}`;
+const INPUT = `w-full min-w-0 bg-[#f4f5f6] border border-[#d5d7da] rounded-[2px] px-3 py-2 text-sm text-[#202328] placeholder:text-[#a4a8ae] focus:border-[#26292e] focus:outline-none`;
+const TEXTAREA_BOX = `w-full bg-[#f4f5f6] border border-[#d5d7da] rounded-[2px] p-3 text-sm leading-relaxed text-[#202328] placeholder:text-[#a4a8ae] focus:border-[#26292e] focus:outline-none`;
+const LABEL = 'block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#666b73]';
 
 function GlobalStyle() {
   return (
     <style>{`
       @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
       :root {
-        --paper: #f4efe5; --paper-light: #fbf8f1; --paper-deep: #e9dfce;
-        --ink: #332e27; --ink-soft: #71675a; --ink-faint: #9f9382;
-        --line: #d9cdbb; --line-dark: #b7a78e; --rust: #8d4d38; --rust-light: #ead8cd;
-        --olive: #666b4c; --olive-light: #e4e4d4; --blue: #586778; --blue-light: #dce3e7;
-        --shadow: 0 12px 35px rgba(61,47,31,.07);
+        --paper: #f1f2f4; --paper-light: #fafafa; --paper-deep: #e7e9ec;
+        --ink: #202328; --ink-soft: #666b73; --ink-faint: #969ba2;
+        --line: #d5d7da; --line-dark: #b7bbc1; --rust: #26292e; --rust-light: #dbdbdb;
+        --olive: #686868; --olive-light: #e3e3e3; --blue: #656565; --blue-light: #e2e2e2;
+        --shadow: 0 12px 35px rgba(49, 49, 49, .07);
         --sans: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
         --serif: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
       }
@@ -126,195 +126,181 @@ function GlobalStyle() {
       }
       ::selection { background: var(--ink); color: var(--paper-light); }
       button { cursor: pointer; }
-      .bs-sidebar{position:fixed;inset:0 auto 0 0;width:244px;background:#eae1d2;border-right:1px solid var(--line);padding:27px 18px 20px;display:flex;flex-direction:column;z-index:5}
+      .bs-sidebar{position:fixed;inset:0 auto 0 0;width:244px;background:#e2e2e2;border-right:1px solid var(--line);padding:27px 18px 20px;display:flex;flex-direction:column;z-index:5}
       .bs-brand{display:flex;align-items:center;gap:11px;padding:0 10px 27px;border-bottom:1px solid var(--line)}
-      .bs-brand-mark{width:39px;height:43px;border:1px solid #9e8b70;display:grid;place-items:center;background:var(--paper-light);color:var(--rust);font-family:var(--serif);font-size:20px;position:relative;box-shadow:3px 3px 0 #d5c7b2}
-      .bs-brand-mark:before{content:"";position:absolute;left:5px;top:0;bottom:0;border-left:1px solid #d4c5ae}
+      .bs-brand-mark{width:39px;height:43px;border:1px solid #8d8d8d;display:grid;place-items:center;background:var(--paper-light);color:var(--rust);font-family:var(--serif);font-size:20px;position:relative;box-shadow:3px 3px 0 #c8c8c8}
+      .bs-brand-mark:before{content:"";position:absolute;left:5px;top:0;bottom:0;border-left:1px solid #c7c7c7}
       .bs-brand-title{font-family:var(--serif);font-size:20px;letter-spacing:-.035em;font-weight:700;line-height:1.2}
       .bs-brand-sub{font-family:var(--serif);font-size:9px;letter-spacing:.17em;color:var(--ink-soft);margin-top:5px}
-      .bs-side-label{font-size:10px;letter-spacing:.12em;color:#91836f;margin:26px 11px 9px;text-transform:uppercase}
+      .bs-side-label{font-size:10px;letter-spacing:.12em;color:#858585;margin:26px 11px 9px;text-transform:uppercase}
       .bs-nav{display:grid;gap:5px}
-      .bs-nav button{background:transparent;border:0;text-align:left;display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:4px;color:#62594d;transition:.2s}
-      .bs-nav button:hover{background:rgba(255,255,255,.42)}
-      .bs-nav button.bs-active{background:#d9ccb8;color:#352d24;font-weight:700;box-shadow:inset 3px 0 var(--rust)}
-      .bs-nav-ico{width:20px;text-align:center;font-size:16px;color:#89775f}
-      .bs-nav-count{margin-left:auto;font-family:var(--serif);font-size:12px;color:#8c7b63}
+      .bs-nav button{background:transparent;border:0;text-align:left;display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:4px;color:#5a5a5a;transition:.2s}
+      .bs-nav button:hover{background:rgba(255, 255, 255, .42)}
+      .bs-nav button.bs-active{background:#cdcdcd;color:#2e2e2e;font-weight:700;box-shadow:inset 3px 0 var(--rust)}
+      .bs-nav-ico{width:20px;text-align:center;font-size:16px;color:#797979}
+      .bs-nav-count{margin-left:auto;font-family:var(--serif);font-size:12px;color:#7d7d7d}
       .bs-side-spacer{flex:1;min-height:24px}
-      .bs-shelf-note{background:#f4ebd7;border:1px solid #ddcda9;padding:15px 15px 14px;transform:rotate(-.5deg);box-shadow:2px 4px 9px rgba(70,52,29,.05);position:relative}
-      .bs-shelf-note:before{content:"";position:absolute;width:43px;height:11px;top:-5px;left:calc(50% - 21px);background:#c8b69a;opacity:.7;transform:rotate(2deg)}
-      .bs-note-eyebrow{font-size:9px;letter-spacing:.15em;color:#8d6b4e;margin-bottom:7px}
-      .bs-shelf-note p{font-family:var(--serif);font-size:14px;margin:0;line-height:1.8;color:#554534}
-      .bs-note-sign{font-family:var(--serif);font-style:italic;text-align:right;color:#947e61;margin-top:8px;font-size:11px}
       .bs-side-bottom{display:flex;align-items:center;gap:9px;padding:20px 8px 0;color:var(--ink-soft);font-size:11px}
-      .bs-seal{width:26px;height:26px;border:1px solid #bdad95;border-radius:50%;display:grid;place-items:center;font-family:var(--serif);color:var(--rust);font-size:11px}
-      .bs-topbar{height:71px;padding:0 42px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:rgba(250,247,239,.62);gap:20px}
+      .bs-seal{width:26px;height:26px;border:1px solid #afafaf;border-radius:50%;display:grid;place-items:center;font-family:var(--serif);color:var(--rust);font-size:11px}
+      .bs-topbar{height:71px;padding:0 42px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:rgba(247, 247, 247, .62);gap:20px}
       .bs-breadcrumb{font-family:var(--serif);color:var(--ink-soft);font-size:12px;letter-spacing:.03em}
-      .bs-breadcrumb span{color:#c1b39d;padding:0 8px}
+      .bs-breadcrumb span{color:#b4b4b4;padding:0 8px}
       .bs-top-actions{display:flex;align-items:center;gap:11px}
       .bs-search-wrap{position:relative}
-      .bs-search-wrap .bs-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#938571;font-size:14px}
-      .bs-search{width:221px;background:#f9f5ed;border:1px solid var(--line);height:36px;padding:0 12px 0 34px;color:var(--ink);border-radius:3px;font-size:12px}
-      .bs-search::placeholder{color:#a79b88}
-      .bs-icon-button{height:36px;width:36px;border:1px solid var(--line);background:var(--paper-light);color:#6d5f4d;border-radius:3px;font-size:16px;position:relative}
-      .bs-avatar{width:33px;height:33px;border-radius:50%;background:#b8a38a;color:#fffaf0;display:grid;place-items:center;font-family:var(--serif);font-size:13px;border:2px solid #f7f1e7;box-shadow:0 0 0 1px #c6b59c}
+      .bs-search-wrap .bs-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#878787;font-size:14px}
+      .bs-search{width:221px;background:#f5f5f5;border:1px solid var(--line);height:36px;padding:0 12px 0 34px;color:var(--ink);border-radius:3px;font-size:12px}
+      .bs-search::placeholder{color:#a4a8ae}
+      .bs-icon-button{height:36px;width:36px;border:1px solid var(--line);background:var(--paper-light);color:#616161;border-radius:3px;font-size:16px;position:relative}
+      .bs-avatar{width:33px;height:33px;border-radius:50%;background:#a6a6a6;color:#ffffff;display:grid;place-items:center;font-family:var(--serif);font-size:13px;border:2px solid #f2f2f2;box-shadow:0 0 0 1px #b7b7b7}
       .bs-content{max-width:1420px;margin:0 auto;padding:35px 42px 60px}
       .bs-eyebrow{font-size:10px;letter-spacing:.17em;color:var(--rust);font-weight:700;margin-bottom:10px;text-transform:uppercase}
       .bs-lead{color:var(--ink-soft);font-size:13px;line-height:1.9;margin:0;max-width:650px}
       .bs-page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:27px}
       .bs-page-head .bs-heading-copy{max-width:720px}
-      .bs-head-mark{font-family:var(--serif);font-size:11px;color:#9a8a74;letter-spacing:.12em;border-top:1px solid var(--line-dark);padding-top:9px;min-width:123px;text-align:right}
+      .bs-head-mark{font-family:var(--serif);font-size:11px;color:#8c8c8c;letter-spacing:.12em;border-top:1px solid var(--line-dark);padding-top:9px;min-width:123px;text-align:right}
       .bs-btn{border:1px solid var(--line-dark);background:transparent;color:var(--ink);height:39px;padding:0 15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:3px;font-size:12px;transition:.18s;text-decoration:none;white-space:nowrap}
-      .bs-btn:hover{background:#ece2d1}
-      .bs-btn-primary{background:#4c4939;border-color:#4c4939;color:#fbf7ee}
-      .bs-btn-primary:hover{background:#373528;color:#fffaf0}
+      .bs-btn:hover{background:#e9ebee}
+      .bs-btn-primary{background:#34373d;border-color:#34373d;color:#fbfbfc}
+      .bs-btn-primary:hover{background:#191b1f;color:#ffffff}
       .bs-btn-small{height:31px;padding:0 11px;font-size:11px}
       .bs-link-button{background:transparent;border:0;padding:0;color:var(--rust);font-size:12px}
       .bs-section-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:15px}
       .bs-section-title{font-family:var(--serif);font-size:18px;letter-spacing:-.025em;display:flex;align-items:center;gap:10px}
-      .bs-section-title small{font-family:var(--sans);font-size:10px;letter-spacing:.11em;color:#9d8e79;font-weight:400}
+      .bs-section-title small{font-family:var(--sans);font-size:10px;letter-spacing:.11em;color:#909090;font-weight:400}
       .bs-rule{height:1px;background:var(--line);flex:1;margin-left:5px}
-      .bs-paper-panel{background:rgba(251,248,241,.72);border:1px solid var(--line);box-shadow:var(--shadow)}
+      .bs-paper-panel{background:rgba(248, 248, 248, .72);border:1px solid var(--line);box-shadow:var(--shadow)}
       .bs-home-intro{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:30px;align-items:end;margin-bottom:26px}
       .bs-home-intro h1 em{font-weight:400;color:var(--rust);font-style:normal}
       .bs-intro-buttons{display:flex;gap:8px;margin-top:22px}
-      .bs-archive-stamp{justify-self:end;width:148px;height:148px;border:1px solid #c9b8a0;outline:1px solid #c9b8a0;outline-offset:-7px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#8c775c;transform:rotate(7deg);font-family:var(--serif);text-align:center}
+      .bs-archive-stamp{justify-self:end;width:148px;height:148px;border:1px solid #c6c9ce;outline:1px solid #c6c9ce;outline-offset:-7px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#7a7a7a;transform:rotate(7deg);font-family:var(--serif);text-align:center}
       .bs-archive-stamp .bs-stamp-symbol{font-size:31px;line-height:1.2;margin-bottom:7px}
       .bs-archive-stamp strong{font-size:11px;letter-spacing:.1em;font-weight:400}
       .bs-archive-stamp small{font-family:var(--sans);font-size:8px;letter-spacing:.18em;margin-top:4px}
       .bs-stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:34px}
-      .bs-stat-card{padding:16px 17px;background:#f8f3e9;border:1px solid var(--line);position:relative;min-height:104px;overflow:hidden}
-      .bs-stat-card:after{content:"";position:absolute;width:54px;height:54px;border:1px solid rgba(163,143,113,.18);border-radius:50%;right:-15px;bottom:-16px}
+      .bs-stat-card{padding:16px 17px;background:#f4f5f6;border:1px solid var(--line);position:relative;min-height:104px;overflow:hidden}
+      .bs-stat-card:after{content:"";position:absolute;width:54px;height:54px;border:1px solid rgba(145, 145, 145, .18);border-radius:50%;right:-15px;bottom:-16px}
       .bs-stat-label{font-size:11px;color:var(--ink-soft);display:flex;align-items:center;gap:7px}
       .bs-stat-number{font-family:var(--serif);font-size:29px;margin-top:7px;line-height:1.1;letter-spacing:-.025em}
-      .bs-stat-note{font-size:10px;color:#9a8c78;margin-top:6px}
+      .bs-stat-note{font-size:10px;color:#8e8e8e;margin-top:6px}
       .bs-home-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.85fr);gap:26px;align-items:start}
       .bs-records{border-top:1px solid var(--line)}
       .bs-record-row{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:15px;align-items:center;padding:17px 4px;border-bottom:1px solid var(--line)}
       .bs-record-row:hover .bs-record-title{color:var(--rust)}
       .bs-record-title{font-family:var(--serif);font-size:17px;letter-spacing:-.025em;margin-bottom:4px;transition:color .18s;cursor:pointer}
-      .bs-record-excerpt{font-family:var(--serif);font-size:12px;color:#776c5b;line-height:1.8;margin-bottom:8px;max-width:570px}
-      .bs-record-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:#958671;font-size:10px}
-      .bs-meta-dot{width:3px;height:3px;border-radius:50%;background:#b9a991}
-      .bs-tag{display:inline-flex;align-items:center;padding:3px 7px;background:#eee4d4;border:1px solid #e1d4c1;color:#79664e;font-size:10px;border-radius:2px;white-space:nowrap}
-      .bs-tag.bs-green{background:#e8e7d9;border-color:#d8d8c6;color:#626449}
-      .bs-tag.bs-blue{background:#e2e7e8;border-color:#d3dcdd;color:#586b75}
-      .bs-row-action{border:0;background:transparent;color:#9c8a70;font-size:16px;padding:8px}
+      .bs-record-excerpt{font-family:var(--serif);font-size:12px;color:#6d6d6d;line-height:1.8;margin-bottom:8px;max-width:570px}
+      .bs-record-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:#888888;font-size:10px}
+      .bs-meta-dot{width:3px;height:3px;border-radius:50%;background:#ababab}
+      .bs-tag{display:inline-flex;align-items:center;padding:3px 7px;background:#e5e5e5;border:1px solid #d5d5d5;color:#686868;font-size:10px;border-radius:2px;white-space:nowrap}
+      .bs-tag.bs-green{background:#e6e6e6;border-color:#d7d7d7;color:#626262}
+      .bs-tag.bs-blue{background:#e6e6e6;border-color:#dadada;color:#686868}
+      .bs-row-action{border:0;background:transparent;color:#8c8c8c;font-size:16px;padding:8px}
       .bs-row-action.bs-saved{color:var(--rust)}
-      .bs-book-cover{--cover:#6c745d;--cover-light:#aab098;width:58px;height:78px;position:relative;display:flex;align-items:center;justify-content:center;background:var(--cover);box-shadow:2px 3px 0 rgba(62,47,29,.13);border-left:4px solid rgba(20,20,15,.14);overflow:hidden;color:#f3e9d3;text-align:center;flex-shrink:0}
-      .bs-book-cover:before{content:"";position:absolute;inset:6px;border:1px solid rgba(242,228,196,.47)}
-      .bs-book-cover:after{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:rgba(0,0,0,.13)}
+      .bs-book-cover{--cover:#717171;--cover-light:#adadad;width:58px;height:78px;position:relative;display:flex;align-items:center;justify-content:center;background:var(--cover);box-shadow:2px 3px 0 rgba(49, 49, 49, .13);border-left:4px solid rgba(20, 20, 20, .14);overflow:hidden;color:#eaeaea;text-align:center;flex-shrink:0}
+      .bs-book-cover:before{content:"";position:absolute;inset:6px;border:1px solid rgba(229, 229, 229, .47)}
+      .bs-book-cover:after{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:rgba(0, 0, 0, .13)}
       .bs-cover-inner{position:relative;z-index:1;padding:6px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%}
       .bs-cover-top{font-family:var(--serif);font-size:7px;letter-spacing:.09em;opacity:.85;margin-bottom:5px}
       .bs-cover-title{font-family:var(--serif);font-size:11px;line-height:1.45;writing-mode:vertical-rl;max-height:50px;letter-spacing:.04em}
       .bs-cover-author{font-size:6px;letter-spacing:.06em;margin-top:4px;opacity:.8}
-      .bs-cover-rust{--cover:#9a5b43;--cover-light:#d5aa8e}
-      .bs-cover-blue{--cover:#586879;--cover-light:#b3c0c4}
-      .bs-cover-plum{--cover:#6c4c56;--cover-light:#c3a3a2}
-      .bs-cover-ochre{--cover:#b0854f;--cover-light:#ddc39a}
-      .bs-cover-cream{--cover:#d8c6a5;--cover-light:#f3e8d1;color:#4c4233}
-      .bs-cover-cream:before{border-color:rgba(95,76,48,.4)}
+      .bs-cover-rust{--cover:#676767;--cover-light:#b1b1b1}
+      .bs-cover-blue{--cover:#666666;--cover-light:#bebebe}
+      .bs-cover-plum{--cover:#545454;--cover-light:#aaaaaa}
+      .bs-cover-ochre{--cover:#8a8a8a;--cover-light:#c6c6c6}
+      .bs-cover-cream{--cover:#d2d5d9;--cover-light:#e9e9e9;color:#434343}
+      .bs-cover-cream:before{border-color:rgba(78, 78, 78, .4)}
       .bs-right-stack{display:grid;gap:21px}
-      .bs-memo-card{background:#eee1c5;border:1px solid #d8c5a3;padding:19px 19px 16px;position:relative;box-shadow:2px 5px 12px rgba(66,50,29,.07);transform:rotate(.35deg)}
-      .bs-memo-card:before{content:"";position:absolute;width:49px;height:13px;left:calc(50% - 25px);top:-6px;background:#d0bea0;opacity:.77;transform:rotate(-2deg)}
-      .bs-memo-label{font-size:9px;letter-spacing:.15em;color:#9b7854;margin-bottom:11px}
-      .bs-memo-card p{font-family:var(--serif);font-size:15px;line-height:1.9;color:#554635;margin:0}
-      .bs-memo-foot{margin-top:13px;padding-top:10px;border-top:1px dashed #c8b590;display:flex;justify-content:space-between;font-family:var(--serif);font-style:italic;font-size:11px;color:#92795a}
-      .bs-member-list{background:rgba(251,248,241,.5);border:1px solid var(--line);padding:18px}
+      .bs-member-list{background:rgba(248, 248, 248, .5);border:1px solid var(--line);padding:18px}
       .bs-member{display:flex;align-items:center;gap:10px;margin-top:14px}
-      .bs-member-avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#d8c7ac;color:#66523d;font-family:var(--serif);border:1px solid #c8b698;font-size:11px;flex-shrink:0}
-      .bs-member-avatar.bs-a2{background:#d7dcd0;color:#59614a;border-color:#c3cbb9}
-      .bs-member-avatar.bs-a3{background:#e2cfc4;color:#845f4e;border-color:#d5bdb1}
+      .bs-member-avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#c9c9c9;color:#555555;font-family:var(--serif);border:1px solid #b8b8b8;font-size:11px;flex-shrink:0}
+      .bs-member-avatar.bs-a2{background:#dadada;color:#5e5e5e;border-color:#c8c8c8}
+      .bs-member-avatar.bs-a3{background:#d2d2d2;color:#666666;border-color:#c1c1c1}
       .bs-member-name{font-size:12px;font-weight:600}
-      .bs-member-sub{font-size:10px;color:#9b8c76;margin-top:2px}
-      .bs-member-status{margin-left:auto;font-size:10px;color:#8d8a6b}
-      .bs-mini-calendar{padding:18px;background:#f8f4ec;border:1px solid var(--line)}
+      .bs-member-sub{font-size:10px;color:#8e8e8e;margin-top:2px}
+      .bs-member-status{margin-left:auto;font-size:10px;color:#888888}
+      .bs-mini-calendar{padding:18px;background:#f4f4f4;border:1px solid var(--line)}
       .bs-calendar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}
       .bs-calendar-month{font-family:var(--serif);font-size:15px}
       .bs-calendar-week,.bs-calendar-days{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:4px}
-      .bs-calendar-week{font-size:9px;color:#a09583;margin-bottom:7px}
-      .bs-calendar-day{height:26px;display:grid;place-items:center;font-size:10px;color:#756a59;position:relative}
+      .bs-calendar-week{font-size:9px;color:#969696;margin-bottom:7px}
+      .bs-calendar-day{height:26px;display:grid;place-items:center;font-size:10px;color:#6b6b6b;position:relative}
       .bs-calendar-day.bs-marked:after{content:"";width:4px;height:4px;border-radius:50%;background:var(--rust);position:absolute;bottom:1px}
-      .bs-calendar-day.bs-today{background:#e5d8c5;border-radius:50%;color:#5a4939;font-weight:700}
-      .bs-calendar-day.bs-muted{color:#c6bcac}
-      .bs-calendar-foot{border-top:1px solid var(--line);padding-top:10px;margin-top:9px;display:flex;align-items:center;gap:7px;font-size:10px;color:#938470}
+      .bs-calendar-day.bs-today{background:#d9d9d9;border-radius:50%;color:#4b4b4b;font-weight:700}
+      .bs-calendar-day.bs-muted{color:#bdbdbd}
+      .bs-calendar-foot{border-top:1px solid var(--line);padding-top:10px;margin-top:9px;display:flex;align-items:center;gap:7px;font-size:10px;color:#868686}
       .bs-tiny-dot{width:6px;height:6px;border-radius:50%;background:var(--rust)}
-      .bs-shelf-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin:28px 0 20px;padding:12px;background:#eee6d8;border:1px solid var(--line)}
+      .bs-shelf-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin:28px 0 20px;padding:12px;background:#eceef0;border:1px solid var(--line)}
       .bs-filter-group{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-      .bs-filter-btn{border:1px solid transparent;background:transparent;color:#817461;padding:7px 10px;font-size:11px;border-radius:2px}
-      .bs-filter-btn.bs-active{border-color:#cbb99e;background:#f8f3e9;color:#443b30;font-weight:700}
-      .bs-shelf-count{font-size:11px;color:#897d6b;padding-right:5px}
+      .bs-filter-btn{border:1px solid transparent;background:transparent;color:#757575;padding:7px 10px;font-size:11px;border-radius:2px}
+      .bs-filter-btn.bs-active{border-color:#bbbbbb;background:#f4f5f6;color:#3c3c3c;font-weight:700}
+      .bs-shelf-count{font-size:11px;color:#7e7e7e;padding-right:5px}
       .bs-books-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-      .bs-book-card{background:#faf7ef;border:1px solid var(--line);padding:17px 15px 14px;position:relative;min-width:0;transition:transform .18s,box-shadow .18s;cursor:pointer}
+      .bs-book-card{background:#f7f7f7;border:1px solid var(--line);padding:17px 15px 14px;position:relative;min-width:0;transition:transform .18s,box-shadow .18s;cursor:pointer}
       .bs-book-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
       .bs-book-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-      .bs-book-ref{font-family:var(--serif);font-size:10px;color:#a09380;letter-spacing:.1em}
-      .bs-bookmark-mini{background:none;border:0;color:#a1927b;font-size:16px;padding:0 2px}
-      .bs-book-card .bs-book-cover{width:87px;height:118px;margin:0 auto 17px;box-shadow:4px 5px 0 #ded3c1,6px 7px 0 rgba(65,48,28,.04)}
+      .bs-book-ref{font-family:var(--serif);font-size:10px;color:#949494;letter-spacing:.1em}
+      .bs-bookmark-mini{background:none;border:0;color:#949494;font-size:16px;padding:0 2px}
+      .bs-book-card .bs-book-cover{width:87px;height:118px;margin:0 auto 17px;box-shadow:4px 5px 0 #d8dade,6px 7px 0 rgba(50, 50, 50, .04)}
       .bs-book-card .bs-cover-title{font-size:15px;max-height:79px}
       .bs-book-card .bs-cover-top{font-size:8px;margin-bottom:8px}
       .bs-book-card .bs-cover-author{font-size:7px;margin-top:7px}
       .bs-book-card h3{text-align:center;font-size:15px;margin:0 0 5px;line-height:1.5;min-height:23px}
-      .bs-book-author{text-align:center;font-size:10px;color:#9a8d7a;margin-bottom:12px}
-      .bs-book-divider{border-top:1px dashed #ded3c1;margin:12px 0}
-      .bs-book-card-foot{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:10px;color:#8c7d68}
+      .bs-book-author{text-align:center;font-size:10px;color:#8e8e8e;margin-bottom:12px}
+      .bs-book-divider{border-top:1px dashed #d8dade;margin:12px 0}
+      .bs-book-card-foot{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:10px;color:#7f7f7f}
       .bs-mini-avatars{display:flex;padding-left:2px}
       .bs-mini-avatars .bs-member-avatar{width:22px;height:22px;margin-left:-4px;font-size:8px;border-width:1px}
-      .bs-empty-state{padding:50px;text-align:center;color:#92836f;border:1px dashed var(--line-dark);grid-column:1/-1}
-      .bs-empty-state strong{display:block;font-family:var(--serif);font-size:20px;color:#6d5d49;margin:10px}
-      .bs-back-link{border:0;background:none;padding:0;color:#8e7d65;display:flex;align-items:center;gap:8px;font-size:11px;margin-bottom:24px}
+      .bs-empty-state{padding:50px;text-align:center;color:#858585;border:1px dashed var(--line-dark);grid-column:1/-1}
+      .bs-empty-state strong{display:block;font-family:var(--serif);font-size:20px;color:#5f5f5f;margin:10px}
+      .bs-back-link{border:0;background:none;padding:0;color:#7f7f7f;display:flex;align-items:center;gap:8px;font-size:11px;margin-bottom:24px}
       .bs-review-layout{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:34px;align-items:start}
-      .bs-review-paper{background:#fbf8f0;border:1px solid #ded2be;box-shadow:0 14px 34px rgba(71,51,30,.07);position:relative;padding:43px clamp(28px,5vw,68px) 40px;overflow:hidden}
-      .bs-review-paper:before{content:"";position:absolute;top:0;bottom:0;left:25px;border-left:1px solid #ead4ca}
-      .bs-review-paper:after{content:"";position:absolute;top:0;left:0;right:0;height:7px;background:repeating-linear-gradient(90deg,#d9c8ae 0 15px,transparent 15px 25px);opacity:.7}
-      .bs-paper-no{position:absolute;top:21px;right:24px;font-family:var(--serif);font-size:10px;color:#a79a84;letter-spacing:.08em}
-      .bs-review-bookline{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:12px;color:#796d5b;margin-bottom:17px}
-      .bs-review-bookline .bs-line{height:1px;background:#d8cbb7;flex:1}
+      .bs-review-paper{background:#f8f8f8;border:1px solid #d3d3d3;box-shadow:0 14px 34px rgba(54, 54, 54, .07);position:relative;padding:43px clamp(28px,5vw,68px) 40px;overflow:hidden}
+      .bs-review-paper:before{content:"";position:absolute;top:0;bottom:0;left:25px;border-left:1px solid #d8d8d8}
+      .bs-review-paper:after{content:"";position:absolute;top:0;left:0;right:0;height:7px;background:repeating-linear-gradient(90deg,#cacaca 0 15px,transparent 15px 25px);opacity:.7}
+      .bs-paper-no{position:absolute;top:21px;right:24px;font-family:var(--serif);font-size:10px;color:#9b9b9b;letter-spacing:.08em}
+      .bs-review-bookline{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:12px;color:#6e6e6e;margin-bottom:17px}
+      .bs-review-bookline .bs-line{height:1px;background:#cccccc;flex:1}
       .bs-review-paper h1{font-size:31px;margin-bottom:14px;max-width:620px}
-      .bs-review-byline{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:#958772;font-size:10px;border-bottom:1px solid #e0d5c3;padding-bottom:20px;margin-bottom:25px}
-      .bs-review-byline .bs-author-chip{display:flex;align-items:center;gap:7px;color:#665847}
+      .bs-review-byline{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:#888888;font-size:10px;border-bottom:1px solid #d6d6d6;padding-bottom:20px;margin-bottom:25px}
+      .bs-review-byline .bs-author-chip{display:flex;align-items:center;gap:7px;color:#5a5a5a}
       .bs-review-byline .bs-member-avatar{width:24px;height:24px;font-size:9px}
-      .bs-review-body{font-family:var(--serif);font-size:15px;line-height:2.15;color:#4b4439;letter-spacing:-.02em}
+      .bs-review-body{font-family:var(--serif);font-size:15px;line-height:2.15;color:#454545;letter-spacing:-.02em}
       .bs-review-body p{margin:0 0 20px}
       .bs-review-body .bs-dropcap:first-letter{float:left;font-size:46px;line-height:.9;padding:9px 8px 0 0;color:var(--rust)}
-      .bs-review-body blockquote{margin:25px 0;padding:16px 21px;border-left:2px solid #a67a5e;background:#f2eadc;color:#74533e;font-size:16px;line-height:1.9}
-      .bs-review-body blockquote cite{display:block;font-family:var(--sans);font-style:normal;font-size:10px;color:#a18c74;margin-top:7px}
-      .bs-review-tags{display:flex;gap:6px;flex-wrap:wrap;padding-top:16px;border-top:1px solid #e1d5c1;margin-top:26px}
+      .bs-review-body blockquote{margin:25px 0;padding:16px 21px;border-left:2px solid #818181;background:#ebebeb;color:#585858;font-size:16px;line-height:1.9}
+      .bs-review-body blockquote cite{display:block;font-family:var(--sans);font-style:normal;font-size:10px;color:#8f8f8f;margin-top:7px}
+      .bs-review-tags{display:flex;gap:6px;flex-wrap:wrap;padding-top:16px;border-top:1px solid #d6d6d6;margin-top:26px}
       .bs-review-actions{display:flex;align-items:center;gap:8px;margin-top:19px}
       .bs-review-actions .bs-btn{height:34px}
       .bs-review-side{display:grid;gap:14px}
-      .bs-file-card{background:#eee5d7;border:1px solid #d8c8b0;padding:18px}
-      .bs-file-label{font-size:9px;color:#9a7957;letter-spacing:.14em;margin-bottom:12px}
+      .bs-file-card{background:#e6e6e6;border:1px solid #d4d7db;padding:18px}
+      .bs-file-label{font-size:9px;color:#7e7e7e;letter-spacing:.14em;margin-bottom:12px}
       .bs-file-book{display:flex;gap:12px;align-items:center}
       .bs-file-book .bs-book-cover{width:54px;height:74px}
       .bs-file-book .bs-cover-title{font-size:10px}
       .bs-file-book-title{font-family:var(--serif);font-size:14px;line-height:1.6;margin-bottom:4px}
-      .bs-file-book-author{font-size:10px;color:#8d7e68}
-      .bs-file-detail{display:flex;justify-content:space-between;gap:8px;border-top:1px solid #d8c8b0;margin-top:15px;padding-top:10px;font-size:10px;color:#8a7a63}
-      .bs-margin-note{background:#e7e7d8;border:1px solid #d1d2bd;padding:17px 16px;color:#5e634b;transform:rotate(.7deg)}
-      .bs-margin-note .bs-note-label{font-size:9px;letter-spacing:.14em;color:#848666;margin-bottom:9px}
-      .bs-margin-note p{font-family:var(--serif);font-size:13px;line-height:1.85;margin:0}
-      .bs-margin-note small{display:block;text-align:right;margin-top:9px;font-family:var(--serif);font-size:10px;color:#8e9276;font-style:italic}
+      .bs-file-book-author{font-size:10px;color:#808080}
+      .bs-file-detail{display:flex;justify-content:space-between;gap:8px;border-top:1px solid #d4d7db;margin-top:15px;padding-top:10px;font-size:10px;color:#7c7c7c}
       .bs-comments-panel{margin-top:27px;border-top:1px solid var(--line);padding-top:22px}
       .bs-comments-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px}
-      .bs-comment{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid #e5dac8}
+      .bs-comment{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid #e4e6e9}
       .bs-comment-content{flex:1;min-width:0}
-      .bs-comment-meta{display:flex;align-items:center;gap:9px;margin-bottom:5px;font-size:10px;color:#978973}
-      .bs-comment-meta strong{font-size:11px;color:#5e5142}
-      .bs-comment-text{font-family:var(--serif);font-size:13px;line-height:1.8;color:#5c5245;margin:0}
+      .bs-comment-meta{display:flex;align-items:center;gap:9px;margin-bottom:5px;font-size:10px;color:#8a8a8a}
+      .bs-comment-meta strong{font-size:11px;color:#535353}
+      .bs-comment-text{font-family:var(--serif);font-size:13px;line-height:1.8;color:#555a62;margin:0}
       .bs-comment-form{display:flex;gap:8px;margin-top:15px}
-      .bs-comment-input{flex:1;min-width:0;height:38px;border:1px solid var(--line);background:#f8f3e9;padding:0 12px;font-size:12px;color:var(--ink)}
-      .bs-page-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);margin-top:40px;padding-top:17px;color:#a2947d;font-size:10px}
+      .bs-comment-input{flex:1;min-width:0;height:38px;border:1px solid var(--line);background:#f4f5f6;padding:0 12px;font-size:12px;color:var(--ink)}
+      .bs-page-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);margin-top:40px;padding-top:17px;color:#959595;font-size:10px}
       .bs-page-footer .bs-footer-brand{font-family:var(--serif);letter-spacing:.08em}
       @media(max-width:1200px){.bs-content{padding:30px 28px 50px}.bs-topbar{padding:0 28px}.bs-books-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.bs-home-grid{grid-template-columns:minmax(0,1.3fr) minmax(240px,.8fr);gap:18px}.bs-review-layout{grid-template-columns:minmax(0,1fr) 220px;gap:20px}}
       @media(max-width:900px){.bs-sidebar{width:206px;padding-left:12px;padding-right:12px}.bs-main{margin-left:206px}.bs-topbar{padding:0 20px}.bs-content{padding:25px 20px 45px}.bs-home-intro{grid-template-columns:1fr}.bs-archive-stamp{display:none}.bs-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.bs-home-grid{grid-template-columns:1fr}.bs-right-stack{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.bs-right-stack .bs-mini-calendar{grid-column:1/-1}.bs-review-layout{grid-template-columns:1fr}.bs-review-side{grid-template-columns:repeat(2,minmax(0,1fr));grid-row:1}.bs-review-side .bs-file-card{grid-column:span 1}.bs-books-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-      @media(max-width:620px){.bs-sidebar{width:100%;height:auto;position:sticky;inset:0 0 auto;padding:10px 14px 9px;display:block;border-right:0;border-bottom:1px solid var(--line)}.bs-brand{padding:0 2px 8px;border:0}.bs-brand-mark{width:31px;height:34px;font-size:16px}.bs-brand-title{font-size:17px}.bs-brand-sub{font-size:8px;margin-top:2px}.bs-sidebar .bs-side-label,.bs-sidebar .bs-side-spacer,.bs-sidebar .bs-shelf-note,.bs-sidebar .bs-side-bottom{display:none}.bs-nav{display:flex;gap:4px;overflow:auto;padding-top:7px}.bs-nav button{flex:1;justify-content:center;gap:5px;padding:8px 7px;white-space:nowrap;font-size:11px}.bs-nav-ico{font-size:13px;width:auto}.bs-nav-count{display:none}.bs-main{margin-left:0}.bs-topbar{height:54px;padding:0 14px}.bs-breadcrumb{font-size:11px}.bs-top-actions{gap:6px}.bs-search{width:min(38vw,180px);height:32px}.bs-icon-button{width:32px;height:32px}.bs-content{padding:25px 14px 35px}.bs-page-head{align-items:flex-start;flex-direction:column;margin-bottom:22px;gap:15px}.bs-page-head h1{font-size:29px}.bs-page-head .bs-head-mark{display:none}.bs-home-intro h1{font-size:30px}.bs-lead{font-size:12px}.bs-intro-buttons{margin-top:16px}.bs-stats-grid{gap:8px}.bs-stat-card{padding:13px;min-height:91px}.bs-stat-number{font-size:25px}.bs-record-row{grid-template-columns:48px minmax(0,1fr) auto;gap:10px;padding:14px 0}.bs-record-row .bs-book-cover{width:48px;height:65px}.bs-record-title{font-size:15px}.bs-record-excerpt{font-size:11px;line-height:1.7}.bs-row-action{padding:4px}.bs-right-stack{grid-template-columns:1fr}.bs-right-stack .bs-mini-calendar{grid-column:auto}.bs-books-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bs-book-card{padding:12px 9px}.bs-book-card .bs-book-cover{width:78px;height:105px}.bs-book-card h3{font-size:13px}.bs-shelf-toolbar{align-items:flex-start}.bs-filter-group{width:100%}.bs-shelf-count{margin-left:auto}.bs-review-paper{padding:36px 23px 30px 31px}.bs-review-paper:before{left:17px}.bs-review-paper h1{font-size:25px}.bs-review-body{font-size:14px;line-height:2}.bs-review-side{grid-template-columns:1fr 1fr;gap:9px}.bs-file-card,.bs-margin-note{padding:13px}.bs-file-book{gap:8px}.bs-file-book .bs-book-cover{width:42px;height:60px}.bs-file-book-title{font-size:12px}.bs-file-book-author{font-size:9px}.bs-comment-form{flex-wrap:wrap}.bs-comment-form .bs-btn{flex:0 0 100%}.bs-page-footer{font-size:9px}.bs-hide-mobile{display:none}}
+      @media(max-width:620px){.bs-sidebar{width:100%;height:auto;position:sticky;inset:0 0 auto;padding:10px 14px 9px;display:block;border-right:0;border-bottom:1px solid var(--line)}.bs-brand{padding:0 2px 8px;border:0}.bs-brand-mark{width:31px;height:34px;font-size:16px}.bs-brand-title{font-size:17px}.bs-brand-sub{font-size:8px;margin-top:2px}.bs-sidebar .bs-side-label,.bs-sidebar .bs-side-spacer,.bs-sidebar .bs-side-bottom{display:none}.bs-nav{display:flex;gap:4px;overflow:auto;padding-top:7px}.bs-nav button{flex:1;justify-content:center;gap:5px;padding:8px 7px;white-space:nowrap;font-size:11px}.bs-nav-ico{font-size:13px;width:auto}.bs-nav-count{display:none}.bs-main{margin-left:0}.bs-topbar{height:54px;padding:0 14px}.bs-breadcrumb{font-size:11px}.bs-top-actions{gap:6px}.bs-search{width:min(38vw,180px);height:32px}.bs-icon-button{width:32px;height:32px}.bs-content{padding:25px 14px 35px}.bs-page-head{align-items:flex-start;flex-direction:column;margin-bottom:22px;gap:15px}.bs-page-head h1{font-size:29px}.bs-page-head .bs-head-mark{display:none}.bs-home-intro h1{font-size:30px}.bs-lead{font-size:12px}.bs-intro-buttons{margin-top:16px}.bs-stats-grid{gap:8px}.bs-stat-card{padding:13px;min-height:91px}.bs-stat-number{font-size:25px}.bs-record-row{grid-template-columns:48px minmax(0,1fr) auto;gap:10px;padding:14px 0}.bs-record-row .bs-book-cover{width:48px;height:65px}.bs-record-title{font-size:15px}.bs-record-excerpt{font-size:11px;line-height:1.7}.bs-row-action{padding:4px}.bs-right-stack{grid-template-columns:1fr}.bs-right-stack .bs-mini-calendar{grid-column:auto}.bs-books-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bs-book-card{padding:12px 9px}.bs-book-card .bs-book-cover{width:78px;height:105px}.bs-book-card h3{font-size:13px}.bs-shelf-toolbar{align-items:flex-start}.bs-filter-group{width:100%}.bs-shelf-count{margin-left:auto}.bs-review-paper{padding:36px 23px 30px 31px}.bs-review-paper:before{left:17px}.bs-review-paper h1{font-size:25px}.bs-review-body{font-size:14px;line-height:2}.bs-review-side{grid-template-columns:1fr 1fr;gap:9px}.bs-file-card{padding:13px}.bs-file-book{gap:8px}.bs-file-book .bs-book-cover{width:42px;height:60px}.bs-file-book-title{font-size:12px}.bs-file-book-author{font-size:9px}.bs-comment-form{flex-wrap:wrap}.bs-comment-form .bs-btn{flex:0 0 100%}.bs-page-footer{font-size:9px}.bs-hide-mobile{display:none}}
       .bs-h1,.bs-h2,.bs-h3,.bs-serif{font-family:var(--serif)}
       .bs-h1{font-size:35px;letter-spacing:-.035em;line-height:1.32;font-weight:700;margin:0 0 12px}
       .bs-h2{font-size:23px;letter-spacing:-.035em;margin:0}
       .bs-h3{font-size:17px;letter-spacing:-.025em;margin:0}
       .bs-page-head .bs-h1{margin-bottom:12px}
       @media(max-width:620px){.bs-h1{font-size:29px}}
-      .bs-cover-img{object-fit:cover;box-shadow:2px 3px 0 rgba(62,47,29,.13);border-left:4px solid rgba(20,20,15,.14);flex-shrink:0;display:block;background:#e9dfce}
+      .bs-cover-img{object-fit:cover;box-shadow:2px 3px 0 rgba(49, 49, 49, .13);border-left:4px solid rgba(20, 20, 20, .14);flex-shrink:0;display:block;background:#e7e9ec}
       .bs-footer-wrap{max-width:1420px;margin:0 auto;padding:0 42px 40px}
       @media(max-width:1200px){.bs-footer-wrap{padding:0 28px 40px}}
       @media(max-width:900px){.bs-footer-wrap{padding:0 20px 40px}}
@@ -323,22 +309,21 @@ function GlobalStyle() {
       @media(max-width:900px){.bs-main{margin-left:206px}}
       @media(max-width:620px){.bs-main{margin-left:0}}
       .bs-avatar-btn{background:none;border:0;padding:0;display:inline-flex;align-items:center}
-      .bs-quote-row{grid-template-columns:34px minmax(0,1fr)}
-      .bs-quote-mark{font-family:var(--serif);font-size:42px;line-height:.9;color:#c9b79b}
-      .bs-quote-comment{font-size:12px;color:#7a6a55;margin:-2px 0 6px 2px}
+      .bs-quote-row{grid-template-columns:minmax(0,1fr)}
+      .bs-quote-comment{font-size:12px;color:#6c6c6c;margin:-2px 0 6px 2px}
       .bs-cover-wrap{display:flex;justify-content:center}
       .bs-prose .ProseMirror{outline:none;font-size:15px;line-height:1.85;color:var(--ink)}
       .bs-prose .ProseMirror>*:first-child{margin-top:0}
       .bs-prose .ProseMirror p{margin:0 0 .9em}
       .bs-prose .ProseMirror h2{font-size:21px;font-weight:700;margin:1.3em 0 .5em;letter-spacing:-.02em}
       .bs-prose .ProseMirror h3{font-size:17px;font-weight:700;margin:1.2em 0 .45em}
-      .bs-prose .ProseMirror blockquote{margin:1em 0;padding:2px 0 2px 14px;border-left:3px solid var(--line-dark);color:#5c5245}
+      .bs-prose .ProseMirror blockquote{margin:1em 0;padding:2px 0 2px 14px;border-left:3px solid var(--line-dark);color:#555a62}
       .bs-prose .ProseMirror ul{list-style:disc;padding-left:1.4em;margin:0 0 .9em}
       .bs-prose .ProseMirror ol{list-style:decimal;padding-left:1.5em;margin:0 0 .9em}
       .bs-prose .ProseMirror li p{margin:0 0 .3em}
       .bs-prose .ProseMirror strong{font-weight:700}
       .bs-prose .ProseMirror em{font-style:italic}
-      .bs-editor-box .ProseMirror{padding:14px 16px;background:#f8f3e9;border:1px solid var(--line);border-radius:2px;min-height:260px}
+      .bs-editor-box .ProseMirror{padding:14px 16px;background:#f4f5f6;border:1px solid var(--line);border-radius:2px;min-height:260px}
       .bs-editor-box .ProseMirror:focus{border-color:var(--rust)}
     `}</style>
   );
@@ -354,13 +339,13 @@ function Star({ fill, size = 20 }: { fill: number; size?: number }) {
         viewBox="0 0 24 24"
         width={size}
         height={size}
-        className="absolute inset-0 text-[#e5dac8]"
+        className="absolute inset-0 text-[#e4e6e9]"
         fill="currentColor"
       >
         <path d={STAR_PATH} />
       </svg>
       <span
-        className="absolute left-0 top-0 h-full overflow-hidden text-[#332e27]"
+        className="absolute left-0 top-0 h-full overflow-hidden text-[#202328]"
         style={{ width: `${fill * 100}%` }}
       >
         <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor">
@@ -446,7 +431,7 @@ function ToggleButton({
 
 function ReadingBadge() {
   return (
-    <span className="inline-block bg-[#8d4d38] px-2 py-0.5 text-[11px] font-semibold tracking-widest text-white">
+    <span className="inline-block bg-[#26292e] px-2 py-0.5 text-[11px] font-semibold tracking-widest text-white">
       읽는 중
     </span>
   );
@@ -458,7 +443,7 @@ function ReplyIcon() {
       viewBox="0 0 24 24"
       width={14}
       height={14}
-      className="mt-1 shrink-0 text-[#9f9382]"
+      className="mt-1 shrink-0 text-[#969ba2]"
       fill="none"
       stroke="currentColor"
       strokeWidth={2}
@@ -479,7 +464,7 @@ function Spoiler({ children }: { children: React.ReactNode }) {
         e.stopPropagation();
         setShown(true);
       }}
-      className={`px-0.5 ${shown ? 'bg-[#e5dac8]' : 'bg-[#4c4939] cursor-pointer select-none'}`}
+      className={`px-0.5 ${shown ? 'bg-[#e4e6e9]' : 'bg-[#34373d] cursor-pointer select-none'}`}
     >
       <span className={shown ? '' : 'invisible'}>{children}</span>
     </span>
@@ -501,7 +486,7 @@ const INLINE: InlinePattern[] = [
     render: (m, key) => (
       <code
         key={key}
-        className="px-1 py-0.5 bg-[#e5dac8] text-[0.85em] font-normal not-italic text-[#332e27]"
+        className="px-1 py-0.5 bg-[#e4e6e9] text-[0.85em] font-normal not-italic text-[#202328]"
       >
         {m[2]}
       </code>
@@ -550,7 +535,7 @@ const INLINE: InlinePattern[] = [
         target="_blank"
         rel="noopener noreferrer nofollow"
         onClick={(e) => e.stopPropagation()}
-        className="underline decoration-2 decoration-[#8d4d38] underline-offset-4"
+        className="underline decoration-2 decoration-[#26292e] underline-offset-4"
       >
         {m[1]}
       </a>
@@ -565,7 +550,7 @@ const INLINE: InlinePattern[] = [
         target="_blank"
         rel="noopener noreferrer nofollow"
         onClick={(e) => e.stopPropagation()}
-        className="underline decoration-2 decoration-[#8d4d38] underline-offset-4 break-all"
+        className="underline decoration-2 decoration-[#26292e] underline-offset-4 break-all"
       >
         {m[0]}
       </a>
@@ -643,7 +628,7 @@ function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
         out.push(
           <pre
             key={key()}
-            className="my-1 p-3 border border-[#d9cdbb] bg-[#e5dac8] text-xs font-normal not-italic text-[#332e27] whitespace-pre overflow-x-auto"
+            className="my-1 p-3 border border-[#d5d7da] bg-[#e4e6e9] text-xs font-normal not-italic text-[#202328] whitespace-pre overflow-x-auto"
           >
             <code>{body.join('\n')}</code>
           </pre>
@@ -657,7 +642,7 @@ function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
       flush();
       const restText = [trimmed.replace(/^>>>\s?/, ''), ...lines.slice(i + 1)].join('\n');
       out.push(
-        <blockquote key={key()} className="my-1 border-l border-[#d9cdbb] pl-3 text-[#5c5245]">
+        <blockquote key={key()} className="my-1 border-l border-[#d5d7da] pl-3 text-[#555a62]">
           {renderBlocks(restText, key())}
         </blockquote>
       );
@@ -673,7 +658,7 @@ function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
         i++;
       }
       out.push(
-        <blockquote key={key()} className="my-1 border-l border-[#d9cdbb] pl-3 text-[#5c5245]">
+        <blockquote key={key()} className="my-1 border-l border-[#d5d7da] pl-3 text-[#555a62]">
           {renderBlocks(q.join('\n'), key())}
         </blockquote>
       );
@@ -700,7 +685,7 @@ function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
       flush();
       const kk = key();
       out.push(
-        <p key={kk} className="text-xs text-[#71675a]">
+        <p key={kk} className="text-xs text-[#666b73]">
           {parseInline(sub[1], kk)}
         </p>
       );
@@ -797,14 +782,14 @@ function QuoteList({
   };
 
   return (
-    <div className="divide-y divide-[#e5dac8]">
+    <div className="divide-y divide-[#e4e6e9]">
       {quotes.map((q) => (
         <div key={q.id} className="py-4 first:pt-0">
           <div className="flex justify-between items-start gap-3">
             <div
               onClick={isOwner ? () => toggle(q.id) : undefined}
               className={`min-w-0 text-base font-bold italic leading-relaxed ${
-                isOwner ? 'cursor-pointer hover:text-[#8d4d38] transition-colors duration-200' : ''
+                isOwner ? 'cursor-pointer hover:text-[#26292e] transition-colors duration-200' : ''
               }`}
             >
               <DiscordText text={q.content} wrapQuotes />
@@ -819,7 +804,7 @@ function QuoteList({
           {q.quote_comments.length > 0 && (
             <div className="mt-2 ml-2 space-y-1.5">
               {q.quote_comments.map((c) => (
-                <div key={c.id} className="flex items-start gap-1.5 text-sm text-[#5c5245]">
+                <div key={c.id} className="flex items-start gap-1.5 text-sm text-[#555a62]">
                   <ReplyIcon />
                   <DiscordText text={c.content} className="flex-1 min-w-0 leading-relaxed" />
                   {isOwner && onDeleteComment && (
@@ -854,9 +839,9 @@ function QuoteList({
 }
 
 const SEAL_COLORS: Record<string, { label: string; hex: string }> = {
-  ink: { label: '먹색', hex: '#332e27' },
+  ink: { label: '먹색', hex: '#202328' },
   red: { label: '붉은색', hex: '#CC0000' },
-  grey: { label: '회색', hex: '#5c5245' },
+  grey: { label: '회색', hex: '#555a62' },
 };
 
 const SEAL_STYLES: [string, string][] = [
@@ -887,7 +872,7 @@ function Seal({
     return (
       <span
         aria-hidden="true"
-        className="inline-block shrink-0 overflow-hidden bg-[#e9dfce]"
+        className="inline-block shrink-0 overflow-hidden bg-[#e7e9ec]"
         style={{ width: size, height: size, border: `${w}px solid ${hex}`, transform: 'rotate(-4deg)' }}
       >
         <img
@@ -920,10 +905,10 @@ function Seal({
       color: hex,
       border: `${w}px solid ${hex}`,
       background: 'transparent',
-      boxShadow: `inset 0 0 0 ${w}px #fbf8f1, inset 0 0 0 ${w * 2}px ${hex}`,
+      boxShadow: `inset 0 0 0 ${w}px #fafafa, inset 0 0 0 ${w * 2}px ${hex}`,
     };
   } else {
-    extra = { color: '#fbf8f1', background: hex, border: `${w}px solid ${hex}` };
+    extra = { color: '#fafafa', background: hex, border: `${w}px solid ${hex}` };
   }
 
   return (
@@ -939,7 +924,7 @@ function Seal({
 
 function WishBadge() {
   return (
-    <span className="inline-block border border-[#d9cdbb] px-2 py-0.5 text-[11px] font-semibold tracking-widest">
+    <span className="inline-block border border-[#d5d7da] px-2 py-0.5 text-[11px] font-semibold tracking-widest">
       읽고 싶음
     </span>
   );
@@ -1154,7 +1139,7 @@ const ClipArticle = memo(function ClipArticle({
           key={`s${a}`}
           data-start={a}
           style={color ? { backgroundColor: HL_COLORS[color] } : undefined}
-          className={noted ? 'underline decoration-[#332e27] decoration-1 underline-offset-4' : undefined}
+          className={noted ? 'underline decoration-[#202328] decoration-1 underline-offset-4' : undefined}
         >
           {content.slice(a, b)}
         </span>
@@ -1169,7 +1154,7 @@ const ClipArticle = memo(function ClipArticle({
               data-fn={numberOf.get(n.id)}
               onClick={() => scrollToNote(n.id)}
               style={{ userSelect: 'none' }}
-              className="ml-0.5 cursor-pointer text-[11px] font-black hover:text-[#8d4d38]"
+              className="ml-0.5 cursor-pointer text-[11px] font-black hover:text-[#26292e]"
             >
               {numberOf.get(n.id)})
             </sup>
@@ -1218,7 +1203,7 @@ async function loadOrientedCanvas(file: File, maxSide = 1200): Promise<HTMLCanva
   canvas.height = Math.max(1, Math.round(h * k));
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('이미지를 처리하지 못했어요.');
-  ctx.fillStyle = '#fbf8f1';
+  ctx.fillStyle = '#fafafa';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
   return canvas;
@@ -1251,7 +1236,7 @@ function renderCrop(
   canvas.height = out;
   const ctx = canvas.getContext('2d');
   if (ctx) {
-    ctx.fillStyle = '#fbf8f1';
+    ctx.fillStyle = '#fafafa';
     ctx.fillRect(0, 0, out, out);
     ctx.drawImage(source, r.sx, r.sy, r.size, r.size, 0, 0, out, out);
   }
@@ -1341,17 +1326,17 @@ function SealCropper({
   const s = (CROP_VIEW / Math.min(natW, natH)) * zoom;
   const dispW = natW * s;
   const dispH = natH * s;
-  const guide = 'rgba(255,255,255,0.55)';
+  const guide = 'rgba(255, 255, 255, 0.55)';
   const thirds = `linear-gradient(to right, transparent calc(33.33% - 0.5px), ${guide} calc(33.33% - 0.5px), ${guide} calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px), transparent calc(66.66% - 0.5px), ${guide} calc(66.66% - 0.5px), ${guide} calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px)), linear-gradient(to bottom, transparent calc(33.33% - 0.5px), ${guide} calc(33.33% - 0.5px), ${guide} calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px), transparent calc(66.66% - 0.5px), ${guide} calc(66.66% - 0.5px), ${guide} calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px))`;
 
   return (
-    <div className="mt-3 border border-[#d9cdbb] p-3 space-y-3">
+    <div className="mt-3 border border-[#d5d7da] p-3 space-y-3">
       <p className={LABEL}>사진 자르기</p>
 
       <div className="flex flex-wrap items-start gap-4">
         <div
           ref={viewRef}
-          className="relative shrink-0 overflow-hidden border border-[#d9cdbb] bg-[#e9dfce] cursor-grab active:cursor-grabbing select-none"
+          className="relative shrink-0 overflow-hidden border border-[#d5d7da] bg-[#e7e9ec] cursor-grab active:cursor-grabbing select-none"
           style={{ width: CROP_VIEW, height: CROP_VIEW, touchAction: 'none' }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
@@ -1382,7 +1367,7 @@ function SealCropper({
             <Seal text="" color={sealColor} image={previewUrl} size={48} />
             <Seal text="" color={sealColor} image={previewUrl} size={26} />
           </div>
-          <p className="text-xs text-[#71675a]">실제로 이렇게 기울어진 도장으로 보여요.</p>
+          <p className="text-xs text-[#666b73]">실제로 이렇게 기울어진 도장으로 보여요.</p>
         </div>
       </div>
 
@@ -1405,7 +1390,7 @@ function SealCropper({
             value={zoom}
             onChange={(e) => setZoom(Number(e.target.value))}
             aria-label="확대 비율"
-            className="flex-1 min-w-0 accent-[#332e27]"
+            className="flex-1 min-w-0 accent-[#202328]"
           />
           <button
             type="button"
@@ -1419,7 +1404,7 @@ function SealCropper({
         </div>
       </div>
 
-      <p className="text-xs text-[#71675a]">
+      <p className="text-xs text-[#666b73]">
         사진을 드래그해서 위치를 맞추고, 슬라이더나 마우스 휠(휴대폰은 두 손가락)로 확대해요.
       </p>
 
@@ -1443,7 +1428,7 @@ function sealPathFromUrl(url: string, uid: string): string | null {
   return path.startsWith(`${uid}/`) ? path : null;
 }
 
-const COVER_COLORS = ['#6c745d', '#9a5b43', '#586879', '#6c4c56', '#b0854f', '#d8c6a5', '#4c6872'];
+const COVER_COLORS = ['#717171', '#676767', '#666666', '#545454', '#8a8a8a', '#d2d5d9', '#636363'];
 
 function BookCover({
   title,
@@ -1474,12 +1459,12 @@ function BookCover({
   let hash = 0;
   for (const ch of title) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
   const bg = COVER_COLORS[hash % COVER_COLORS.length];
-  const light = bg === '#d8c6a5';
+  const light = bg === '#d2d5d9';
 
   return (
     <div
       className="bs-book-cover"
-      style={{ width, height, background: bg, color: light ? '#4c4233' : '#f3e9d3' }}
+      style={{ width, height, background: bg, color: light ? '#434343' : '#eaeaea' }}
     >
       <div className="bs-cover-inner">
         <div
@@ -1594,7 +1579,7 @@ function RichView({ json }: { json: JSONContent }) {
 
 function ReviewBody({ review }: { review: Review }) {
   if (review.content_json) return <RichView json={review.content_json} />;
-  return <DiscordText text={review.content} className="text-sm leading-relaxed text-[#4b4439]" />;
+  return <DiscordText text={review.content} className="text-sm leading-relaxed text-[#454545]" />;
 }
 
 type SaveState = 'saved' | 'dirty' | 'saving' | 'error';
@@ -1674,29 +1659,29 @@ function ReviewEditorPanel({
   });
 
   const active = useEditorState({
-  editor,
-  selector: ({ editor: ed }) => ({
-    h2: !!ed?.isActive('heading', { level: 2 }),
-    h3: !!ed?.isActive('heading', { level: 3 }),
-    bold: !!ed?.isActive('bold'),
-    italic: !!ed?.isActive('italic'),
-    quote: !!ed?.isActive('blockquote'),
-    bullet: !!ed?.isActive('bulletList'),
-    ordered: !!ed?.isActive('orderedList'),
-    canUndo: !!ed?.can().undo(),
-    canRedo: !!ed?.can().redo(),
-  }),
-}) ?? {
-  h2: false,
-  h3: false,
-  bold: false,
-  italic: false,
-  quote: false,
-  bullet: false,
-  ordered: false,
-  canUndo: false,
-  canRedo: false,
-};
+    editor,
+    selector: ({ editor: ed }) => ({
+      h2: !!ed?.isActive('heading', { level: 2 }),
+      h3: !!ed?.isActive('heading', { level: 3 }),
+      bold: !!ed?.isActive('bold'),
+      italic: !!ed?.isActive('italic'),
+      quote: !!ed?.isActive('blockquote'),
+      bullet: !!ed?.isActive('bulletList'),
+      ordered: !!ed?.isActive('orderedList'),
+      canUndo: !!ed?.can().undo(),
+      canRedo: !!ed?.can().redo(),
+    }),
+  }) ?? {
+    h2: false,
+    h3: false,
+    bold: false,
+    italic: false,
+    quote: false,
+    bullet: false,
+    ordered: false,
+    canUndo: false,
+    canRedo: false,
+  };
 
   useEffect(() => {
     mounted.current = true;
@@ -1790,7 +1775,7 @@ function ReviewEditorPanel({
   return (
     <div className="space-y-3">
       {review.content && (
-        <p className="text-xs text-[#71675a]">
+        <p className="text-xs text-[#666b73]">
           발행된 글을 고치는 중이에요. 발행하기 전까지는 다른 멤버에게 이전에 발행한 글이 보여요.
         </p>
       )}
@@ -1811,14 +1796,14 @@ function ReviewEditorPanel({
         <EditorContent editor={editor} />
       </div>
       {preview && (
-        <div className="bs-prose border border-[#d9cdbb] p-4 min-h-[240px]">
+        <div className="bs-prose border border-[#d5d7da] p-4 min-h-[240px]">
           <RichView json={previewDoc} />
         </div>
       )}
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <span
-          className={`text-xs ${saveState === 'error' ? 'font-semibold text-[#8d4d38]' : 'text-[#71675a]'}`}
+          className={`text-xs ${saveState === 'error' ? 'font-semibold text-[#26292e]' : 'text-[#666b73]'}`}
           role="status"
         >
           {statusText}
@@ -2646,16 +2631,16 @@ export default function Home() {
 
   if (!user) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-4 text-[#332e27]">
+      <main className="min-h-screen flex items-center justify-center p-4 text-[#202328]">
         <GlobalStyle />
-        <div className="w-full max-w-md border border-[#d9cdbb] bg-[#fbf8f1] p-8">
-          <p className="text-center text-[11px] uppercase tracking-widest text-[#71675a] mb-3">
+        <div className="w-full max-w-md border border-[#d5d7da] bg-[#fafafa] p-8">
+          <p className="text-center text-[11px] uppercase tracking-widest text-[#666b73] mb-3">
             A PRIVATE READING ARCHIVE
           </p>
-          <h1 className="text-center text-5xl font-black tracking-tighter leading-none border-b border-[#d9cdbb] pb-4">
+          <h1 className="text-center text-5xl font-black tracking-tighter leading-none border-b border-[#d5d7da] pb-4">
             책장 사이
           </h1>
-          <p className="text-center text-sm text-[#5c5245] mt-4 mb-8">
+          <p className="text-center text-sm text-[#555a62] mt-4 mb-8">
             {isSignUp ? '새로운 계정 생성하기' : '읽고, 남기고, 다시 꺼내 보는 일'}
           </p>
 
@@ -2742,23 +2727,13 @@ export default function Home() {
         <nav className="bs-nav" aria-label="주 메뉴">
           {navItem('home', '⌂', '기록실 홈')}
           {navItem('shelf', '▤', '공동 서재', countBooks)}
-          {navItem('reviews', '☷', '독후감 기록', writtenAll.length)}
         </nav>
         <div className="bs-side-label">MY DESK</div>
         <nav className="bs-nav" aria-label="개인 메뉴">
-          {navItem('quotes', '❞', '문장 수집장')}
+          {navItem('quotes', '≡', '문장 수집장')}
           {navItem('mine', '▦', '나의 기록')}
         </nav>
         <div className="bs-side-spacer" />
-        <div className="bs-shelf-note">
-          <div className="bs-note-eyebrow">TODAY&apos;S NOTE</div>
-          <p>
-            읽는 일은 혼자지만,
-            <br />
-            기억은 함께 나눌 수 있으니까.
-          </p>
-          <div className="bs-note-sign">— 책장 사이에서</div>
-        </div>
         <div className="bs-side-bottom">
           <span>함께 읽는 작은 서재</span>
           <button onClick={handleLogout} className="bs-link-button" style={{ marginLeft: 'auto' }}>
@@ -2832,15 +2807,15 @@ export default function Home() {
       ? { title: 'sm:col-span-4', author: 'sm:col-span-2', nick: 'sm:col-span-2', status: 'sm:col-span-3', date: 'sm:col-span-1' }
       : { title: 'sm:col-span-6', author: 'sm:col-span-3', nick: '', status: 'sm:col-span-2', date: 'sm:col-span-1' };
     const rowClass =
-      'grid grid-cols-12 gap-3 items-center px-5 py-3 border-b border-[#d9cdbb] last:border-b-0 hover:bg-[#ece2d1] cursor-pointer transition-colors duration-200 group';
+      'grid grid-cols-12 gap-3 items-center px-5 py-3 border-b border-[#d5d7da] last:border-b-0 hover:bg-[#e9ebee] cursor-pointer transition-colors duration-200 group';
     const coverClass =
-      'w-9 h-12 object-cover border border-[#d9cdbb] bg-[#e9dfce] transition duration-200 shrink-0';
+      'w-9 h-12 object-cover border border-[#d5d7da] bg-[#e7e9ec] transition duration-200 shrink-0';
     const titleClass =
-      'font-bold text-sm truncate underline-offset-4 decoration-2 decoration-[#8d4d38] group-hover:underline';
+      'font-bold text-sm truncate underline-offset-4 decoration-2 decoration-[#26292e] group-hover:underline';
 
     return (
       <>
-        <div className="hidden sm:grid grid-cols-12 gap-3 px-5 py-2 bg-[#eee6d8] text-[#71675a] text-[11px] font-semibold uppercase tracking-widest">
+        <div className="hidden sm:grid grid-cols-12 gap-3 px-5 py-2 bg-[#eceef0] text-[#666b73] text-[11px] font-semibold uppercase tracking-widest">
           <span className={col.title}>책 제목</span>
           <span className={col.author}>저자</span>
           {showAuthor && <span className={col.nick}>읽은이</span>}
@@ -2862,28 +2837,28 @@ export default function Home() {
                     />
                     <span className="min-w-0">
                       <span className={`block ${titleClass}`}>{row.base}</span>
-                      <span className="block text-[11px] text-[#71675a]">
+                      <span className="block text-[11px] text-[#666b73]">
                         시리즈 &middot; 기록된 {row.volumes.length}권
                       </span>
                     </span>
                   </div>
-                  <span className={`col-span-6 ${col.author} text-xs text-[#5c5245] truncate`}>
+                  <span className={`col-span-6 ${col.author} text-xs text-[#555a62] truncate`}>
                     {row.author}
                   </span>
                   {showAuthor && (
                     <span className={`col-span-6 ${col.nick} text-xs font-semibold min-w-0 flex items-center gap-1`}>
                       {renderByline(userIds[0], 18)}
                       {userIds.length > 1 && (
-                        <span className="shrink-0 text-[#71675a]">외 {userIds.length - 1}명</span>
+                        <span className="shrink-0 text-[#666b73]">외 {userIds.length - 1}명</span>
                       )}
                     </span>
                   )}
                   <div className={`col-span-6 ${col.status} flex sm:justify-center`}>
-                    <span className="inline-block bg-[#4c4939] px-2 py-0.5 text-[11px] font-semibold tracking-widest text-[#fbf8f1]">
+                    <span className="inline-block bg-[#34373d] px-2 py-0.5 text-[11px] font-semibold tracking-widest text-[#fafafa]">
                       시리즈
                     </span>
                   </div>
-                  <span className={`hidden sm:block ${col.date} text-right text-[11px] text-[#71675a]`}>
+                  <span className={`hidden sm:block ${col.date} text-right text-[11px] text-[#666b73]`}>
                     {new Date(row.latest).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })}
                   </span>
                 </li>
@@ -2901,7 +2876,7 @@ export default function Home() {
                   />
                   <span className={titleClass}>{rev.books.title}</span>
                 </div>
-                <span className={`col-span-6 ${col.author} text-xs text-[#5c5245] truncate`}>
+                <span className={`col-span-6 ${col.author} text-xs text-[#555a62] truncate`}>
                   {rev.books.author}
                 </span>
                 {showAuthor && (
@@ -2912,7 +2887,7 @@ export default function Home() {
                 <div className={`col-span-6 ${col.status} flex sm:justify-center`}>
                   <StatusCell review={rev} size={13} />
                 </div>
-                <span className={`hidden sm:block ${col.date} text-right text-[11px] text-[#71675a]`}>
+                <span className={`hidden sm:block ${col.date} text-right text-[11px] text-[#666b73]`}>
                   {new Date(rev.created_at).toLocaleDateString('ko-KR', {
                     month: 'numeric',
                     day: 'numeric',
@@ -2948,8 +2923,8 @@ export default function Home() {
           </button>
 
           {seriesEntry && (
-            <div className="border border-[#d9cdbb] bg-[#fbf8f1] px-4 py-3">
-              <p className="text-[11px] uppercase tracking-widest text-[#71675a]">Series</p>
+            <div className="border border-[#d5d7da] bg-[#fafafa] px-4 py-3">
+              <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Series</p>
               <p className="font-black tracking-tight break-words">{seriesEntry.base}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {seriesEntry.volumes.map((v) => (
@@ -2966,25 +2941,25 @@ export default function Home() {
             </div>
           )}
 
-          <article className="border border-[#d9cdbb] bg-[#fbf8f1]">
-            <section className="p-5 md:p-6 border-b border-[#d9cdbb]">
+          <article className="border border-[#d5d7da] bg-[#fafafa]">
+            <section className="p-5 md:p-6 border-b border-[#d5d7da]">
               <div className="flex gap-4 sm:gap-5">
                 <img
                   src={activeReview.books.cover_url || undefined}
                   alt={activeReview.books.title}
-                  className="w-20 h-28 sm:w-24 sm:h-36 object-cover border border-[#d9cdbb] bg-[#e9dfce] transition duration-200 shrink-0"
+                  className="w-20 h-28 sm:w-24 sm:h-36 object-cover border border-[#d5d7da] bg-[#e7e9ec] transition duration-200 shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-[#71675a]">
-                        {renderByline(activeReview.user_id, 20, 'font-semibold text-[#332e27]')}
+                      <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-[#666b73]">
+                        {renderByline(activeReview.user_id, 20, 'font-semibold text-[#202328]')}
                         <span>&middot; {new Date(activeReview.created_at).toLocaleDateString('ko-KR')}</span>
                       </p>
                       <h2 className="mt-1 text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight break-words">
                         {activeReview.books.title}
                       </h2>
-                      <p className="mt-1 text-sm text-[#5c5245]">{activeReview.books.author}</p>
+                      <p className="mt-1 text-sm text-[#555a62]">{activeReview.books.author}</p>
                     </div>
 
                     {isOwner && (
@@ -3045,15 +3020,15 @@ export default function Home() {
             <div>
               <div>
                 {showQuotes && (
-                  <section className={`p-5 md:p-6 ${showReview ? 'border-b border-[#d9cdbb]' : ''}`}>
+                  <section className={`p-5 md:p-6 ${showReview ? 'border-b border-[#d5d7da]' : ''}`}>
                     <h3 className="text-xl font-black tracking-tight">
                       인용문{' '}
-                      <span className="text-sm font-semibold text-[#71675a]">
+                      <span className="text-sm font-semibold text-[#666b73]">
                         ({activeReview.quotes?.length || 0})
                       </span>
                     </h3>
                     {isOwner && hasQuotes && (
-                      <p className="mt-1 text-xs text-[#71675a]">인용문을 누르면 코멘트를 달 수 있어요.</p>
+                      <p className="mt-1 text-xs text-[#666b73]">인용문을 누르면 코멘트를 달 수 있어요.</p>
                     )}
 
                     <div className="mt-4">
@@ -3066,14 +3041,14 @@ export default function Home() {
                           onDeleteComment={isOwner ? handleDeleteComment : undefined}
                         />
                       ) : (
-                        <p className="text-sm text-[#71675a]">아직 추가된 인용문이 없습니다.</p>
+                        <p className="text-sm text-[#666b73]">아직 추가된 인용문이 없습니다.</p>
                       )}
                     </div>
 
                     {isOwner && (
                       <form
                         onSubmit={handleAddQuote}
-                        className="mt-5 pt-5 border-t border-[#d9cdbb] flex gap-3 items-end"
+                        className="mt-5 pt-5 border-t border-[#d5d7da] flex gap-3 items-end"
                       >
                         <div className="flex-1">
                           <label className={LABEL}>새 인용문</label>
@@ -3129,7 +3104,7 @@ export default function Home() {
                       <h3 className="text-xl font-black tracking-tight">독후감</h3>
                       <span className="bs-tag bs-green">임시 저장</span>
                     </div>
-                    <p className="text-sm text-[#71675a]">
+                    <p className="text-sm text-[#666b73]">
                       아직 발행하지 않은 글이 임시 저장되어 있어요. 나만 볼 수 있어요.
                     </p>
                     <button onClick={() => setIsEditingContent(true)} className={BTN}>
@@ -3140,11 +3115,11 @@ export default function Home() {
               </div>
 
               {hasSidebar && (
-                <aside className="border-t border-[#d9cdbb] p-5 md:p-6 space-y-4">
+                <aside className="border-t border-[#d5d7da] p-5 md:p-6 space-y-4">
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-xl font-black tracking-tight">
                       같은 책을 읽은 사람{' '}
-                      <span className="text-sm font-semibold text-[#71675a]">({readers.length})</span>
+                      <span className="text-sm font-semibold text-[#666b73]">({readers.length})</span>
                     </h3>
                     <ToggleButton pressed={showOthers} onClick={() => setShowOthers(!showOthers)}>
                       함께 보기
@@ -3153,7 +3128,7 @@ export default function Home() {
 
                   {showOthers &&
                     readers.map((o) => (
-                      <div key={o.id} className="border-t border-[#d9cdbb] pt-4 space-y-3">
+                      <div key={o.id} className="border-t border-[#d5d7da] pt-4 space-y-3">
                         <div className="flex items-center gap-3">
                           <span className="font-bold text-sm min-w-0">{renderByline(o.user_id, 22)}</span>
                           <StatusCell review={o} size={14} />
@@ -3169,7 +3144,7 @@ export default function Home() {
                         )}
 
                         {(!o.quotes || o.quotes.length === 0) && !o.content && (
-                          <p className="text-xs text-[#71675a]">아직 남긴 기록이 없어요.</p>
+                          <p className="text-xs text-[#666b73]">아직 남긴 기록이 없어요.</p>
                         )}
                       </div>
                     ))}
@@ -3177,7 +3152,7 @@ export default function Home() {
               )}
             </div>
 
-            <div className="flex justify-between items-center gap-3 p-4 border-t border-[#d9cdbb]">
+            <div className="flex justify-between items-center gap-3 p-4 border-t border-[#d5d7da]">
               {isOwner ? (
                 <button onClick={() => handleDeleteReview(activeReview.id)} className={DANGER_BTN}>
                   이 책 서재에서 삭제
@@ -3206,8 +3181,8 @@ export default function Home() {
     ];
     const keepSelection = (e: React.MouseEvent) => e.preventDefault();
 
-    const sideBtn = `flex w-full items-center gap-2 min-h-[34px] px-3 border border-[#d9cdbb] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#4c4939] hover:text-[#fbf8f1] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
-    const barBtn = `flex flex-col items-center justify-center gap-1 min-h-[44px] min-w-0 border border-[#d9cdbb] text-[11px] font-semibold transition-all duration-200 active:bg-[#4c4939] active:text-[#fbf8f1] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+    const sideBtn = `flex w-full items-center gap-2 min-h-[34px] px-3 border border-[#d5d7da] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#34373d] hover:text-[#fafafa] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+    const barBtn = `flex flex-col items-center justify-center gap-1 min-h-[44px] min-w-0 border border-[#d5d7da] text-[11px] font-semibold transition-all duration-200 active:bg-[#34373d] active:text-[#fafafa] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
 
     const noteForm = (variant: 'side' | 'bar') =>
       selection && notePanelOpen ? (
@@ -3215,8 +3190,8 @@ export default function Home() {
           onSubmit={handleAddNote}
           className={
             variant === 'side'
-              ? 'space-y-2 border-t border-[#d9cdbb] pt-3'
-              : 'px-3 py-3 space-y-2 border-b border-[#d9cdbb]'
+              ? 'space-y-2 border-t border-[#d5d7da] pt-3'
+              : 'px-3 py-3 space-y-2 border-b border-[#d5d7da]'
           }
         >
           {variant === 'bar' && (
@@ -3271,20 +3246,20 @@ export default function Home() {
           </button>
 
           <div className="mt-2 lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-6">
-            <article className="min-w-0 border border-[#d9cdbb] bg-[#fbf8f1]">
-              <section className="p-5 md:p-8 border-b border-[#d9cdbb] space-y-3">
-                <p className="text-[11px] uppercase tracking-widest text-[#71675a]">Clipping</p>
+            <article className="min-w-0 border border-[#d5d7da] bg-[#fafafa]">
+              <section className="p-5 md:p-8 border-b border-[#d5d7da] space-y-3">
+                <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Clipping</p>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight break-words">
                   {activeClip.title}
                 </h2>
-                <p className="text-xs text-[#71675a] flex flex-wrap gap-x-3 gap-y-1">
+                <p className="text-xs text-[#666b73] flex flex-wrap gap-x-3 gap-y-1">
                   {activeClip.source &&
                     (isUrl ? (
                       <a
                         href={activeClip.source}
                         target="_blank"
                         rel="noopener noreferrer nofollow"
-                        className="underline decoration-2 decoration-[#8d4d38] underline-offset-4 break-all"
+                        className="underline decoration-2 decoration-[#26292e] underline-offset-4 break-all"
                       >
                         {activeClip.source}
                       </a>
@@ -3315,12 +3290,12 @@ export default function Home() {
               </section>
 
               {notes.length > 0 && (
-                <section className="p-5 md:p-8 border-t border-[#d9cdbb]">
+                <section className="p-5 md:p-8 border-t border-[#d5d7da]">
                   <h3 className="text-xl font-black tracking-tight">
                     각주{' '}
-                    <span className="text-sm font-semibold text-[#71675a]">({notes.length})</span>
+                    <span className="text-sm font-semibold text-[#666b73]">({notes.length})</span>
                   </h3>
-                  <div className="mt-4 divide-y divide-[#e5dac8]">
+                  <div className="mt-4 divide-y divide-[#e4e6e9]">
                     {notes.map((n, i) => (
                       <div key={n.id} id={`note-${n.id}`} className="py-4 first:pt-0">
                         <div className="flex justify-between items-start gap-3">
@@ -3332,7 +3307,7 @@ export default function Home() {
                             삭제
                           </button>
                         </div>
-                        <div className="mt-2 ml-2 flex items-start gap-1.5 text-sm text-[#5c5245]">
+                        <div className="mt-2 ml-2 flex items-start gap-1.5 text-sm text-[#555a62]">
                           <ReplyIcon />
                           <DiscordText text={n.content} className="flex-1 min-w-0 leading-relaxed" />
                         </div>
@@ -3344,8 +3319,8 @@ export default function Home() {
             </article>
 
             <aside className="hidden lg:block lg:self-start lg:sticky lg:top-6">
-              <div className="border border-[#d9cdbb] bg-[#fbf8f1]">
-                <div className="px-4 py-2 bg-[#4c4939] text-[#fbf8f1] text-[11px] font-semibold uppercase tracking-widest">
+              <div className="border border-[#d5d7da] bg-[#fafafa]">
+                <div className="px-4 py-2 bg-[#34373d] text-[#fafafa] text-[11px] font-semibold uppercase tracking-widest">
                   도구
                 </div>
                 <div className="p-4 space-y-4">
@@ -3362,7 +3337,7 @@ export default function Home() {
                           className={sideBtn}
                         >
                           <span
-                            className="inline-block w-4 h-4 border border-[#d9cdbb]"
+                            className="inline-block w-4 h-4 border border-[#d5d7da]"
                             style={{ background: b.color }}
                           />
                           {b.label}
@@ -3371,9 +3346,9 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="border-t border-[#d9cdbb] pt-4 space-y-3">
+                  <div className="border-t border-[#d5d7da] pt-4 space-y-3">
                     <p className={LABEL}>선택한 문장</p>
-                    <p className="text-xs text-[#5c5245] break-words max-h-32 overflow-y-auto">
+                    <p className="text-xs text-[#555a62] break-words max-h-32 overflow-y-auto">
                       {selection ? `"${selection.text}"` : '문장을 드래그해서 선택하세요'}
                     </p>
                     {selection && (
@@ -3398,10 +3373,10 @@ export default function Home() {
           </div>
         </main>
 
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 min-[621px]:left-[206px] z-40 bg-[#fbf8f1] border-t border-[#d9cdbb] pb-[env(safe-area-inset-bottom)]">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 min-[621px]:left-[206px] z-40 bg-[#fafafa] border-t border-[#d5d7da] pb-[env(safe-area-inset-bottom)]">
           {noteForm('bar')}
           <div className="px-3 pt-2 flex items-center gap-3 text-xs">
-            <span className="flex-1 min-w-0 truncate text-[#71675a]">
+            <span className="flex-1 min-w-0 truncate text-[#666b73]">
               {selection ? `선택: "${selection.text}"` : '문장을 드래그해서 선택하세요'}
             </span>
             {selection && (
@@ -3420,7 +3395,7 @@ export default function Home() {
                 onClick={() => applyHighlight(b.key)}
                 className={barBtn}
               >
-                <span className="inline-block w-4 h-4 border border-[#d9cdbb]" style={{ background: b.color }} />
+                <span className="inline-block w-4 h-4 border border-[#d5d7da]" style={{ background: b.color }} />
                 <span>{b.label}</span>
               </button>
             ))}
@@ -3429,7 +3404,7 @@ export default function Home() {
               disabled={!selection}
               onMouseDown={keepSelection}
               onClick={() => setNotePanelOpen(true)}
-              className={`${barBtn} bg-[#4c4939] text-[#fbf8f1]`}
+              className={`${barBtn} bg-[#34373d] text-[#fafafa]`}
             >
               <span className="text-base font-black leading-none">+</span>
               <span>코멘트</span>
@@ -3462,10 +3437,10 @@ export default function Home() {
         <GlobalStyle />
         {header}
         <main className="max-w-screen-xl mx-auto px-4 py-8">
-          <div className="border border-[#d9cdbb] bg-[#fbf8f1] grid grid-cols-1 lg:grid-cols-12">
-            <section className="lg:col-span-5 p-5 md:p-6 border-b lg:border-b-0 lg:border-r border-[#d9cdbb] space-y-6">
-              <div className="border-b border-[#d9cdbb] pb-2">
-                <p className="text-[11px] uppercase tracking-widest text-[#71675a]">Profile</p>
+          <div className="border border-[#d5d7da] bg-[#fafafa] grid grid-cols-1 lg:grid-cols-12">
+            <section className="lg:col-span-5 p-5 md:p-6 border-b lg:border-b-0 lg:border-r border-[#d5d7da] space-y-6">
+              <div className="border-b border-[#d5d7da] pb-2">
+                <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Profile</p>
                 <h2 className="text-xl font-black tracking-tight">닉네임과 인장</h2>
               </div>
 
@@ -3480,7 +3455,7 @@ export default function Home() {
                   placeholder="다른 사람에게 보이는 이름"
                   className={INPUT}
                 />
-                <p className="mt-1 text-xs text-[#71675a]">
+                <p className="mt-1 text-xs text-[#666b73]">
                   {Array.from(draft.nickname).length}/16 &middot; 다른 사람과 겹치면 쓸 수 없어요.
                 </p>
               </div>
@@ -3524,7 +3499,7 @@ export default function Home() {
                   />
                 )}
                 {sealImageBroken && draft.sealImage.startsWith('http') && (
-                  <p className="mt-2 text-xs font-semibold text-[#8d4d38] break-words">
+                  <p className="mt-2 text-xs font-semibold text-[#26292e] break-words">
                     저장된 사진을 불러오지 못했어요. Supabase Storage의 seals 버킷이 Public(공개)인지 확인해 주세요.
                   </p>
                 )}
@@ -3538,7 +3513,7 @@ export default function Home() {
                     저장된 사진 주소 열어보기
                   </a>
                 )}
-                <p className="mt-2 text-xs text-[#71675a]">
+                <p className="mt-2 text-xs text-[#666b73]">
                   사진을 고르면 드래그하고 확대해서 보여줄 부분을 정할 수 있어요. 사진은 원래 색 그대로, 기울어진
                   도장 모양으로 보여요. 사진을 쓰면 인장 글자와 모양은 쓰이지 않고, 색은 테두리에만 쓰여요. 저장해야
                   올라가요.
@@ -3556,7 +3531,7 @@ export default function Home() {
                   placeholder="비우면 닉네임 첫 글자"
                   className={INPUT}
                 />
-                <p className="mt-1 text-xs text-[#71675a]">1~2글자까지 새길 수 있어요.</p>
+                <p className="mt-1 text-xs text-[#666b73]">1~2글자까지 새길 수 있어요.</p>
               </div>
 
               <div>
@@ -3568,12 +3543,12 @@ export default function Home() {
                       type="button"
                       aria-pressed={draft.sealColor === key}
                       onClick={() => setDraft({ ...draft, sealColor: key })}
-                      className={`inline-flex items-center gap-2 min-h-[34px] px-4 border border-[#d9cdbb] text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
-                        draft.sealColor === key ? 'bg-[#4c4939] text-[#fbf8f1]' : 'hover:bg-[#ece2d1]'
+                      className={`inline-flex items-center gap-2 min-h-[34px] px-4 border border-[#d5d7da] text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
+                        draft.sealColor === key ? 'bg-[#34373d] text-[#fafafa]' : 'hover:bg-[#e9ebee]'
                       }`}
                     >
                       <span
-                        className="inline-block w-4 h-4 border border-[#9f9382]"
+                        className="inline-block w-4 h-4 border border-[#969ba2]"
                         style={{ background: c.hex }}
                       />
                       {c.label}
@@ -3597,7 +3572,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 pt-2 border-t border-[#d9cdbb]">
+              <div className="flex items-center gap-4 pt-2 border-t border-[#d5d7da]">
                 <button onClick={handleSaveProfile} disabled={profileSaving} className={`${BTN} mt-4`}>
                   {profileSaving ? '저장 중...' : '저장'}
                 </button>
@@ -3609,8 +3584,8 @@ export default function Home() {
             </section>
 
             <section className="lg:col-span-7">
-              <div className="px-5 py-4 border-b border-[#d9cdbb]">
-                <p className="text-[11px] uppercase tracking-widest text-[#71675a]">Preview</p>
+              <div className="px-5 py-4 border-b border-[#d5d7da]">
+                <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Preview</p>
                 <h2 className="text-3xl font-black tracking-tight">미리보기</h2>
               </div>
 
@@ -3624,12 +3599,12 @@ export default function Home() {
                     size={88}
                   />
                   <div className="min-w-0">
-                    <p className="text-[11px] uppercase tracking-widest text-[#71675a]">Reader</p>
+                    <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Reader</p>
                     <p className="text-3xl font-black tracking-tight truncate">{previewNick}</p>
                   </div>
                 </div>
 
-                <div className="border-t border-[#d9cdbb] pt-4 space-y-2">
+                <div className="border-t border-[#d5d7da] pt-4 space-y-2">
                   <p className={LABEL}>이렇게 보여요</p>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                     <span className="inline-flex items-center gap-1.5 font-semibold">
@@ -3642,7 +3617,7 @@ export default function Home() {
                       />
                       {previewNick}
                     </span>
-                    <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#71675a]">
+                    <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#666b73]">
                       <Seal
                         text={previewSeal}
                         color={draft.sealColor}
@@ -3655,18 +3630,18 @@ export default function Home() {
                       </span>
                     </span>
                   </div>
-                  <p className="text-xs text-[#71675a]">
+                  <p className="text-xs text-[#666b73]">
                     인장은 전체 서재 목록, 글 상세 화면, 같은 책을 읽은 사람 목록에서 닉네임 옆에 찍혀요.
                   </p>
                 </div>
 
                 <div>
                   <p className={LABEL}>나의 기록</p>
-                  <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 border-t border-l border-[#d9cdbb]">
+                  <div className="mt-2 grid grid-cols-2 sm:grid-cols-4 border-t border-l border-[#d5d7da]">
                     {stats.map(([label, n]) => (
-                      <div key={label} className="p-4 border-r border-b border-[#d9cdbb]">
+                      <div key={label} className="p-4 border-r border-b border-[#d5d7da]">
                         <p className="text-3xl font-black tracking-tight">{n}</p>
-                        <p className="mt-1 text-[11px] uppercase tracking-widest text-[#71675a]">{label}</p>
+                        <p className="mt-1 text-[11px] uppercase tracking-widest text-[#666b73]">{label}</p>
                       </div>
                     ))}
                   </div>
@@ -3747,7 +3722,7 @@ export default function Home() {
     const stats: [string, number, string, string][] = [
       ['▤ 함께 모은 책', countBooks, '권', '모두의 책장에서'],
       ['▧ 쌓인 독후감', writtenAll.length, '편', '생각의 기록들'],
-      ['❞ 모아둔 문장', allQuotes.length, '개', '다시 읽고 싶은 구절'],
+      ['▤ 모아둔 문장', allQuotes.length, '개', '다시 읽고 싶은 구절'],
       ['⌁ 함께한 멤버', memberIds.length, '명', '작은 서재 식구'],
     ];
 
@@ -3824,19 +3799,19 @@ export default function Home() {
             </div>
 
             <aside className="bs-right-stack">
-              <div className="bs-memo-card">
-                <div className="bs-memo-label">PINNED MEMO</div>
-                <p>
-                  {pinned
-                    ? `“${plainText(pinned.q.content).slice(0, 90)}${plainText(pinned.q.content).length > 90 ? '…' : ''}”`
-                    : '“마음에 남은 문장을 한 줄 적어 두면 여기에 붙여 둘게요.”'}
-                </p>
-                <div className="bs-memo-foot">
-                  <span>{pinned ? pinned.r.books.title : '서가에 붙여 둔 메모'}</span>
-                  <span>{pinned ? fmtMD(pinned.q.created_at) : ''}</span>
+              {pinned && (
+                <div className="bs-paper-panel" style={{ padding: 16 }}>
+                  <div className="bs-file-label">RECENT QUOTE</div>
+                  <p className="text-sm leading-relaxed text-[#555a62]">
+                    {plainText(pinned.q.content).slice(0, 120)}
+                    {plainText(pinned.q.content).length > 120 ? '…' : ''}
+                  </p>
+                  <div className="bs-file-detail">
+                    <span>{pinned.r.books.title}</span>
+                    <span>{fmtMD(pinned.q.created_at)}</span>
+                  </div>
                 </div>
-              </div>
-
+              )}
               <div className="bs-member-list">
                 <div className="bs-section-head" style={{ margin: 0 }}>
                   <div className="bs-section-title" style={{ fontSize: 16 }}>
@@ -3858,7 +3833,7 @@ export default function Home() {
                       <div className="min-w-0">
                         <div className="bs-member-name">
                           {nameOf(uid)}
-                          {uid === user.id && <span style={{ fontWeight: 400, color: '#a0937e' }}> (나)</span>}
+                          {uid === user.id && <span style={{ fontWeight: 400, color: '#949494' }}> (나)</span>}
                         </div>
                         <div className="bs-member-sub">
                           {last ? `최근 기록 · ${fmtMD(last)}` : '아직 기록이 없어요'}
@@ -3874,7 +3849,7 @@ export default function Home() {
                   <div className="bs-calendar-month">
                     {y}년 {m + 1}월
                   </div>
-                  <span style={{ fontSize: 10, color: '#9a8a72' }}>READING LOG</span>
+                  <span style={{ fontSize: 10, color: '#8c8c8c' }}>READING LOG</span>
                 </div>
                 <div className="bs-calendar-week">
                   {['일', '월', '화', '수', '목', '금', '토'].map((d) => (
@@ -4053,7 +4028,7 @@ export default function Home() {
           <div className="bs-shelf-toolbar">
             <div className="bs-filter-group">
               <span className="bs-tag">전체 기록 {pad2(writtenAll.length)}</span>
-              <span style={{ fontSize: 11, color: '#8f806a', marginLeft: 7 }}>최신 기록부터 정리합니다.</span>
+              <span style={{ fontSize: 11, color: '#828282', marginLeft: 7 }}>최신 기록부터 정리합니다.</span>
             </div>
           </div>
           <div className="bs-records">
@@ -4100,7 +4075,7 @@ export default function Home() {
               ❞ &nbsp; 책에서 문장 추가
             </button>
           </div>
-          <div className="bs-home-grid">
+          <div>
             <div className="bs-records">
               {list.length === 0 ? (
                 <div className="bs-empty-state">
@@ -4110,9 +4085,8 @@ export default function Home() {
               ) : (
                 list.map(({ q, r }) => (
                   <article key={q.id} className="bs-record-row bs-quote-row" onClick={() => openReview(r)}>
-                    <div className="bs-quote-mark">“</div>
                     <div className="min-w-0">
-                      <div className="bs-record-excerpt" style={{ fontSize: 15, color: '#554635', marginBottom: 8 }}>
+                      <div className="bs-record-excerpt" style={{ fontSize: 15, color: '#484848', marginBottom: 8 }}>
                         {plainText(q.content)}
                       </div>
                       {q.quote_comments.map((c) => (
@@ -4129,22 +4103,6 @@ export default function Home() {
                   </article>
                 ))
               )}
-            </div>
-            <div className="bs-right-stack">
-              <div className="bs-memo-card">
-                <div className="bs-memo-label">COLLECTED THOUGHTS</div>
-                <p>
-                  문장을 모으는 일은
-                  <br />
-                  마음이 잠시 멈춘 자리에
-                  <br />
-                  작은 표식을 남기는 일.
-                </p>
-                <div className="bs-memo-foot">
-                  <span>나의 수집장</span>
-                  <span>{pad2(mine.length)}</span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -4194,14 +4152,14 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <div className="border border-[#d9cdbb] bg-[#fbf8f1] grid grid-cols-1 lg:grid-cols-12">
+        <div className="border border-[#d5d7da] bg-[#fafafa] grid grid-cols-1 lg:grid-cols-12">
           <section
             className={`${
               searchOpen ? 'lg:col-span-4' : 'lg:col-span-3'
-            } min-w-0 p-4 sm:p-5 border-b lg:border-b-0 lg:border-r border-[#d9cdbb] space-y-5`}
+            } min-w-0 p-4 sm:p-5 border-b lg:border-b-0 lg:border-r border-[#d5d7da] space-y-5`}
           >
-            <div className="border-b border-[#d9cdbb] pb-2">
-              <p className="text-[11px] uppercase tracking-widest text-[#71675a]">New Entry</p>
+            <div className="border-b border-[#d5d7da] pb-2">
+              <p className="text-[11px] uppercase tracking-widest text-[#666b73]">New Entry</p>
               <h2 className="text-xl font-black tracking-tight">책 추가</h2>
             </div>
 
@@ -4226,18 +4184,18 @@ export default function Home() {
                     결과 지우기
                   </button>
                 </div>
-                <div className="divide-y divide-[#e5dac8] border-y border-[#d9cdbb] max-h-96 overflow-y-auto">
+                <div className="divide-y divide-[#e4e6e9] border-y border-[#d5d7da] max-h-96 overflow-y-auto">
                   {searchResults.map((book, idx) => (
                     <div key={idx} className="py-3 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3 min-w-0">
                         <img
                           src={book.thumbnail || undefined}
                           alt={book.title}
-                          className="w-11 h-16 object-cover border border-[#d9cdbb] bg-[#e9dfce] shrink-0"
+                          className="w-11 h-16 object-cover border border-[#d5d7da] bg-[#e7e9ec] shrink-0"
                         />
                         <div className="min-w-0">
                           <p className="font-bold text-sm truncate">{book.title}</p>
-                          <p className="text-xs text-[#5c5245] truncate">{book.authors.join(', ')}</p>
+                          <p className="text-xs text-[#555a62] truncate">{book.authors.join(', ')}</p>
                         </div>
                       </div>
                       <button
@@ -4253,7 +4211,7 @@ export default function Home() {
             )}
 
             {selectedBook && (
-              <div className="border border-[#d9cdbb] p-4 space-y-5">
+              <div className="border border-[#d5d7da] p-4 space-y-5">
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="text-sm font-black tracking-tight">새 책 서재에 추가</h3>
                   <div className="flex items-center gap-3 shrink-0">
@@ -4268,15 +4226,15 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 border-y border-[#d9cdbb] py-3">
+                <div className="flex items-center gap-3 border-y border-[#d5d7da] py-3">
                   <img
                     src={selectedBook.thumbnail || undefined}
                     alt={selectedBook.title}
-                    className="w-12 h-16 object-cover border border-[#d9cdbb] bg-[#e9dfce] shrink-0"
+                    className="w-12 h-16 object-cover border border-[#d5d7da] bg-[#e7e9ec] shrink-0"
                   />
                   <div className="min-w-0">
                     <p className="font-bold text-sm break-words">{selectedBook.title}</p>
-                    <p className="text-xs text-[#5c5245] truncate">{selectedBook.authors.join(', ')}</p>
+                    <p className="text-xs text-[#555a62] truncate">{selectedBook.authors.join(', ')}</p>
                   </div>
                 </div>
 
@@ -4317,12 +4275,12 @@ export default function Home() {
 
           <div className={`${searchOpen ? 'lg:col-span-8' : 'lg:col-span-9'} min-w-0`}>
             <section>
-              <div className="flex flex-wrap justify-between items-end gap-3 px-4 sm:px-5 py-4 border-b border-[#d9cdbb]">
+              <div className="flex flex-wrap justify-between items-end gap-3 px-4 sm:px-5 py-4 border-b border-[#d5d7da]">
                 <div>
-                  <p className="text-[11px] uppercase tracking-widest text-[#71675a]">My Shelf</p>
+                  <p className="text-[11px] uppercase tracking-widest text-[#666b73]">My Shelf</p>
                   <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
                     내 서재{' '}
-                    <span className="text-sm font-semibold text-[#71675a]">총 {myShelf.length}권</span>
+                    <span className="text-sm font-semibold text-[#666b73]">총 {myShelf.length}권</span>
                   </h2>
                 </div>
                 <input
@@ -4335,7 +4293,7 @@ export default function Home() {
               </div>
 
               {shelfList.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 px-4 text-center text-[#71675a]">
+                <div className="flex flex-col items-center justify-center py-16 px-4 text-center text-[#666b73]">
                   <p className="text-sm">
                     {myShelf.length === 0
                       ? '등록된 책이 없습니다. "책 추가"에서 책을 검색해 첫 글을 만들어 보세요.'
@@ -4347,17 +4305,17 @@ export default function Home() {
               )}
             </section>
 
-            <section className="border-t border-[#d9cdbb]">
-              <div className="px-4 sm:px-5 py-4 border-b border-[#d9cdbb]">
-                <p className="text-[11px] uppercase tracking-widest text-[#71675a]">Wish List</p>
+            <section className="border-t border-[#d5d7da]">
+              <div className="px-4 sm:px-5 py-4 border-b border-[#d5d7da]">
+                <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Wish List</p>
                 <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
                   읽고 싶은 책{' '}
-                  <span className="text-sm font-semibold text-[#71675a]">총 {myWishlist.length}권</span>
+                  <span className="text-sm font-semibold text-[#666b73]">총 {myWishlist.length}권</span>
                 </h2>
               </div>
 
               {wishList.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-[#71675a]">
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-[#666b73]">
                   <p className="text-sm">
                     {myWishlist.length === 0
                       ? '읽고 싶은 책이 없습니다. 책을 검색해 "읽고 싶은 책"으로 담아 보세요.'
@@ -4369,13 +4327,13 @@ export default function Home() {
               )}
             </section>
 
-            <section className="border-t border-[#d9cdbb]">
-              <div className="flex items-end justify-between gap-3 px-4 sm:px-5 py-4 border-b border-[#d9cdbb]">
+            <section className="border-t border-[#d5d7da]">
+              <div className="flex items-end justify-between gap-3 px-4 sm:px-5 py-4 border-b border-[#d5d7da]">
                 <div>
-                  <p className="text-[11px] uppercase tracking-widest text-[#71675a]">Clippings</p>
+                  <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Clippings</p>
                   <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
                     스크랩{' '}
-                    <span className="text-sm font-semibold text-[#71675a]">총 {clippings.length}개</span>
+                    <span className="text-sm font-semibold text-[#666b73]">총 {clippings.length}개</span>
                   </h2>
                 </div>
                 <button
@@ -4390,7 +4348,7 @@ export default function Home() {
               </div>
 
               {clipList.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-[#71675a]">
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-[#666b73]">
                   <p className="text-sm">
                     {clippings.length === 0
                       ? '스크랩이 없습니다. 위의 + 버튼으로 기사 링크나 칼럼을 추가해 보세요.'
@@ -4403,12 +4361,12 @@ export default function Home() {
                     <li
                       key={c.id}
                       onClick={() => openClip(c.id)}
-                      className="px-4 sm:px-5 py-4 border-b border-[#d9cdbb] last:border-b-0 hover:bg-[#ece2d1] cursor-pointer transition-colors duration-200 group"
+                      className="px-4 sm:px-5 py-4 border-b border-[#d5d7da] last:border-b-0 hover:bg-[#e9ebee] cursor-pointer transition-colors duration-200 group"
                     >
-                      <p className="font-bold text-base break-words underline-offset-4 decoration-2 decoration-[#8d4d38] group-hover:underline">
+                      <p className="font-bold text-base break-words underline-offset-4 decoration-2 decoration-[#26292e] group-hover:underline">
                         {c.title}
                       </p>
-                      <p className="mt-1 text-xs text-[#71675a] flex flex-wrap gap-x-3 gap-y-0.5">
+                      <p className="mt-1 text-xs text-[#666b73] flex flex-wrap gap-x-3 gap-y-0.5">
                         {c.source && <span className="truncate max-w-full">{c.source}</span>}
                         <span>{new Date(c.created_at).toLocaleDateString('ko-KR')}</span>
                         <span>
@@ -4430,15 +4388,15 @@ export default function Home() {
           role="dialog"
           aria-modal="true"
           onClick={() => setClipModalOpen(false)}
-          className="fixed inset-0 z-50 flex justify-center bg-[#4c4939]/60 p-4 overflow-y-auto"
+          className="fixed inset-0 z-50 flex justify-center bg-[#34373d]/60 p-4 overflow-y-auto"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-xl my-auto border border-[#d9cdbb] bg-[#fbf8f1] p-5 sm:p-6"
+            className="w-full max-w-xl my-auto border border-[#d5d7da] bg-[#fafafa] p-5 sm:p-6"
           >
-            <div className="flex items-end justify-between gap-3 border-b border-[#d9cdbb] pb-2 mb-5">
+            <div className="flex items-end justify-between gap-3 border-b border-[#d5d7da] pb-2 mb-5">
               <div>
-                <p className="text-[11px] uppercase tracking-widest text-[#71675a]">New Clipping</p>
+                <p className="text-[11px] uppercase tracking-widest text-[#666b73]">New Clipping</p>
                 <h2 className="text-xl font-black tracking-tight">스크랩 만들기</h2>
               </div>
               <button type="button" onClick={() => setClipModalOpen(false)} className={LINK_BTN}>
@@ -4469,9 +4427,9 @@ export default function Home() {
                   </button>
                 </div>
                 {clipFetchError && (
-                  <p className="mt-1 text-xs font-semibold text-[#8d4d38] break-words">{clipFetchError}</p>
+                  <p className="mt-1 text-xs font-semibold text-[#26292e] break-words">{clipFetchError}</p>
                 )}
-                <p className="mt-1 text-xs text-[#71675a]">
+                <p className="mt-1 text-xs text-[#666b73]">
                   링크 대신 매체 이름을 적어도 돼요. 일부 사이트는 불러오지 못할 수 있어요.
                 </p>
               </div>
@@ -4496,7 +4454,7 @@ export default function Home() {
                   placeholder="기사나 칼럼을 복사해서 붙여넣어도 돼요"
                   className={`${TEXTAREA_BOX} mt-2`}
                 />
-                <p className="mt-1 text-xs text-[#71675a]">
+                <p className="mt-1 text-xs text-[#666b73]">
                   저장한 뒤에는 본문을 고칠 수 없어요. 형광펜과 각주 위치가 어긋나기 때문이에요. 불필요한
                   부분은 저장 전에 지워 주세요.
                 </p>
