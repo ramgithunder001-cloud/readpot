@@ -1674,19 +1674,29 @@ function ReviewEditorPanel({
   });
 
   const active = useEditorState({
-    editor,
-    selector: ({ editor: ed }) => ({
-      h2: !!ed?.isActive('heading', { level: 2 }),
-      h3: !!ed?.isActive('heading', { level: 3 }),
-      bold: !!ed?.isActive('bold'),
-      italic: !!ed?.isActive('italic'),
-      quote: !!ed?.isActive('blockquote'),
-      bullet: !!ed?.isActive('bulletList'),
-      ordered: !!ed?.isActive('orderedList'),
-      canUndo: !!ed?.can().undo(),
-      canRedo: !!ed?.can().redo(),
-    }),
-  });
+  editor,
+  selector: ({ editor: ed }) => ({
+    h2: !!ed?.isActive('heading', { level: 2 }),
+    h3: !!ed?.isActive('heading', { level: 3 }),
+    bold: !!ed?.isActive('bold'),
+    italic: !!ed?.isActive('italic'),
+    quote: !!ed?.isActive('blockquote'),
+    bullet: !!ed?.isActive('bulletList'),
+    ordered: !!ed?.isActive('orderedList'),
+    canUndo: !!ed?.can().undo(),
+    canRedo: !!ed?.can().redo(),
+  }),
+}) ?? {
+  h2: false,
+  h3: false,
+  bold: false,
+  italic: false,
+  quote: false,
+  bullet: false,
+  ordered: false,
+  canUndo: false,
+  canRedo: false,
+};
 
   useEffect(() => {
     mounted.current = true;
