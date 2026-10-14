@@ -85,28 +85,28 @@ const byCreated = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
 
 const FOCUS =
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#26292e] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f1f2f4]';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111111] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F9F9F7]';
 
-const BTN = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-4 rounded-[3px] border border-[#34373d] bg-[#34373d] text-[#fbfbfc] text-xs transition-colors duration-200 hover:bg-[#191b1f] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
-const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-4 rounded-[3px] border border-[#b7bbc1] bg-transparent text-[#202328] text-xs transition-colors duration-200 hover:bg-[#e9ebee] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
-const BTN_SM = `inline-flex items-center justify-center min-h-[28px] px-3 rounded-[3px] border border-[#34373d] bg-[#34373d] text-[#fbfbfc] text-xs transition-colors duration-200 hover:bg-[#191b1f] ${FOCUS}`;
-const BTN_ACTIVE = `inline-flex items-center justify-center min-h-[34px] px-3 sm:px-4 rounded-[3px] border border-[#34373d] bg-[#34373d] text-[#fbfbfc] text-xs ${FOCUS}`;
-const LINK_BTN = `text-xs text-[#26292e] underline-offset-4 hover:underline ${FOCUS}`;
-const DANGER_BTN = `text-xs text-[#969ba2] underline-offset-4 hover:text-[#26292e] hover:underline ${FOCUS}`;
-const INPUT = `w-full min-w-0 bg-[#f4f5f6] border border-[#d5d7da] rounded-[2px] px-3 py-2 text-sm text-[#202328] placeholder:text-[#a4a8ae] focus:border-[#26292e] focus:outline-none`;
-const TEXTAREA_BOX = `w-full bg-[#f4f5f6] border border-[#d5d7da] rounded-[2px] p-3 text-sm leading-relaxed text-[#202328] placeholder:text-[#a4a8ae] focus:border-[#26292e] focus:outline-none`;
-const LABEL = 'block text-[11px] font-semibold uppercase tracking-[0.12em] text-[#666b73]';
+const BTN = `inline-flex items-center justify-center min-h-[44px] px-4 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#F9F9F7] hover:text-[#111111] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[44px] px-4 border border-[#111111] bg-transparent text-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F9F9F7] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN_SM = `inline-flex items-center justify-center min-h-[36px] px-3 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold transition-all duration-200 hover:bg-[#F9F9F7] hover:text-[#111111] ${FOCUS}`;
+const BTN_ACTIVE = `inline-flex items-center justify-center min-h-[44px] px-4 border border-[#111111] bg-[#111111] text-[#F9F9F7] text-xs font-semibold tracking-widest ${FOCUS}`;
+const LINK_BTN = `text-xs text-[#111111] underline-offset-4 decoration-2 decoration-[#CC0000] hover:underline ${FOCUS}`;
+const DANGER_BTN = `text-xs text-[#525252] underline-offset-4 decoration-2 decoration-[#CC0000] hover:text-[#CC0000] hover:underline ${FOCUS}`;
+const INPUT = `w-full min-w-0 bg-transparent border-0 border-b-2 border-[#111111] px-3 py-2 text-sm text-[#111111] placeholder:text-[#737373] focus:bg-[#F0F0F0] focus:outline-none`;
+const TEXTAREA_BOX = `w-full bg-transparent border-0 border-b-2 border-[#111111] p-3 text-sm leading-relaxed text-[#111111] placeholder:text-[#737373] focus:bg-[#F0F0F0] focus:outline-none`;
+const LABEL = 'block text-xs font-semibold uppercase tracking-widest text-[#525252]';
 
 function GlobalStyle() {
   return (
     <style>{`
       @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
       :root {
-        --paper: #f1f2f4; --paper-light: #fafafa; --paper-deep: #e7e9ec;
-        --ink: #202328; --ink-soft: #666b73; --ink-faint: #969ba2;
-        --line: #d5d7da; --line-dark: #b7bbc1; --rust: #26292e; --rust-light: #dbdbdb;
-        --olive: #686868; --olive-light: #e3e3e3; --blue: #656565; --blue-light: #e2e2e2;
-        --shadow: 0 12px 35px rgba(49, 49, 49, .07);
+        --paper: #F9F9F7; --paper-light: #F9F9F7; --paper-deep: #E5E5E0;
+        --ink: #111111; --ink-soft: #525252; --ink-faint: #737373;
+        --line: #111111; --line-dark: #111111; --rust: #CC0000; --rust-light: #E5E5E0;
+        --olive: #111111; --olive-light: #E5E5E0; --blue: #111111; --blue-light: #E5E5E0;
+        --shadow: none;
         --sans: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
         --serif: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
       }
@@ -122,7 +122,7 @@ function GlobalStyle() {
       }
       h1, h2, h3 { font-family: var(--serif); }
       body code, body pre, body pre * {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Pretendard', monospace !important;
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
       }
       ::selection { background: var(--ink); color: var(--paper-light); }
       button { cursor: pointer; }
@@ -348,6 +348,130 @@ function GlobalStyle() {
       .bs-book-reader{display:inline-flex;align-items:center;gap:6px;min-width:0;font-size:11px;color:#34373d}
       .bs-reader-name{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
       @media(max-width:620px){.bs-books-grid{grid-template-columns:minmax(0,1fr);gap:10px}.bs-book-card{padding:13px}.bs-book-card-main{grid-template-columns:78px minmax(0,1fr);gap:13px}.bs-book-card-cover{width:78px;min-width:78px}.bs-book-card .bs-book-cover,.bs-book-card .bs-cover-img{width:78px;height:106px}.bs-book-card h3.bs-book-title{font-size:14px}}
+
+      /* Newsprint design system — Pretendard is intentionally used for every text role. */
+      html { background: #F9F9F7; }
+      body, body * , body *::before, body *::after {
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+        border-radius: 0 !important;
+      }
+      body {
+        color: #111111 !important;
+        background-color: #F9F9F7 !important;
+        background-image: radial-gradient(rgba(17,17,17,.07) .55px, transparent .55px) !important;
+        background-size: 5px 5px !important;
+      }
+      ::selection { background: #CC0000; color: #F9F9F7; }
+      img { filter: grayscale(100%); transition: filter .2s ease-out; }
+      a:hover img, button:hover img, .bs-book-card:hover img { filter: grayscale(100%) sepia(50%); }
+      button, input, select, textarea { border-radius: 0 !important; }
+      .bs-main { background: transparent; }
+      .bs-sidebar {
+        background: #F9F9F7; border-right: 1px solid #111111; box-shadow: none;
+      }
+      .bs-brand { border-bottom: 2px solid #111111; }
+      .bs-brand-mark { border: 1px solid #111111; background: #F9F9F7; color: #111111; box-shadow: 3px 3px 0 #111111; }
+      .bs-brand-mark:before { border-color: #111111; }
+      .bs-brand-title { color: #111111; letter-spacing: -.05em; }
+      .bs-side-label, .bs-brand-sub { color: #525252; }
+      .bs-nav { gap: 0; }
+      .bs-nav button { min-height: 44px; border: 1px solid transparent; color: #111111; transition: background-color .2s, color .2s; }
+      .bs-nav button:hover { background: #E5E5E0; }
+      .bs-nav button.bs-active { color: #F9F9F7; background: #111111; box-shadow: inset 4px 0 #CC0000; font-weight: 700; }
+      .bs-nav button.bs-active .bs-nav-ico { color: #F9F9F7; }
+      .bs-nav-ico, .bs-nav-count, .bs-side-bottom { color: #525252; }
+      .bs-seal { border-color: #111111; color: #111111; background: #F9F9F7; }
+      .bs-topbar { background: #F9F9F7; border-bottom: 2px solid #111111; }
+      .bs-search { background: transparent; border: 1px solid #111111; color: #111111; border-radius: 0; }
+      .bs-search:focus { outline: 2px solid #111111; outline-offset: 2px; }
+      .bs-icon-button { background: transparent; color: #111111; border: 1px solid #111111; }
+      .bs-icon-button:hover { color: #F9F9F7; background: #111111; }
+      .bs-avatar { background: #E5E5E0; color: #111111; border: 1px solid #111111; box-shadow: none; }
+      .bs-content { max-width: 1280px; padding-top: 32px; }
+      .bs-page-head { border-bottom: 4px solid #111111; padding-bottom: 18px; margin-bottom: 26px; }
+      .bs-h1 { color: #111111; font-size: clamp(38px, 4.7vw, 62px); line-height: .98; font-weight: 800; letter-spacing: -.065em; }
+      .bs-h2 { color: #111111; font-weight: 800; letter-spacing: -.045em; }
+      .bs-h3 { color: #111111; font-weight: 750; letter-spacing: -.035em; }
+      .bs-head-mark { color: #525252; border-top: 2px solid #111111; }
+      .bs-btn { min-height: 44px; border: 1px solid #111111; background: transparent; color: #111111; transition: all .2s ease-out; }
+      .bs-btn:hover { background: #111111; color: #F9F9F7; }
+      .bs-btn-primary { background: #111111; color: #F9F9F7; border-color: #111111; font-weight: 700; letter-spacing: .06em; }
+      .bs-btn-primary:hover { background: #F9F9F7; color: #111111; border-color: #111111; }
+      .bs-link-button { color: #111111; text-decoration: underline; text-decoration-color: #CC0000; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+      .bs-link-button:hover { color: #CC0000; }
+      .bs-section-title { color: #111111; font-weight: 800; }
+      .bs-section-title small, .bs-lead, .bs-stat-note { color: #525252; }
+      .bs-rule { background: #111111; height: 1px; }
+      .bs-paper-panel, .bs-member-list, .bs-mini-calendar, .bs-stat-card, .bs-review-paper, .bs-file-card,
+      .bs-paper-panel, .bs-comment-input, .bs-editor-box .ProseMirror, .bs-file-detail, .bs-comment {
+        box-shadow: none; border-color: #111111;
+      }
+      .bs-paper-panel, .bs-member-list, .bs-mini-calendar, .bs-stat-card, .bs-review-paper, .bs-file-card { background: #F9F9F7; }
+      .bs-stat-card { border: 1px solid #111111; }
+      .bs-stat-card:after { border-color: rgba(17,17,17,.18); }
+      .bs-stat-number { color: #111111; font-weight: 800; letter-spacing: -.055em; }
+      .bs-home-intro h1 { font-size: clamp(38px, 5vw, 66px); line-height: .98; letter-spacing: -.065em; }
+      .bs-archive-stamp { border-color: #111111; outline-color: #111111; color: #111111; border-radius: 50% !important; }
+      .bs-stats-grid { gap: 0; border-top: 1px solid #111111; border-left: 1px solid #111111; }
+      .bs-stats-grid > * { border-top: 0; border-left: 0; border-right: 1px solid #111111; border-bottom: 1px solid #111111; }
+      .bs-shelf-toolbar { background: #F9F9F7; border: 1px solid #111111; border-left: 4px solid #111111; padding: 10px 12px; }
+      .bs-filter-group { gap: 0; }
+      .bs-filter-btn { min-height: 44px; border: 1px solid transparent; color: #525252; padding: 8px 12px; }
+      .bs-filter-btn:hover { color: #111111; background: #E5E5E0; }
+      .bs-filter-btn.bs-active { background: #111111; border-color: #111111; color: #F9F9F7; }
+      .bs-shelf-count { color: #111111; font-weight: 600; }
+      .bs-books-grid { grid-template-columns: repeat(auto-fit, minmax(285px, 1fr)); gap: 0; border-top: 1px solid #111111; border-left: 1px solid #111111; }
+      .bs-book-card {
+        background: #F9F9F7; border: 0; border-right: 1px solid #111111; border-bottom: 1px solid #111111;
+        padding: 18px; gap: 14px; box-shadow: none; transition: transform .2s ease-out, box-shadow .2s ease-out, background-color .2s ease-out;
+      }
+      .bs-book-card:hover { background: #F5F5F5; transform: translate(-2px, -2px); box-shadow: 4px 4px 0 #111111; z-index: 2; }
+      .bs-book-card-top, .bs-book-ref { display: none !important; }
+      .bs-book-card-main { grid-template-columns: 82px minmax(0,1fr); gap: 16px; }
+      .bs-book-card .bs-book-cover, .bs-book-card .bs-cover-img { border: 1px solid #111111; box-shadow: 3px 3px 0 #111111; }
+      .bs-book-card h3.bs-book-title { color: #111111; font-size: 17px; font-weight: 750; line-height: 1.45; letter-spacing: -.035em; }
+      .bs-book-card h3.bs-book-title:hover { color: #CC0000; }
+      .bs-book-card .bs-book-author { color: #525252; font-size: 12px; }
+      .bs-book-card-foot { border-top: 1px solid #111111; padding-top: 12px; }
+      .bs-reader-label { color: #737373; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; }
+      .bs-book-reader { color: #111111; }
+      .bs-member-avatar { background: #E5E5E0; color: #111111; border-color: #111111; }
+      .bs-empty-state { border: 1px dashed #111111; color: #525252; }
+      .bs-empty-state strong { color: #111111; }
+      .bs-records { border-top: 2px solid #111111; }
+      .bs-record-row { border-bottom: 1px solid #111111; }
+      .bs-record-title { color: #111111; font-weight: 700; }
+      .bs-record-row:hover .bs-record-title { color: #CC0000; }
+      .bs-record-excerpt, .bs-review-body, .bs-comment-text { color: #222222; }
+      .bs-tag, .bs-tag.bs-green, .bs-tag.bs-blue { border-color: #111111; background: #E5E5E0; color: #111111; }
+      .bs-review-paper { border: 1px solid #111111; }
+      .bs-review-paper:after { background: repeating-linear-gradient(90deg,#111111 0 15px,transparent 15px 25px); }
+      .bs-review-paper:before { border-color: #E5E5E0; }
+      .bs-review-body blockquote { border-left: 3px solid #CC0000; background: #E5E5E0; color: #111111; }
+      .bs-review-byline, .bs-review-tags, .bs-comments-panel, .bs-page-footer { border-color: #111111; }
+      .bs-back-link, .bs-danger-btn { color: #525252; }
+      .bs-page-footer { color: #525252; }
+      .bs-footer-wrap { max-width: 1280px; }
+      input, select, textarea { accent-color: #CC0000; }
+      input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible {
+        outline: 2px solid #111111; outline-offset: 2px;
+      }
+      @media(max-width:900px) {
+        .bs-sidebar { border-right: 1px solid #111111; }
+        .bs-content { padding-top: 26px; }
+      }
+      @media(max-width:620px) {
+        .bs-sidebar { border-right: 0; border-bottom: 2px solid #111111; }
+        .bs-brand { border-bottom: 0; }
+        .bs-nav button { min-height: 44px; }
+        .bs-content { padding-top: 22px; }
+        .bs-page-head { padding-bottom: 14px; }
+        .bs-h1 { font-size: 38px; }
+        .bs-books-grid { grid-template-columns: minmax(0,1fr); gap: 0; }
+        .bs-book-card { padding: 14px; }
+        .bs-book-card-main { grid-template-columns: 78px minmax(0,1fr); gap: 14px; }
+        .bs-book-card .bs-book-cover, .bs-book-card .bs-cover-img { width: 78px; height: 106px; }
+      }
     `}</style>
   );
 }
@@ -3760,7 +3884,7 @@ export default function Home() {
                 <span>다른 분류를 선택하거나 검색어를 바꿔 보세요.</span>
               </div>
             ) : (
-              visible.map((e, i) => {
+              visible.map((e) => {
                 const readingUsers = Array.from(
                   new Set(e.reviews.filter((r) => r.status === 'reading').map((r) => r.user_id))
                 );
@@ -3769,9 +3893,6 @@ export default function Home() {
                 const cover = e.type === 'series' ? e.cover : e.book.cover_url;
                 return (
                   <article key={e.type === 'series' ? e.key : e.isbn} className="bs-book-card" onClick={() => openBook(e)}>
-                    <div className="bs-book-card-top">
-                      <span className="bs-book-ref">NO. {String(i + 1).padStart(3, '0')}</span>
-                    </div>
                     <div className="bs-book-card-main">
                       <div className="bs-book-card-cover">
                         <BookCover title={title} author={author} src={cover} width={82} />
