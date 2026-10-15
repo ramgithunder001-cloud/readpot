@@ -1802,6 +1802,135 @@ function GlobalStyle() {
         .bs-book-detail-hero h2 { font-size: 24px !important; }
         .bs-modal-panel { padding: 15px !important; }
       }
+      /* Final usability fixes: preserve width, soften controls, and keep side gutters. */
+      .bs-book-detail-page {
+        box-sizing: border-box !important;
+        width: min(100%, 900px) !important;
+        max-width: 900px !important;
+        padding-left: clamp(22px, 4vw, 46px) !important;
+        padding-right: clamp(22px, 4vw, 46px) !important;
+      }
+      .bs-book-detail-hero {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      .bs-book-detail-hero > div:first-child {
+        display: grid !important;
+        grid-template-columns: 140px minmax(0, 1fr) !important;
+        align-items: start !important;
+        gap: 28px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      .bs-book-detail-hero > div:first-child > img {
+        width: 140px !important;
+        height: 208px !important;
+      }
+      .bs-book-detail-hero > div:first-child > div {
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      .bs-book-detail-hero > div:first-child > div > div:first-child,
+      .bs-book-detail-hero > div:first-child > div > div:first-child > div:first-child {
+        min-width: 0 !important;
+      }
+      .bs-book-detail-hero h2 {
+        max-width: 100% !important;
+        font-size: clamp(23px, 3vw, 36px) !important;
+        line-height: 1.35 !important;
+        font-weight: 600 !important;
+        letter-spacing: -.035em !important;
+        overflow-wrap: break-word !important;
+        word-break: normal !important;
+      }
+      .bs-content {
+        padding-left: clamp(24px, 4vw, 54px) !important;
+        padding-right: clamp(24px, 4vw, 54px) !important;
+      }
+      .bs-delete-x {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 25px !important;
+        min-width: 25px !important;
+        height: 25px !important;
+        min-height: 25px !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 50% !important;
+        background: transparent !important;
+        color: #d9364f !important;
+        box-shadow: none !important;
+        font-size: 22px !important;
+        font-weight: 400 !important;
+        line-height: 1 !important;
+        cursor: pointer !important;
+      }
+      .bs-delete-x:hover { background: rgba(217,54,79,.09) !important; color: #b91c35 !important; }
+      .bs-highlight-color {
+        display: inline-block !important;
+        width: 9px !important;
+        height: 9px !important;
+        border-radius: 50% !important;
+        margin-top: 6px !important;
+      }
+      .bs-highlight-records h3 { font-weight: 500 !important; }
+      .bs-highlight-record p { margin: 0 !important; font-weight: 400 !important; }
+      .bs-book-rating-heading, .bs-book-detail-section h3 { font-weight: 600 !important; }
+      button:not(.bs-mobile-bottom-nav button):not(.bs-nav button):not(.bs-rating-star-button):not(.bs-delete-x):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-active):not([aria-pressed="true"]) {
+        background-color: transparent !important;
+        font-weight: 400 !important;
+        font-size: 11px !important;
+        box-shadow: none !important;
+      }
+      .bs-btn, .bs-btn-primary, .bs-btn-small, .bs-btn-outline, .bs-filter-btn,
+      .bs-link-button, .bs-icon-button, .bs-add-scrap, .bs-book-add-button,
+      .bs-book-detail-hero button, .bs-book-my-rating button,
+      .bs-book-search-form button, .bs-book-search-result button, .bs-selected-book button {
+        background-color: transparent !important;
+        color: inherit !important;
+        font-weight: 400 !important;
+        font-size: 11px !important;
+        box-shadow: none !important;
+        transform: none !important;
+        border-radius: 3px !important;
+      }
+      .bs-btn, .bs-btn-primary, .bs-btn-small, .bs-book-detail-hero button,
+      .bs-book-my-rating button, .bs-book-search-form button, .bs-book-search-result button,
+      .bs-selected-book button { min-height: 34px !important; }
+      .bs-icon-button, .bs-add-scrap, .bs-book-add-button { min-height: 34px !important; }
+      .bs-btn:hover, .bs-btn-primary:hover, .bs-btn-small:hover,
+      .bs-link-button:hover, .bs-filter-btn:hover, .bs-icon-button:hover,
+      .bs-add-scrap:hover, .bs-book-add-button:hover {
+        background-color: rgba(0,0,0,.035) !important;
+        color: inherit !important;
+      }
+      .scrap-detail-article { min-width: 0 !important; width: 100% !important; }
+      .scrap-detail-header h2 { font-size: clamp(22px, 3vw, 32px) !important; font-weight: 600 !important; }
+      .scrap-detail-content { min-width: 0 !important; overflow-wrap: anywhere !important; }
+      .scrap-detail-article a { text-decoration-color: #d9364f !important; text-decoration-thickness: 1px !important; }
+      @media (max-width: 700px) {
+        .bs-content { padding-left: 18px !important; padding-right: 18px !important; }
+        .bs-book-detail-page { padding-left: 18px !important; padding-right: 18px !important; }
+        .bs-book-detail-hero > div:first-child {
+          grid-template-columns: 98px minmax(0, 1fr) !important;
+          gap: 18px !important;
+        }
+        .bs-book-detail-hero > div:first-child > img { width: 98px !important; height: 146px !important; }
+        .bs-book-detail-hero h2 { font-size: clamp(21px, 5vw, 28px) !important; }
+        .bs-book-detail-hero > div:first-child > div > div:first-child { gap: 8px !important; }
+        .bs-book-detail-hero > div:first-child > div > div:first-child > div:last-child { max-width: 100% !important; }
+        .bs-scrap-detail-page .bs-content { padding-left: 18px !important; padding-right: 18px !important; }
+        .bs-highlight-records { padding-left: 0 !important; padding-right: 0 !important; }
+      }
+      @media (max-width: 430px) {
+        .bs-content { padding-left: 15px !important; padding-right: 15px !important; }
+        .bs-book-detail-page { padding-left: 15px !important; padding-right: 15px !important; }
+        .bs-book-detail-hero > div:first-child { grid-template-columns: 84px minmax(0, 1fr) !important; gap: 13px !important; }
+        .bs-book-detail-hero > div:first-child > img { width: 84px !important; height: 126px !important; }
+        .bs-book-detail-hero h2 { font-size: 22px !important; }
+      }
     `}</style>
   );
 }
@@ -2271,8 +2400,14 @@ function QuoteList({
               <DiscordText text={q.content} wrapQuotes />
             </div>
             {onDeleteQuote && (
-              <button onClick={() => onDeleteQuote(q.id)} className={`${DANGER_BTN} shrink-0`}>
-                인용문 삭제
+              <button
+                type="button"
+                onClick={() => onDeleteQuote(q.id)}
+                className="bs-delete-x shrink-0"
+                aria-label="인용문 삭제"
+                title="인용문 삭제"
+              >
+                ×
               </button>
             )}
           </div>
@@ -2284,8 +2419,14 @@ function QuoteList({
                   <ReplyIcon />
                   <DiscordText text={c.content} className="flex-1 min-w-0 leading-relaxed" />
                   {isOwner && onDeleteComment && (
-                    <button onClick={() => onDeleteComment(c.id)} className={`${DANGER_BTN} shrink-0`}>
-                      삭제
+                    <button
+                      type="button"
+                      onClick={() => onDeleteComment(c.id)}
+                      className="bs-delete-x shrink-0"
+                      aria-label="댓글 삭제"
+                      title="댓글 삭제"
+                    >
+                      ×
                     </button>
                   )}
                 </div>
@@ -2550,8 +2691,8 @@ interface Clipping {
 }
 
 const HL_COLORS: Record<string, string> = {
-  red: 'rgba(80, 80, 80, 0.24)',
-  blue: 'rgba(128, 128, 128, 0.20)',
+  red: 'rgba(230, 45, 70, 0.24)',
+  blue: 'rgba(45, 125, 235, 0.23)',
 };
 
 const sortNotes = (notes: ClipNote[]) =>
@@ -2615,7 +2756,7 @@ const ClipArticle = memo(function ClipArticle({
           key={`s${a}`}
           data-start={a}
           style={color ? { backgroundColor: HL_COLORS[color] } : undefined}
-          className={noted ? 'underline decoration-[#202328] decoration-1 underline-offset-4' : undefined}
+          className={noted ? 'underline decoration-[#d9364f] decoration-2 underline-offset-4' : undefined}
         >
           {content.slice(a, b)}
         </span>
@@ -4037,6 +4178,24 @@ export default function Home() {
     );
   };
 
+  const handleDeleteHighlight = async (highlightId: string) => {
+    if (!activeClip || !user || !confirm('이 형광펜을 삭제하시겠습니까?')) return;
+    const { error } = await supabase
+      .from('clip_highlights')
+      .delete()
+      .eq('id', highlightId)
+      .eq('clipping_id', activeClip.id)
+      .eq('user_id', user.id);
+    if (error) return alert(`형광펜 삭제 실패: ${error.message}`);
+    setClippings((prev) =>
+      prev.map((c) =>
+        c.id === activeClip.id
+          ? { ...c, clip_highlights: c.clip_highlights.filter((h) => h.id !== highlightId) }
+          : c
+      )
+    );
+  };
+
   const handleClearHighlights = async () => {
     if (!activeClip || !confirm('이 스크랩의 형광펜을 모두 지우시겠습니까?')) return;
     const { error } = await supabase.from('clip_highlights').delete().eq('clipping_id', activeClip.id);
@@ -4696,8 +4855,8 @@ export default function Home() {
     const notes = sortNotes(activeClip.clip_notes);
     const isUrl = !!activeClip.source && /^https?:\/\//i.test(activeClip.source);
     const swatches: { key: 'red' | 'blue' | 'erase'; label: string; color: string }[] = [
-      { key: 'red', label: '진회색', color: '#555555' },
-      { key: 'blue', label: '중간 회색', color: '#777777' },
+      { key: 'red', label: '빨강', color: 'rgba(230, 45, 70, 0.58)' },
+      { key: 'blue', label: '파랑', color: 'rgba(45, 125, 235, 0.56)' },
       { key: 'erase', label: '지우개', color: '#FFFFFF' },
     ];
     const keepSelection = (e: React.MouseEvent) => e.preventDefault();
@@ -4810,6 +4969,40 @@ export default function Home() {
                 />
               </section>
 
+              {activeClip.clip_highlights.length > 0 && (
+                <section className="scrap-detail-content bs-highlight-records p-5 md:p-8 border-t border-[#d5d7da]">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-base font-semibold">
+                      형광펜 <span className="text-xs font-normal text-[#777777]">({activeClip.clip_highlights.length})</span>
+                    </h3>
+                    <button type="button" onClick={handleClearHighlights} className="bs-delete-x" aria-label="형광펜 전체 삭제" title="형광펜 전체 삭제">
+                      ×
+                    </button>
+                  </div>
+                  <div className="mt-3 divide-y divide-[#e5e5e5]">
+                    {[...activeClip.clip_highlights].sort(byCreated).map((h) => {
+                      const excerpt = activeClip.content.slice(h.start_offset, h.end_offset).trim() || '선택한 문장';
+                      const markerColor = h.color === 'red' ? '#d9364f' : h.color === 'blue' ? '#2d7deb' : '#999999';
+                      return (
+                        <div key={h.id} className="bs-highlight-record flex items-start gap-3 py-3">
+                          <span className="bs-highlight-color shrink-0 mt-1" style={{ backgroundColor: markerColor }} aria-hidden="true" />
+                          <p className="min-w-0 flex-1 text-sm leading-relaxed break-words">{excerpt}</p>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteHighlight(h.id)}
+                            className="bs-delete-x shrink-0"
+                            aria-label={`형광펜 삭제: ${excerpt.slice(0, 40)}`}
+                            title="이 형광펜 삭제"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
               {notes.length > 0 && (
                 <section className="scrap-detail-content p-5 md:p-8 border-t border-[#d5d7da]">
                   <h3 className="text-xl font-black tracking-tight">
@@ -4824,8 +5017,14 @@ export default function Home() {
                             <span className="not-italic mr-1.5 text-xs font-black">{i + 1})</span>
                             &quot;{n.quote_text}&quot;
                           </div>
-                          <button onClick={() => handleDeleteNote(n.id)} className={`${DANGER_BTN} shrink-0`}>
-                            삭제
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteNote(n.id)}
+                            className="bs-delete-x shrink-0"
+                            aria-label="각주 삭제"
+                            title="각주 삭제"
+                          >
+                            ×
                           </button>
                         </div>
                         <div className="mt-2 ml-2 flex items-start gap-1.5 text-sm text-[#555a62]">
