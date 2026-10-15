@@ -54,7 +54,7 @@ interface NavState {
   activeClipId: string | null;
 }
 const NAV_DEFAULT: NavState = {
-  tab: 'mine',
+  tab: 'shelf',
   activeId: null,
   activeSeries: null,
   activeClipId: null,
@@ -1415,6 +1415,501 @@ function GlobalStyle() {
         .bs-comment-form .bs-btn { flex: 1 1 100%; }
         .bs-sidebar::after { display: none !important; }
       }
+      /* Final reference layout: plain monochrome library, no grid or decorative clips. */
+      html, body {
+        background: #f7f7f7 !important;
+        background-image: none !important;
+        color: #111111 !important;
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+      }
+      body, body *, body *::before, body *::after {
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+        box-sizing: border-box;
+      }
+      body { line-height: 1.6 !important; }
+      img, img:hover, button:hover img, a:hover img { filter: none !important; }
+      .bs-main {
+        width: calc(100% - 225px) !important;
+        margin-left: 225px !important;
+        min-height: 100vh !important;
+        background: #f7f7f7 !important;
+        color: #111111 !important;
+      }
+      .bs-sidebar {
+        position: fixed !important;
+        inset: 0 auto 0 0 !important;
+        width: 225px !important;
+        min-height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 25px 22px 24px !important;
+        background: #f1f1f1 !important;
+        border: 0 !important;
+        border-right: 1px solid #dddddd !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        z-index: 30 !important;
+      }
+      .bs-sidebar::before, .bs-sidebar::after, .bs-brand::before, .bs-brand::after {
+        content: none !important;
+        display: none !important;
+      }
+      .bs-brand {
+        padding: 0 7px 18px !important;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+      .bs-brand-title {
+        color: #111111 !important;
+        font-size: 38px !important;
+        line-height: .94 !important;
+        font-weight: 850 !important;
+        letter-spacing: -.075em !important;
+      }
+      .bs-brand-sub, .bs-side-label, .bs-eyebrow, .bs-lead, .bs-head-mark,
+      .bs-breadcrumb, .bs-topbar, .bs-sidebar-search, .bs-nav-ico,
+      .bs-footer-wrap, .bs-page-footer, .bs-archive-stamp, .bs-stats-grid {
+        display: none !important;
+      }
+      .bs-nav {
+        display: grid !important;
+        gap: 2px !important;
+        margin: 10px 0 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+      }
+      .bs-nav-secondary { display: none !important; }
+      .bs-nav button {
+        min-height: 33px !important;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 8px !important;
+        padding: 6px 10px !important;
+        color: #555555 !important;
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+        text-align: left !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        transition: background-color .12s ease, color .12s ease !important;
+        outline: none !important;
+      }
+      .bs-nav button:hover {
+        background: #e8e8e8 !important;
+        color: #111111 !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+      }
+      .bs-nav button.bs-active {
+        background: #dddddd !important;
+        color: #111111 !important;
+        border: 0 !important;
+        border-left: 0 !important;
+        box-shadow: none !important;
+        font-weight: 750 !important;
+      }
+      .bs-nav button:focus, .bs-nav button:focus-visible {
+        outline: 1px solid #999999 !important;
+        outline-offset: -1px !important;
+        box-shadow: none !important;
+      }
+      .bs-nav-count {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 18px !important;
+        height: 18px !important;
+        margin-left: auto !important;
+        padding: 0 4px !important;
+        background: #111111 !important;
+        color: #ffffff !important;
+        font-family: 'Pretendard', sans-serif !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+      }
+      .bs-side-spacer { flex: 1 !important; min-height: 24px !important; }
+      .bs-side-bottom {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        margin: 0 !important;
+        padding: 13px 2px 0 !important;
+        border-top: 1px solid #d0d0d0 !important;
+        color: #333333 !important;
+      }
+      .bs-profile-settings {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        min-height: 42px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 9px !important;
+        padding: 0 !important;
+        color: #111111 !important;
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        text-align: left !important;
+      }
+      .bs-profile-settings > span:first-child {
+        width: 32px !important;
+        height: 32px !important;
+        flex: 0 0 32px !important;
+        transform: none !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: #d8d8d8 !important;
+        color: #111111 !important;
+      }
+      .bs-profile-name {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+        color: #111111 !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+      }
+      .bs-settings-icon { flex: 0 0 auto !important; color: #666666 !important; }
+      .bs-logout-icon {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 28px !important;
+        height: 32px !important;
+        padding: 0 !important;
+        color: #777777 !important;
+        background: transparent !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+      }
+      .bs-logout-icon:hover, .bs-profile-settings:hover {
+        background: #e8e8e8 !important;
+        color: #111111 !important;
+        box-shadow: none !important;
+        transform: none !important;
+      }
+      .bs-main-search {
+        position: relative !important;
+        display: block !important;
+        width: 100% !important;
+        margin: 42px 0 18px !important;
+      }
+      .bs-main-search .bs-search-icon {
+        position: absolute !important;
+        left: 13px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        color: #777777 !important;
+        font-size: 20px !important;
+        line-height: 1 !important;
+        pointer-events: none !important;
+      }
+      .bs-main-search .bs-search {
+        width: 100% !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        padding: 0 40px 0 38px !important;
+        background: #ffffff !important;
+        color: #111111 !important;
+        border: 1px solid #cecece !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        font-size: 11px !important;
+      }
+      .bs-main-search .bs-search:focus {
+        outline: 1px solid #888888 !important;
+        outline-offset: 0 !important;
+        border-color: #999999 !important;
+        box-shadow: none !important;
+      }
+      .bs-search-clear {
+        position: absolute !important;
+        right: 6px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 27px !important;
+        height: 27px !important;
+        padding: 0 !important;
+        background: transparent !important;
+        color: #555555 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        font-size: 17px !important;
+      }
+      .bs-content {
+        width: 100% !important;
+        max-width: 1050px !important;
+        margin: 0 !important;
+        padding: 56px 70px 60px 80px !important;
+        color: #111111 !important;
+        background: transparent !important;
+      }
+      .bs-page-head {
+        display: flex !important;
+        align-items: flex-end !important;
+        justify-content: space-between !important;
+        gap: 20px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+      }
+      .bs-h1, .bs-page-head .bs-h1 {
+        margin: 0 !important;
+        color: #111111 !important;
+        font-size: 34px !important;
+        line-height: 1.2 !important;
+        font-weight: 800 !important;
+        letter-spacing: -.055em !important;
+      }
+      .bs-btn, .bs-btn-primary, .bs-btn-small {
+        min-height: 38px !important;
+        height: 38px !important;
+        padding: 0 15px !important;
+        border: 1px solid #111111 !important;
+        border-radius: 0 !important;
+        background: #111111 !important;
+        color: #ffffff !important;
+        box-shadow: none !important;
+        transform: none !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        transition: background-color .12s ease, color .12s ease !important;
+      }
+      .bs-btn:hover, .bs-btn-primary:hover, .bs-btn-small:hover {
+        background: #ffffff !important;
+        color: #111111 !important;
+        box-shadow: none !important;
+        transform: none !important;
+      }
+      .bs-record-cta { display: inline-flex !important; gap: 7px !important; white-space: nowrap !important; }
+      .bs-record-cta > span:first-child { font-size: 18px !important; line-height: 1 !important; font-weight: 400 !important; }
+      .bs-icon-button, .bs-add-scrap {
+        width: 38px !important;
+        min-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        background: #111111 !important;
+        color: #ffffff !important;
+        border: 1px solid #111111 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        font-size: 20px !important;
+      }
+      .bs-icon-button:hover, .bs-add-scrap:hover { background: #ffffff !important; color: #111111 !important; box-shadow: none !important; transform: none !important; }
+      .bs-shelf-toolbar { display: none !important; }
+      .bs-books-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: none !important;
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-top: 1px solid #d0d0d0 !important;
+      }
+      .bs-book-card {
+        display: block !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 16px 0 !important;
+        background: transparent !important;
+        border: 0 !important;
+        border-bottom: 1px solid #d0d0d0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+        cursor: pointer;
+        transition: none !important;
+      }
+      .bs-book-card:hover, .bs-book-card:focus, .bs-book-card:focus-within {
+        background: transparent !important;
+        border-color: #d0d0d0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+      }
+      .bs-book-card-main {
+        display: grid !important;
+        grid-template-columns: 80px minmax(0, 1fr) !important;
+        align-items: start !important;
+        gap: 20px !important;
+        min-width: 0 !important;
+      }
+      .bs-book-card-cover { width: 80px !important; min-width: 80px !important; display: block !important; }
+      .bs-book-card .bs-book-cover, .bs-book-card .bs-cover-img {
+        display: block !important;
+        width: 80px !important;
+        height: 120px !important;
+        min-width: 80px !important;
+        max-width: none !important;
+        object-fit: cover !important;
+        filter: none !important;
+        border: 1px solid #222222 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+      }
+      .bs-book-card-info {
+        position: relative !important;
+        min-width: 0 !important;
+        min-height: 120px !important;
+        padding: 1px 0 0 !important;
+      }
+      .bs-book-card h3, .bs-book-card .bs-book-title {
+        margin: 0 0 3px !important;
+        padding-right: 78px !important;
+        color: #111111 !important;
+        font-size: 15px !important;
+        line-height: 1.4 !important;
+        font-weight: 750 !important;
+        text-align: left !important;
+        min-height: 0 !important;
+        letter-spacing: -.025em !important;
+      }
+      .bs-book-author {
+        margin: 0 0 5px !important;
+        color: #666666 !important;
+        text-align: left !important;
+        font-size: 11px !important;
+      }
+      .bs-book-rating {
+        display: flex !important;
+        align-items: center !important;
+        gap: 7px !important;
+        margin: 2px 0 7px !important;
+        color: #555555 !important;
+        font-size: 10px !important;
+        line-height: 1.3 !important;
+      }
+      .bs-rating-stars { display: inline-flex !important; gap: 1px !important; color: #222222 !important; font-size: 13px !important; letter-spacing: -.04em !important; }
+      .bs-rating-meta { color: #666666 !important; font-size: 10px !important; }
+      .bs-book-card-quote {
+        margin: 8px 0 0 !important;
+        max-width: 100% !important;
+        color: #222222 !important;
+        font-size: 11px !important;
+        line-height: 1.75 !important;
+      }
+      .bs-book-card-readers {
+        position: absolute !important;
+        top: 0 !important;
+        right: 0 !important;
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: flex-end !important;
+        gap: 2px !important;
+        max-width: 75px !important;
+        margin: 0 !important;
+      }
+      .bs-book-reader { display: inline-flex !important; min-width: 0 !important; margin: 0 !important; }
+      .bs-book-reader > span:first-child { display: none !important; }
+      .bs-reader-name {
+        display: inline-block !important;
+        max-width: 24px !important;
+        overflow: hidden !important;
+        padding: 3px 5px !important;
+        background: #dedede !important;
+        color: #222222 !important;
+        font-size: 9px !important;
+        line-height: 1.2 !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+      }
+      .bs-records { border-top: 1px solid #d0d0d0 !important; }
+      .bs-record-row { padding: 16px 0 !important; border-bottom: 1px solid #d0d0d0 !important; }
+      .bs-record-excerpt, .bs-quote-full-text { font-size: 12px !important; color: #222222 !important; line-height: 1.8 !important; }
+      .bs-record-meta { margin-top: 7px !important; color: #666666 !important; font-size: 10px !important; }
+      .bs-empty-state { border: 0 !important; border-top: 1px solid #d0d0d0 !important; color: #666666 !important; }
+      .bs-paper-panel, .bs-review-paper, .bs-file-card, .bs-member-list, .bs-mini-calendar,
+      .bs-stat-card, .bs-book-card, .bs-editor-box .ProseMirror, input, textarea, select,
+      .bs-bookmark-mini, .bs-row-action {
+        border-radius: 0 !important;
+        box-shadow: none !important;
+      }
+      .bs-main .rounded, .bs-main .rounded-sm, .bs-main .rounded-md, .bs-main .rounded-lg,
+      .bs-main .rounded-xl, .bs-main .rounded-2xl, .bs-main .rounded-3xl, .bs-main .rounded-full {
+        border-radius: 0 !important;
+      }
+      .bs-main input, .bs-main textarea, .bs-main select {
+        color: #111111 !important;
+        background: #ffffff !important;
+        border-color: #cecece !important;
+        box-shadow: none !important;
+      }
+      .bs-main button:focus-visible, .bs-sidebar button:focus-visible {
+        outline: 1px solid #555555 !important;
+        outline-offset: 2px !important;
+        box-shadow: none !important;
+      }
+      @media (max-width: 900px) {
+        .bs-main { width: calc(100% - 206px) !important; margin-left: 206px !important; }
+        .bs-sidebar { width: 206px !important; padding: 24px 14px 18px !important; }
+        .bs-content { padding: 38px 28px 48px !important; }
+      }
+      @media (max-width: 620px) {
+        .bs-sidebar {
+          position: sticky !important;
+          inset: 0 auto auto 0 !important;
+          width: 100% !important;
+          min-height: auto !important;
+          height: auto !important;
+          padding: 10px 14px 9px !important;
+          display: block !important;
+          border-right: 0 !important;
+          border-bottom: 1px solid #dddddd !important;
+          background: #f1f1f1 !important;
+        }
+        .bs-brand { display: flex !important; align-items: center !important; justify-content: space-between !important; padding: 0 2px !important; }
+        .bs-brand-title { font-size: 24px !important; line-height: .95 !important; }
+        .bs-mobile-menu-toggle {
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 42px !important;
+          height: 42px !important;
+          min-width: 42px !important;
+          padding: 0 !important;
+          color: #111111 !important;
+          background: transparent !important;
+          border: 1px solid #cecece !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+        }
+        .bs-sidebar .bs-nav, .bs-sidebar .bs-side-spacer, .bs-sidebar .bs-side-bottom { display: none !important; }
+        .bs-sidebar.bs-mobile-nav-open .bs-nav { display: flex !important; flex-direction: column !important; gap: 2px !important; margin-top: 10px !important; }
+        .bs-sidebar.bs-mobile-nav-open .bs-side-bottom { display: flex !important; margin-top: 14px !important; }
+        .bs-main { width: 100% !important; margin-left: 0 !important; }
+        .bs-content { max-width: none !important; padding: 27px 18px 36px !important; }
+        .bs-page-head { align-items: center !important; }
+        .bs-h1, .bs-page-head .bs-h1 { font-size: 29px !important; }
+        .bs-main-search { margin: 18px 0 15px !important; }
+        .bs-book-card-main { grid-template-columns: 70px minmax(0,1fr) !important; gap: 13px !important; }
+        .bs-book-card-cover { width: 70px !important; min-width: 70px !important; }
+        .bs-book-card .bs-book-cover, .bs-book-card .bs-cover-img { width: 70px !important; min-width: 70px !important; height: 105px !important; }
+        .bs-book-card-info { min-height: 105px !important; }
+        .bs-book-card h3, .bs-book-card .bs-book-title { padding-right: 0 !important; }
+        .bs-book-card-readers { position: static !important; justify-content: flex-start !important; max-width: none !important; margin-top: 8px !important; }
+        .bs-reader-name { max-width: 56px !important; }
+        .bs-record-cta { width: 38px !important; min-width: 38px !important; padding: 0 !important; font-size: 0 !important; }
+        .bs-record-cta > span:first-child { font-size: 20px !important; }
+        .bs-record-cta > span:last-child { display: none !important; }
+      }
     `}</style>
   );
 }
@@ -2164,8 +2659,8 @@ interface Clipping {
 }
 
 const HL_COLORS: Record<string, string> = {
-  red: 'rgba(204, 0, 0, 0.28)',
-  blue: 'rgba(0, 71, 204, 0.28)',
+  red: 'rgba(80, 80, 80, 0.24)',
+  blue: 'rgba(128, 128, 128, 0.20)',
 };
 
 const sortNotes = (notes: ClipNote[]) =>
@@ -2952,7 +3447,7 @@ export default function Home() {
   const [allReviews, setAllReviews] = useState<Review[]>([]);
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
 
-  const [tab, setTab] = useState<Tab>('mine');
+  const [tab, setTab] = useState<Tab>('shelf');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [boardFilter, setBoardFilter] = useState('');
@@ -3784,16 +4279,47 @@ export default function Home() {
   const writtenAll = allReviews.filter((r) => r.content.trim());
   const pad2 = (n: number) => String(n).padStart(2, '0');
 
-  const navItem = (t: Tab, label: string) => (
-    <button key={t} type="button" className={tab === t ? 'bs-active' : ''} onClick={() => { goTab(t); setMobileNavOpen(false); }}>
-      {label}
+  const navItem = (t: Tab, label: string, count?: number) => (
+    <button
+      key={t}
+      type="button"
+      className={tab === t ? 'bs-active' : ''}
+      onClick={() => { goTab(t); setMobileNavOpen(false); }}
+      aria-current={tab === t ? 'page' : undefined}
+    >
+      <span>{label}</span>
+      {count !== undefined && tab === t && <span className="bs-nav-count">{count}</span>}
     </button>
+  );
+
+  const boardSearch = (
+    <div className="bs-search-wrap bs-main-search">
+      <span className="bs-search-icon" aria-hidden="true">⌕</span>
+      <input
+        id="archive-search"
+        className="bs-search"
+        type="search"
+        value={boardFilter}
+        onChange={(e) => setBoardFilter(e.target.value)}
+        placeholder="책 제목 또는 저자 검색"
+        aria-label="책, 문장, 기록 검색"
+      />
+      {boardFilter && (
+        <button
+          type="button"
+          className="bs-search-clear"
+          onClick={() => setBoardFilter('')}
+          aria-label="검색어 지우기"
+          title="검색어 지우기"
+        >×</button>
+      )}
+    </div>
   );
 
   const header = (
     <aside className={`bs-sidebar${mobileNavOpen ? ' bs-mobile-nav-open' : ''}`}>
       <div className="bs-brand">
-        <div className="bs-brand-title">독-서팟</div>
+        <div className="bs-brand-title">독-<br />서팟</div>
         <button
           type="button"
           className="bs-mobile-menu-toggle"
@@ -3801,34 +4327,49 @@ export default function Home() {
           aria-expanded={mobileNavOpen}
           onClick={() => setMobileNavOpen((open) => !open)}
         >
-          {mobileNavOpen ? '닫기 ×' : '메뉴 ☰'}
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            {mobileNavOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M3 6h18M3 12h18M3 18h18" />}
+          </svg>
         </button>
       </div>
-      <div className="bs-sidebar-search">
-        <label htmlFor="archive-search" className="bs-sidebar-search-label">검색</label>
-        <input
-          id="archive-search"
-          className="bs-search"
-          type="search"
-          value={boardFilter}
-          onChange={(e) => setBoardFilter(e.target.value)}
-          placeholder="책·문장·기록 찾기"
-          aria-label="책, 문장, 기록 검색"
-        />
-      </div>
       <nav className="bs-nav" aria-label="주 메뉴">
-        {navItem('mine', '나의 기록')}
-        {navItem('shelf', '서고')}
-      </nav>
-      <nav className="bs-nav bs-nav-secondary" aria-label="기록 및 설정">
-        {navItem('quotes', '문장 수집장')}
-        {navItem('reviews', '독후감 기록')}
-        {navItem('profile', '프로필 설정')}
+        {navItem('shelf', '서고', buildShelfEntries(allReviews).length)}
+        {navItem('mine', '책장')}
+        {navItem('quotes', '스크랩북')}
       </nav>
       <div className="bs-side-spacer" />
       <div className="bs-side-bottom">
-        <button onClick={handleLogout} className="bs-link-button">
-          로그아웃
+        <button
+          type="button"
+          className="bs-profile-settings"
+          onClick={() => { goTab('profile'); setMobileNavOpen(false); }}
+          aria-label="프로필 설정"
+          title="프로필 설정"
+        >
+          <Seal
+            text={profileOf(user.id).seal_text}
+            color={profileOf(user.id).seal_color}
+            styleType={profileOf(user.id).seal_style}
+            image={profileOf(user.id).seal_image}
+            size={31}
+          />
+          <span className="bs-profile-name">{profileOf(user.id).nickname}</span>
+          <svg className="bs-settings-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.8 1.8-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1 1.55V20h-2.55v-.11a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06-1.8-1.8.06-.06A1.7 1.7 0 0 0 8.17 15a1.7 1.7 0 0 0-1.55-1H6.5v-2.55h.12a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.8-1.8.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1-1.55V5.5h2.55v.12a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.8 1.8-.06.06A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.55 1h.12v2.55h-.12a1.7 1.7 0 0 0-1.55 1Z" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          className="bs-logout-icon"
+          onClick={handleLogout}
+          aria-label="로그아웃"
+          title="로그아웃"
+        >
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M10 17l5-5-5-5M15 12H3" />
+            <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" />
+          </svg>
         </button>
       </div>
     </aside>
@@ -4735,15 +5276,13 @@ export default function Home() {
         <div className="bs-content">
           <div className="bs-page-head">
             <div className="bs-heading-copy">
-              <div className="bs-eyebrow">THE SHARED LIBRARY · {pad2(books.length)} VOLUMES</div>
               <h1 className="bs-h1">서고</h1>
-              <p className="bs-lead">
-                서로의 책장에 놓인 책들을 한곳에 모았습니다.
-                <br />
-                누가 읽고 있는지, 어떤 기록이 남아 있는지 천천히 둘러보세요.
-              </p>
             </div>
+            <button className="bs-btn bs-btn-primary bs-record-cta" onClick={goWrite} aria-label="기록 남기기">
+              <span aria-hidden="true">＋</span><span>기록 남기기</span>
+            </button>
           </div>
+          {boardSearch}
 
           <div className="bs-shelf-toolbar">
             <div className="bs-filter-group">
@@ -4786,6 +5325,24 @@ export default function Home() {
                       <div className="bs-book-card-info">
                         <h3 className="bs-h3 bs-book-title">{title}</h3>
                         <div className="bs-book-author">{author}</div>
+                        {e.reviews.some((review) => review.rating > 0) && (
+                          <div className="bs-book-rating" aria-label={`평점 ${(
+                            e.reviews.filter((review) => review.rating > 0).reduce((sum, review) => sum + review.rating, 0) /
+                            e.reviews.filter((review) => review.rating > 0).length
+                          ).toFixed(1)}점`}>
+                            <span className="bs-rating-stars" aria-hidden="true">
+                              {Array.from({ length: 5 }, (_, i) => {
+                                const rated = e.reviews.filter((review) => review.rating > 0);
+                                const avg = rated.reduce((sum, review) => sum + review.rating, 0) / rated.length;
+                                return <span key={i}>{i < Math.round(avg) ? '★' : '☆'}</span>;
+                              })}
+                            </span>
+                            <span className="bs-rating-meta">
+                              {(e.reviews.filter((review) => review.rating > 0).reduce((sum, review) => sum + review.rating, 0) /
+                                e.reviews.filter((review) => review.rating > 0).length).toFixed(1)} · {e.reviews.filter((review) => review.rating > 0).length}명
+                            </span>
+                          </div>
+                        )}
                         {latestQuote && (
                           <p className="bs-book-card-quote">
                             “{plainText(latestQuote.quote.content)}”
@@ -4883,14 +5440,13 @@ export default function Home() {
         <div className="bs-content">
           <div className="bs-page-head">
             <div className="bs-heading-copy">
-              <div className="bs-eyebrow">LOOSE LEAVES · PERSONAL</div>
-              <h1 className="bs-h1">문장 수집장</h1>
-              <p className="bs-lead">책 속에서 만난 문장과 그 옆에 적어 둔 메모를 보관합니다.</p>
+              <h1 className="bs-h1">스크랩북</h1>
             </div>
-            <button className="bs-btn bs-btn-primary" onClick={() => goTab('mine')}>
-              ❞ &nbsp; 책에서 문장 추가
+            <button className="bs-icon-button bs-add-scrap" onClick={() => goTab('mine')} aria-label="새 기록" title="새 기록">
+              ＋
             </button>
           </div>
+          {boardSearch}
           <div>
             <div className="bs-records">
               {list.length === 0 ? (
@@ -4946,12 +5502,13 @@ export default function Home() {
         <div className="bs-page-head">
           <div className="bs-heading-copy">
             <div className="bs-eyebrow">MY DESK · PERSONAL RECORDS</div>
-            <h1 className="bs-h1">나의 기록</h1>
+            <h1 className="bs-h1">책장</h1>
             <p className="bs-lead">
               내가 고른 책과 남긴 기록, 붙여 둔 스크랩을 한곳에서 정리합니다.
             </p>
           </div>
         </div>
+        {boardSearch}
         <div className="border border-[#d5d7da] bg-[#fafafa] grid grid-cols-1 lg:grid-cols-12">
           <section
             className={`${
@@ -5080,13 +5637,6 @@ export default function Home() {
                   <p className="text-[11px] uppercase tracking-widest text-[#666b73]">My Shelf</p>
                   <h2 className="text-2xl sm:text-3xl font-black tracking-tight">내 서재</h2>
                 </div>
-                <input
-                  type="text"
-                  value={boardFilter}
-                  onChange={(e) => setBoardFilter(e.target.value)}
-                  placeholder="내 서재에서 찾기..."
-                  className={`${INPUT} sm:w-56`}
-                />
               </div>
 
               {shelfList.length === 0 ? (
