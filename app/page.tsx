@@ -45,7 +45,7 @@ interface Review {
   quotes?: QuoteItem[];
 }
 
-type Tab = 'shelf' | 'reviews' | 'quotes' | 'mine' | 'profile';
+type Tab = 'shelf' | 'reviews' | 'scraps' | 'mine' | 'profile';
 
 interface NavState {
   tab: Tab;
@@ -128,61 +128,28 @@ function GlobalStyle() {
       button { cursor: pointer; }
       .bs-sidebar{position:fixed;inset:0 auto 0 0;width:244px;background:#e2e2e2;border-right:1px solid var(--line);padding:27px 18px 20px;display:flex;flex-direction:column;z-index:5}
       .bs-brand{display:flex;align-items:center;gap:11px;padding:0 10px 27px;border-bottom:1px solid var(--line)}
-      .bs-brand-mark{width:39px;height:43px;border:1px solid #8d8d8d;display:grid;place-items:center;background:var(--paper-light);color:var(--rust);font-family:var(--serif);font-size:20px;position:relative;box-shadow:3px 3px 0 #c8c8c8}
-      .bs-brand-mark:before{content:"";position:absolute;left:5px;top:0;bottom:0;border-left:1px solid #c7c7c7}
       .bs-brand-title{font-family:var(--serif);font-size:20px;letter-spacing:-.035em;font-weight:700;line-height:1.2}
-      .bs-brand-sub{font-family:var(--serif);font-size:9px;letter-spacing:.17em;color:var(--ink-soft);margin-top:5px}
-      .bs-side-label{font-size:10px;letter-spacing:.12em;color:#858585;margin:26px 11px 9px;text-transform:uppercase}
       .bs-nav{display:grid;gap:5px}
       .bs-nav button{background:transparent;border:0;text-align:left;display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:4px;color:#5a5a5a;transition:.2s}
       .bs-nav button:hover{background:rgba(255, 255, 255, .42)}
       .bs-nav button.bs-active{background:#cdcdcd;color:#2e2e2e;font-weight:700;box-shadow:inset 3px 0 var(--rust)}
-      .bs-nav-ico{width:20px;text-align:center;font-size:16px;color:#797979}
       .bs-nav-count{margin-left:auto;font-family:var(--serif);font-size:12px;color:#7d7d7d}
       .bs-side-spacer{flex:1;min-height:24px}
       .bs-side-bottom{display:flex;align-items:center;gap:9px;padding:20px 8px 0;color:var(--ink-soft);font-size:11px}
-      .bs-seal{width:26px;height:26px;border:1px solid #afafaf;border-radius:50%;display:grid;place-items:center;font-family:var(--serif);color:var(--rust);font-size:11px}
-      .bs-topbar{height:71px;padding:0 42px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:rgba(247, 247, 247, .62);gap:20px}
-      .bs-breadcrumb{font-family:var(--serif);color:var(--ink-soft);font-size:12px;letter-spacing:.03em}
-      .bs-breadcrumb span{color:#b4b4b4;padding:0 8px}
-      .bs-top-actions{display:flex;align-items:center;gap:11px}
       .bs-search-wrap{position:relative}
       .bs-search-wrap .bs-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#878787;font-size:14px}
       .bs-search{width:221px;background:#f5f5f5;border:1px solid var(--line);height:36px;padding:0 12px 0 34px;color:var(--ink);border-radius:3px;font-size:12px}
       .bs-search::placeholder{color:#a4a8ae}
       .bs-icon-button{height:36px;width:36px;border:1px solid var(--line);background:var(--paper-light);color:#616161;border-radius:3px;font-size:16px;position:relative}
-      .bs-avatar{width:33px;height:33px;border-radius:50%;background:#a6a6a6;color:#ffffff;display:grid;place-items:center;font-family:var(--serif);font-size:13px;border:2px solid #f2f2f2;box-shadow:0 0 0 1px #b7b7b7}
       .bs-content{max-width:1420px;margin:0 auto;padding:35px 42px 60px}
       .bs-eyebrow{font-size:10px;letter-spacing:.17em;color:var(--rust);font-weight:700;margin-bottom:10px;text-transform:uppercase}
       .bs-lead{color:var(--ink-soft);font-size:13px;line-height:1.9;margin:0;max-width:650px}
       .bs-page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:27px}
       .bs-page-head .bs-heading-copy{max-width:720px}
-      .bs-head-mark{font-family:var(--serif);font-size:11px;color:#8c8c8c;letter-spacing:.12em;border-top:1px solid var(--line-dark);padding-top:9px;min-width:123px;text-align:right}
       .bs-btn{border:1px solid var(--line-dark);background:transparent;color:var(--ink);height:39px;padding:0 15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:3px;font-size:12px;transition:.18s;text-decoration:none;white-space:nowrap}
       .bs-btn:hover{background:#e9ebee}
       .bs-btn-primary{background:#34373d;border-color:#34373d;color:#fbfbfc}
       .bs-btn-primary:hover{background:#191b1f;color:#ffffff}
-      .bs-btn-small{height:31px;padding:0 11px;font-size:11px}
-      .bs-link-button{background:transparent;border:0;padding:0;color:var(--rust);font-size:12px}
-      .bs-section-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:15px}
-      .bs-section-title{font-family:var(--serif);font-size:18px;letter-spacing:-.025em;display:flex;align-items:center;gap:10px}
-      .bs-section-title small{font-family:var(--sans);font-size:10px;letter-spacing:.11em;color:#909090;font-weight:400}
-      .bs-rule{height:1px;background:var(--line);flex:1;margin-left:5px}
-      .bs-paper-panel{background:rgba(248, 248, 248, .72);border:1px solid var(--line);box-shadow:var(--shadow)}
-      .bs-home-intro{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:30px;align-items:end;margin-bottom:26px}
-      .bs-home-intro h1 em{font-weight:400;color:var(--rust);font-style:normal}
-      .bs-intro-buttons{display:flex;gap:8px;margin-top:22px}
-      .bs-archive-stamp{justify-self:end;width:148px;height:148px;border:1px solid #c6c9ce;outline:1px solid #c6c9ce;outline-offset:-7px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#7a7a7a;transform:rotate(7deg);font-family:var(--serif);text-align:center}
-      .bs-archive-stamp .bs-stamp-symbol{font-size:31px;line-height:1.2;margin-bottom:7px}
-      .bs-archive-stamp strong{font-size:11px;letter-spacing:.1em;font-weight:400}
-      .bs-archive-stamp small{font-family:var(--sans);font-size:8px;letter-spacing:.18em;margin-top:4px}
-      .bs-stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:34px}
-      .bs-stat-card{padding:16px 17px;background:#f4f5f6;border:1px solid var(--line);position:relative;min-height:104px;overflow:hidden}
-      .bs-stat-card:after{content:"";position:absolute;width:54px;height:54px;border:1px solid rgba(145, 145, 145, .18);border-radius:50%;right:-15px;bottom:-16px}
-      .bs-stat-label{font-size:11px;color:var(--ink-soft);display:flex;align-items:center;gap:7px}
-      .bs-stat-number{font-family:var(--serif);font-size:29px;margin-top:7px;line-height:1.1;letter-spacing:-.025em}
-      .bs-stat-note{font-size:10px;color:#8e8e8e;margin-top:6px}
-      .bs-home-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.85fr);gap:26px;align-items:start}
       .bs-records{border-top:1px solid var(--line)}
       .bs-record-row{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:15px;align-items:center;padding:17px 4px;border-bottom:1px solid var(--line)}
       .bs-record-row:hover .bs-record-title{color:var(--rust)}
@@ -193,41 +160,12 @@ function GlobalStyle() {
       .bs-tag{display:inline-flex;align-items:center;padding:3px 7px;background:#e5e5e5;border:1px solid #d5d5d5;color:#686868;font-size:10px;border-radius:2px;white-space:nowrap}
       .bs-tag.bs-green{background:#e6e6e6;border-color:#d7d7d7;color:#626262}
       .bs-tag.bs-blue{background:#e6e6e6;border-color:#dadada;color:#686868}
-      .bs-row-action{border:0;background:transparent;color:#8c8c8c;font-size:16px;padding:8px}
-      .bs-row-action.bs-saved{color:var(--rust)}
       .bs-book-cover{--cover:#717171;--cover-light:#adadad;width:58px;height:78px;position:relative;display:flex;align-items:center;justify-content:center;background:var(--cover);box-shadow:2px 3px 0 rgba(49, 49, 49, .13);border-left:4px solid rgba(20, 20, 20, .14);overflow:hidden;color:#eaeaea;text-align:center;flex-shrink:0}
       .bs-book-cover:before{content:"";position:absolute;inset:6px;border:1px solid rgba(229, 229, 229, .47)}
       .bs-book-cover:after{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:rgba(0, 0, 0, .13)}
       .bs-cover-inner{position:relative;z-index:1;padding:6px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%}
-      .bs-cover-top{font-family:var(--serif);font-size:7px;letter-spacing:.09em;opacity:.85;margin-bottom:5px}
       .bs-cover-title{font-family:var(--serif);font-size:11px;line-height:1.45;writing-mode:vertical-rl;max-height:50px;letter-spacing:.04em}
       .bs-cover-author{font-size:6px;letter-spacing:.06em;margin-top:4px;opacity:.8}
-      .bs-cover-rust{--cover:#676767;--cover-light:#b1b1b1}
-      .bs-cover-blue{--cover:#666666;--cover-light:#bebebe}
-      .bs-cover-plum{--cover:#545454;--cover-light:#aaaaaa}
-      .bs-cover-ochre{--cover:#8a8a8a;--cover-light:#c6c6c6}
-      .bs-cover-cream{--cover:#d2d5d9;--cover-light:#e9e9e9;color:#434343}
-      .bs-cover-cream:before{border-color:rgba(78, 78, 78, .4)}
-      .bs-right-stack{display:grid;gap:21px}
-      .bs-member-list{background:rgba(248, 248, 248, .5);border:1px solid var(--line);padding:18px}
-      .bs-member{display:flex;align-items:center;gap:10px;margin-top:14px}
-      .bs-member-avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#c9c9c9;color:#555555;font-family:var(--serif);border:1px solid #b8b8b8;font-size:11px;flex-shrink:0}
-      .bs-member-avatar.bs-a2{background:#dadada;color:#5e5e5e;border-color:#c8c8c8}
-      .bs-member-avatar.bs-a3{background:#d2d2d2;color:#666666;border-color:#c1c1c1}
-      .bs-member-name{font-size:12px;font-weight:600}
-      .bs-member-sub{font-size:10px;color:#8e8e8e;margin-top:2px}
-      .bs-member-status{margin-left:auto;font-size:10px;color:#888888}
-      .bs-mini-calendar{padding:18px;background:#f4f4f4;border:1px solid var(--line)}
-      .bs-calendar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}
-      .bs-calendar-month{font-family:var(--serif);font-size:15px}
-      .bs-calendar-week,.bs-calendar-days{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:4px}
-      .bs-calendar-week{font-size:9px;color:#969696;margin-bottom:7px}
-      .bs-calendar-day{height:26px;display:grid;place-items:center;font-size:10px;color:#6b6b6b;position:relative}
-      .bs-calendar-day.bs-marked:after{content:"";width:4px;height:4px;border-radius:50%;background:var(--rust);position:absolute;bottom:1px}
-      .bs-calendar-day.bs-today{background:#d9d9d9;border-radius:50%;color:#4b4b4b;font-weight:700}
-      .bs-calendar-day.bs-muted{color:#bdbdbd}
-      .bs-calendar-foot{border-top:1px solid var(--line);padding-top:10px;margin-top:9px;display:flex;align-items:center;gap:7px;font-size:10px;color:#868686}
-      .bs-tiny-dot{width:6px;height:6px;border-radius:50%;background:var(--rust)}
       .bs-shelf-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin:28px 0 20px;padding:12px;background:#eceef0;border:1px solid var(--line)}
       .bs-filter-group{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
       .bs-filter-btn{border:1px solid transparent;background:transparent;color:#757575;padding:7px 10px;font-size:11px;border-radius:2px}
@@ -236,82 +174,31 @@ function GlobalStyle() {
       .bs-books-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
       .bs-book-card{background:#f7f7f7;border:1px solid var(--line);padding:17px 15px 14px;position:relative;min-width:0;transition:transform .18s,box-shadow .18s;cursor:pointer}
       .bs-book-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
-      .bs-book-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-      .bs-book-ref{font-family:var(--serif);font-size:10px;color:#949494;letter-spacing:.1em}
-      .bs-bookmark-mini{background:none;border:0;color:#949494;font-size:16px;padding:0 2px}
       .bs-book-card .bs-book-cover{width:87px;height:118px;margin:0 auto 17px;box-shadow:4px 5px 0 #d8dade,6px 7px 0 rgba(50, 50, 50, .04)}
       .bs-book-card .bs-cover-title{font-size:15px;max-height:79px}
       .bs-book-card .bs-cover-top{font-size:8px;margin-bottom:8px}
       .bs-book-card .bs-cover-author{font-size:7px;margin-top:7px}
       .bs-book-card h3{text-align:center;font-size:15px;margin:0 0 5px;line-height:1.5;min-height:23px}
       .bs-book-author{text-align:center;font-size:10px;color:#8e8e8e;margin-bottom:12px}
-      .bs-book-divider{border-top:1px dashed #d8dade;margin:12px 0}
-      .bs-book-card-foot{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:10px;color:#7f7f7f}
-      .bs-mini-avatars{display:flex;padding-left:2px}
-      .bs-mini-avatars .bs-member-avatar{width:22px;height:22px;margin-left:-4px;font-size:8px;border-width:1px}
       .bs-empty-state{padding:50px;text-align:center;color:#858585;border:1px dashed var(--line-dark);grid-column:1/-1}
       .bs-empty-state strong{display:block;font-family:var(--serif);font-size:20px;color:#5f5f5f;margin:10px}
-      .bs-back-link{border:0;background:none;padding:0;color:#7f7f7f;display:flex;align-items:center;gap:8px;font-size:11px;margin-bottom:24px}
-      .bs-review-layout{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:34px;align-items:start}
-      .bs-review-paper{background:#f8f8f8;border:1px solid #d3d3d3;box-shadow:0 14px 34px rgba(54, 54, 54, .07);position:relative;padding:43px clamp(28px,5vw,68px) 40px;overflow:hidden}
-      .bs-review-paper:before{content:"";position:absolute;top:0;bottom:0;left:25px;border-left:1px solid #d8d8d8}
-      .bs-review-paper:after{content:"";position:absolute;top:0;left:0;right:0;height:7px;background:repeating-linear-gradient(90deg,#cacaca 0 15px,transparent 15px 25px);opacity:.7}
-      .bs-paper-no{position:absolute;top:21px;right:24px;font-family:var(--serif);font-size:10px;color:#9b9b9b;letter-spacing:.08em}
-      .bs-review-bookline{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:12px;color:#6e6e6e;margin-bottom:17px}
-      .bs-review-bookline .bs-line{height:1px;background:#cccccc;flex:1}
-      .bs-review-paper h1{font-size:31px;margin-bottom:14px;max-width:620px}
-      .bs-review-byline{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:#888888;font-size:10px;border-bottom:1px solid #d6d6d6;padding-bottom:20px;margin-bottom:25px}
-      .bs-review-byline .bs-author-chip{display:flex;align-items:center;gap:7px;color:#5a5a5a}
-      .bs-review-byline .bs-member-avatar{width:24px;height:24px;font-size:9px}
-      .bs-review-body{font-family:var(--serif);font-size:15px;line-height:2.15;color:#454545;letter-spacing:-.02em}
-      .bs-review-body p{margin:0 0 20px}
-      .bs-review-body .bs-dropcap:first-letter{float:left;font-size:46px;line-height:.9;padding:9px 8px 0 0;color:var(--rust)}
-      .bs-review-body blockquote{margin:25px 0;padding:16px 21px;border-left:2px solid #818181;background:#ebebeb;color:#585858;font-size:16px;line-height:1.9}
-      .bs-review-body blockquote cite{display:block;font-family:var(--sans);font-style:normal;font-size:10px;color:#8f8f8f;margin-top:7px}
-      .bs-review-tags{display:flex;gap:6px;flex-wrap:wrap;padding-top:16px;border-top:1px solid #d6d6d6;margin-top:26px}
-      .bs-review-actions{display:flex;align-items:center;gap:8px;margin-top:19px}
       .bs-review-actions .bs-btn{height:34px}
-      .bs-review-side{display:grid;gap:14px}
-      .bs-file-card{background:#e6e6e6;border:1px solid #d4d7db;padding:18px}
-      .bs-file-label{font-size:9px;color:#7e7e7e;letter-spacing:.14em;margin-bottom:12px}
-      .bs-file-book{display:flex;gap:12px;align-items:center}
       .bs-file-book .bs-book-cover{width:54px;height:74px}
       .bs-file-book .bs-cover-title{font-size:10px}
-      .bs-file-book-title{font-family:var(--serif);font-size:14px;line-height:1.6;margin-bottom:4px}
-      .bs-file-book-author{font-size:10px;color:#808080}
-      .bs-file-detail{display:flex;justify-content:space-between;gap:8px;border-top:1px solid #d4d7db;margin-top:15px;padding-top:10px;font-size:10px;color:#7c7c7c}
-      .bs-comments-panel{margin-top:27px;border-top:1px solid var(--line);padding-top:22px}
-      .bs-comments-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px}
-      .bs-comment{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid #e4e6e9}
-      .bs-comment-content{flex:1;min-width:0}
-      .bs-comment-meta{display:flex;align-items:center;gap:9px;margin-bottom:5px;font-size:10px;color:#8a8a8a}
-      .bs-comment-meta strong{font-size:11px;color:#535353}
-      .bs-comment-text{font-family:var(--serif);font-size:13px;line-height:1.8;color:#555a62;margin:0}
-      .bs-comment-form{display:flex;gap:8px;margin-top:15px}
-      .bs-comment-input{flex:1;min-width:0;height:38px;border:1px solid var(--line);background:#f4f5f6;padding:0 12px;font-size:12px;color:var(--ink)}
-      .bs-page-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);margin-top:40px;padding-top:17px;color:#959595;font-size:10px}
-      .bs-page-footer .bs-footer-brand{font-family:var(--serif);letter-spacing:.08em}
-      @media(max-width:1200px){.bs-content{padding:30px 28px 50px}.bs-topbar{padding:0 28px}.bs-books-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.bs-home-grid{grid-template-columns:minmax(0,1.3fr) minmax(240px,.8fr);gap:18px}.bs-review-layout{grid-template-columns:minmax(0,1fr) 220px;gap:20px}}
-      @media(max-width:900px){.bs-sidebar{width:206px;padding-left:12px;padding-right:12px}.bs-main{margin-left:206px}.bs-topbar{padding:0 20px}.bs-content{padding:25px 20px 45px}.bs-home-intro{grid-template-columns:1fr}.bs-archive-stamp{display:none}.bs-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.bs-home-grid{grid-template-columns:1fr}.bs-right-stack{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.bs-right-stack .bs-mini-calendar{grid-column:1/-1}.bs-review-layout{grid-template-columns:1fr}.bs-review-side{grid-template-columns:repeat(2,minmax(0,1fr));grid-row:1}.bs-review-side .bs-file-card{grid-column:span 1}.bs-books-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-      @media(max-width:620px){.bs-sidebar{width:100%;height:auto;position:sticky;inset:0 0 auto;padding:10px 14px 9px;display:block;border-right:0;border-bottom:1px solid var(--line)}.bs-brand{padding:0 2px 8px;border:0}.bs-brand-mark{width:31px;height:34px;font-size:16px}.bs-brand-title{font-size:17px}.bs-brand-sub{font-size:8px;margin-top:2px}.bs-sidebar .bs-side-label,.bs-sidebar .bs-side-spacer,.bs-sidebar .bs-side-bottom{display:none}.bs-nav{display:flex;gap:4px;overflow:auto;padding-top:7px}.bs-nav button{flex:1;justify-content:center;gap:5px;padding:8px 7px;white-space:nowrap;font-size:11px}.bs-nav-ico{font-size:13px;width:auto}.bs-nav-count{display:none}.bs-main{margin-left:0}.bs-topbar{height:54px;padding:0 14px}.bs-breadcrumb{font-size:11px}.bs-top-actions{gap:6px}.bs-search{width:min(38vw,180px);height:32px}.bs-icon-button{width:32px;height:32px}.bs-content{padding:25px 14px 35px}.bs-page-head{align-items:flex-start;flex-direction:column;margin-bottom:22px;gap:15px}.bs-page-head h1{font-size:29px}.bs-page-head .bs-head-mark{display:none}.bs-home-intro h1{font-size:30px}.bs-lead{font-size:12px}.bs-intro-buttons{margin-top:16px}.bs-stats-grid{gap:8px}.bs-stat-card{padding:13px;min-height:91px}.bs-stat-number{font-size:25px}.bs-record-row{grid-template-columns:48px minmax(0,1fr) auto;gap:10px;padding:14px 0}.bs-record-row .bs-book-cover{width:48px;height:65px}.bs-record-title{font-size:15px}.bs-record-excerpt{font-size:11px;line-height:1.7}.bs-row-action{padding:4px}.bs-right-stack{grid-template-columns:1fr}.bs-right-stack .bs-mini-calendar{grid-column:auto}.bs-books-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bs-book-card{padding:12px 9px}.bs-book-card .bs-book-cover{width:78px;height:105px}.bs-book-card h3{font-size:13px}.bs-shelf-toolbar{align-items:flex-start}.bs-filter-group{width:100%}.bs-shelf-count{margin-left:auto}.bs-review-paper{padding:36px 23px 30px 31px}.bs-review-paper:before{left:17px}.bs-review-paper h1{font-size:25px}.bs-review-body{font-size:14px;line-height:2}.bs-review-side{grid-template-columns:1fr 1fr;gap:9px}.bs-file-card{padding:13px}.bs-file-book{gap:8px}.bs-file-book .bs-book-cover{width:42px;height:60px}.bs-file-book-title{font-size:12px}.bs-file-book-author{font-size:9px}.bs-comment-form{flex-wrap:wrap}.bs-comment-form .bs-btn{flex:0 0 100%}.bs-page-footer{font-size:9px}.bs-hide-mobile{display:none}}
+      @media(max-width:1200px){.bs-content{padding:30px 28px 50px}.bs-books-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+      @media(max-width:900px){.bs-sidebar{width:206px;padding-left:12px;padding-right:12px}.bs-main{margin-left:206px}.bs-content{padding:25px 20px 45px}.bs-books-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+      @media(max-width:620px){.bs-sidebar{width:100%;height:auto;position:sticky;inset:0 0 auto;padding:10px 14px 9px;display:block;border-right:0;border-bottom:1px solid var(--line)}.bs-brand{padding:0 2px 8px;border:0}.bs-brand-title{font-size:17px}.bs-sidebar .bs-side-label,.bs-sidebar .bs-side-spacer,.bs-sidebar .bs-side-bottom{display:none}.bs-nav{display:flex;gap:4px;overflow:auto;padding-top:7px}.bs-nav button{flex:1;justify-content:center;gap:5px;padding:8px 7px;white-space:nowrap;font-size:11px}.bs-nav-count{display:none}.bs-main{margin-left:0}.bs-search{width:min(38vw,180px);height:32px}.bs-icon-button{width:32px;height:32px}.bs-content{padding:25px 14px 35px}.bs-page-head{align-items:flex-start;flex-direction:column;margin-bottom:22px;gap:15px}.bs-page-head h1{font-size:29px}.bs-page-head .bs-head-mark{display:none}.bs-lead{font-size:12px}.bs-record-row{grid-template-columns:48px minmax(0,1fr) auto;gap:10px;padding:14px 0}.bs-record-row .bs-book-cover{width:48px;height:65px}.bs-record-title{font-size:15px}.bs-record-excerpt{font-size:11px;line-height:1.7}.bs-books-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bs-book-card{padding:12px 9px}.bs-book-card .bs-book-cover{width:78px;height:105px}.bs-book-card h3{font-size:13px}.bs-shelf-toolbar{align-items:flex-start}.bs-filter-group{width:100%}.bs-shelf-count{margin-left:auto}.bs-file-book .bs-book-cover{width:42px;height:60px}.bs-comment-form .bs-btn{flex:0 0 100%}}
       .bs-h1,.bs-h2,.bs-h3,.bs-serif{font-family:var(--serif)}
       .bs-h1{font-size:35px;letter-spacing:-.035em;line-height:1.32;font-weight:700;margin:0 0 12px}
-      .bs-h2{font-size:23px;letter-spacing:-.035em;margin:0}
       .bs-h3{font-size:17px;letter-spacing:-.025em;margin:0}
       .bs-page-head .bs-h1{margin-bottom:12px}
       @media(max-width:620px){.bs-h1{font-size:29px}}
       .bs-cover-img{object-fit:cover;box-shadow:2px 3px 0 rgba(49, 49, 49, .13);border-left:4px solid rgba(20, 20, 20, .14);flex-shrink:0;display:block;background:#e7e9ec}
-      .bs-footer-wrap{max-width:1420px;margin:0 auto;padding:0 42px 40px}
-      @media(max-width:1200px){.bs-footer-wrap{padding:0 28px 40px}}
-      @media(max-width:900px){.bs-footer-wrap{padding:0 20px 40px}}
-      @media(max-width:620px){.bs-footer-wrap{padding:0 14px 30px}}
       .bs-main{margin-left:244px;min-height:100vh}
       @media(max-width:900px){.bs-main{margin-left:206px}}
       @media(max-width:620px){.bs-main{margin-left:0}}
-      .bs-avatar-btn{background:none;border:0;padding:0;display:inline-flex;align-items:center}
       .bs-quote-row{grid-template-columns:minmax(0,1fr)}
       .bs-quote-comment{font-size:12px;color:#6c6c6c;margin:-2px 0 6px 2px}
-      .bs-cover-wrap{display:flex;justify-content:center}
       .bs-prose .ProseMirror{outline:none;font-size:15px;line-height:1.85;color:var(--ink)}
       .bs-prose .ProseMirror>*:first-child{margin-top:0}
       .bs-prose .ProseMirror p{margin:0 0 .9em}
@@ -427,15 +314,6 @@ function GlobalStyle() {
       .bs-topbar, .bs-stats-grid {
         display: none !important;
       }
-      .bs-sidebar-search { padding: 18px 4px 8px !important; }
-      .bs-sidebar-search-label {
-        display: block !important;
-        margin: 0 0 7px !important;
-        color: #697783 !important;
-        font-size: 11px !important;
-        font-weight: 700 !important;
-        letter-spacing: .08em !important;
-      }
       .bs-search-wrap { position: relative; }
       .bs-sidebar-search .bs-search, .bs-search {
         width: 100% !important;
@@ -485,9 +363,7 @@ function GlobalStyle() {
         box-shadow: inset 3px 0 #79b9e3 !important;
         font-weight: 750 !important;
       }
-      .bs-nav-ico { display: none !important; }
       .bs-nav-count { margin-left: auto !important; color: #7f8b95 !important; font-size: 11px !important; }
-      .bs-nav-secondary { margin-top: 17px !important; padding-top: 15px !important; border-top: 1px dashed #dce2e8 !important; }
       .bs-side-spacer { flex: 1 !important; min-height: 20px !important; }
       .bs-side-bottom { justify-content: flex-start !important; padding: 14px 4px 0 !important; color: #697783 !important; font-size: 11px !important; }
       .bs-sidebar::after {
@@ -501,17 +377,6 @@ function GlobalStyle() {
         line-height: 1.55;
         letter-spacing: .035em;
         pointer-events: none;
-      }
-      .bs-link-button, .bs-link-button:hover {
-        min-height: 34px !important;
-        padding: 4px 0 !important;
-        color: #65727d !important;
-        background: transparent !important;
-        border: 0 !important;
-        box-shadow: none !important;
-        text-decoration: underline !important;
-        text-decoration-color: #c2d7e6 !important;
-        text-underline-offset: 3px !important;
       }
       .bs-mobile-menu-toggle { display: none !important; }
 
@@ -553,13 +418,7 @@ function GlobalStyle() {
         letter-spacing: -.065em !important;
         text-shadow: 1px 1px 0 #d9efff !important;
       }
-      .bs-h2 { color: #20252b !important; font-size: clamp(24px, 3vw, 32px) !important; font-weight: 800 !important; letter-spacing: -.045em !important; }
       .bs-h3, .bs-section-title { color: #20252b !important; font-weight: 750 !important; letter-spacing: -.03em !important; }
-      .bs-section-head { gap: 12px !important; margin-bottom: 14px !important; }
-      .bs-section-title { font-size: 17px !important; }
-      .bs-section-title small { color: #84919c !important; }
-      .bs-rule { height: 1px !important; background: #d4dce3 !important; }
-      .bs-home-intro { grid-template-columns: minmax(0,1fr) 180px !important; gap: 22px !important; }
 
       /* Paper sheets, pinned cards, clipped reading notes. */
       .bs-paper-panel, .bs-member-list, .bs-mini-calendar, .bs-stat-card,
@@ -570,19 +429,6 @@ function GlobalStyle() {
         border: 1px solid #d2dae1 !important;
         border-radius: 5px !important;
         box-shadow: 2px 3px 0 rgba(201,215,226,.68) !important;
-      }
-      .bs-paper-panel, .bs-review-paper, .bs-file-card { border-radius: 5px !important; }
-      .bs-stat-card { min-height: 95px !important; }
-      .bs-stat-card:after { display: none !important; }
-      .bs-home-grid { gap: 22px !important; }
-      .bs-right-stack { gap: 16px !important; }
-      .bs-member-list, .bs-mini-calendar { padding: 16px !important; }
-      .bs-member { margin-top: 12px !important; }
-      .bs-member-avatar, .bs-avatar {
-        color: #3d4852 !important;
-        background: #f7fbff !important;
-        border: 1px solid #cbd8e2 !important;
-        box-shadow: none !important;
       }
       .bs-books-grid {
         display: grid !important;
@@ -693,30 +539,7 @@ function GlobalStyle() {
         color: #303941 !important; font-size: 15px !important; line-height: 1.9 !important;
       }
       .bs-quote-comment { color: #788590 !important; }
-      .bs-review-paper {
-        position: relative !important; padding: 42px clamp(22px, 4vw, 56px) 38px !important;
-        overflow: visible !important; background: rgba(255,255,255,.98) !important;
-        border: 1px solid #cbd5dd !important; border-radius: 5px !important;
-        box-shadow: 4px 5px 0 #e0eaf1 !important;
-      }
-      .bs-review-paper::before {
-        content: '' !important; position: absolute !important; inset: -9px auto auto 25px !important;
-        width: 11px !important; height: 27px !important; border: 1.5px solid #91a3b1 !important;
-        border-bottom-color: #b9c5ce !important; border-radius: 7px 7px 4px 4px !important;
-        background: #fff !important; transform: rotate(17deg) !important;
-      }
-      .bs-review-paper::after {
-        content: '[ saved.txt ]' !important; position: absolute !important; top: 13px !important; right: 17px !important;
-        left: auto !important; height: auto !important; background: transparent !important; opacity: 1 !important;
-        color: #90a0ad !important; font-size: 9px !important; letter-spacing: .06em !important;
-      }
-      .bs-paper-no { color: #82909b !important; }
-      .bs-review-byline, .bs-review-tags, .bs-comments-panel { border-color: #dce3e8 !important; }
-      .bs-review-body blockquote { margin: 22px 0 !important; padding: 14px 18px !important; border: 0 !important; border-left: 2px solid #9bc9e8 !important; border-radius: 0 4px 4px 0 !important; background: #f5faff !important; box-shadow: none !important; color: #303941 !important; }
       .bs-tag, .bs-tag.bs-green, .bs-tag.bs-blue { background: #edf7ff !important; border: 1px solid #d3e8f6 !important; color: #526575 !important; border-radius: 3px !important; box-shadow: none !important; }
-      .bs-file-label { color: #83909b !important; }
-      .bs-file-detail { border-top: 1px dashed #d7e0e7 !important; }
-      .bs-page-footer, .bs-footer-wrap { display: none !important; }
 
       /* Inputs and buttons: simple outlined controls, no pillowy effects. */
       button, .bs-btn, .bs-filter-btn, .bs-icon-button, .bs-link-button, .bs-row-action,
@@ -745,9 +568,7 @@ function GlobalStyle() {
         background: #20252b !important; border-color: #20252b !important; color: #fff !important;
       }
       .bs-btn-primary:hover { box-shadow: 2px 2px 0 #9bc9e8 !important; }
-      .bs-btn-small { min-height: 32px !important; }
       .bs-icon-button { min-width: 40px !important; min-height: 40px !important; }
-      .bs-row-action { color: #697782 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
       input, select, textarea, .bs-comment-input, .bs-editor-box .ProseMirror {
         min-height: 40px;
         color: #20252b !important;
@@ -794,8 +615,6 @@ function GlobalStyle() {
         .bs-content { padding: 26px 22px 48px !important; }
         .bs-sidebar { width: 206px !important; }
         .bs-main { margin-left: 206px !important; }
-        .bs-review-layout { grid-template-columns: minmax(0,1fr) !important; }
-        .bs-review-side { grid-template-columns: repeat(2,minmax(0,1fr)); }
       }
       @media (max-width: 620px) {
         .bs-sidebar {
@@ -818,14 +637,12 @@ function GlobalStyle() {
         .bs-sidebar.bs-mobile-nav-open .bs-sidebar-search { display: block !important; padding: 14px 2px 8px !important; }
         .bs-sidebar.bs-mobile-nav-open .bs-nav { display: flex !important; flex-direction: column !important; padding-top: 8px !important; margin-top: 5px !important; }
         .bs-sidebar.bs-mobile-nav-open .bs-side-bottom { display: flex !important; padding: 8px 8px 0 !important; }
-        .bs-nav-secondary { border: 0 !important; padding-top: 0 !important; margin-top: 8px !important; }
         .bs-nav button { width: 100% !important; justify-content: flex-start !important; }
         .bs-main { margin-left: 0 !important; }
         .bs-content { padding: 22px 14px 34px !important; }
         .bs-content::before { margin-bottom: 18px !important; font-size: 9px !important; }
         .bs-page-head { align-items: flex-start !important; flex-direction: column !important; margin-bottom: 18px !important; gap: 12px !important; }
         .bs-h1 { font-size: clamp(32px, 9vw, 42px) !important; }
-        .bs-home-intro { grid-template-columns: minmax(0,1fr) !important; }
         .bs-books-grid { grid-template-columns: minmax(0,1fr) !important; gap: 15px !important; }
         .bs-book-card { padding: 16px !important; }
         .bs-book-card-main { grid-template-columns: 78px minmax(0,1fr) !important; gap: 13px !important; }
@@ -836,9 +653,6 @@ function GlobalStyle() {
         .bs-reader-name { max-width: 90px !important; }
         .bs-record-row { grid-template-columns: 48px minmax(0,1fr) !important; gap: 11px !important; padding: 15px !important; }
         .bs-record-row .bs-book-cover { width: 48px !important; height: 65px !important; }
-        .bs-review-paper { padding: 31px 20px 26px !important; }
-        .bs-review-side { grid-template-columns: minmax(0,1fr) !important; }
-        .bs-comment-form { flex-wrap: wrap; }
         .bs-comment-form .bs-btn { flex: 1 1 100%; }
       }
 
@@ -914,14 +728,6 @@ function GlobalStyle() {
         letter-spacing: -.055em !important;
         text-shadow: none !important;
       }
-      .bs-sidebar-search { padding: 24px 4px 8px !important; }
-      .bs-sidebar-search-label {
-        margin: 0 0 8px !important;
-        color: #666666 !important;
-        font-size: 11px !important;
-        font-weight: 600 !important;
-        letter-spacing: .01em !important;
-      }
       .bs-sidebar-search .bs-search, .bs-search {
         width: 100% !important;
         min-width: 0 !important;
@@ -975,13 +781,7 @@ function GlobalStyle() {
         box-shadow: inset 3px 0 #222222 !important;
         font-weight: 750 !important;
       }
-      .bs-nav-ico { display: none !important; }
       .bs-nav-count { margin-left: auto !important; color: #777777 !important; font-size: 11px !important; }
-      .bs-nav-secondary {
-        margin-top: 18px !important;
-        padding-top: 16px !important;
-        border-top: 1px solid #d2d2d2 !important;
-      }
       .bs-side-spacer { flex: 1 !important; min-height: 24px !important; }
       .bs-side-bottom { justify-content: flex-start !important; padding: 12px 8px 0 !important; color: #666666 !important; font-size: 11px !important; }
       .bs-sidebar::after {
@@ -1029,13 +829,7 @@ function GlobalStyle() {
         letter-spacing: -.055em !important;
         text-shadow: none !important;
       }
-      .bs-h2 { color: #111111 !important; font-size: clamp(25px, 3vw, 34px) !important; font-weight: 800 !important; letter-spacing: -.045em !important; }
       .bs-h3, .bs-section-title { color: #111111 !important; font-weight: 750 !important; letter-spacing: -.03em !important; }
-      .bs-section-head { gap: 14px !important; margin-bottom: 15px !important; }
-      .bs-section-title { font-size: 17px !important; }
-      .bs-section-title small { color: #777777 !important; }
-      .bs-rule { height: 1px !important; background: #d2d2d2 !important; }
-      .bs-home-intro { grid-template-columns: minmax(0,1fr) 180px !important; gap: 24px !important; }
       .bs-eyebrow, .bs-lead, .bs-stat-note, .bs-head-mark, .bs-book-card-top,
       .bs-book-ref, .bs-reader-label, .bs-footer-wrap, .bs-page-footer,
       .bs-archive-stamp, .bs-breadcrumb, .bs-topbar, .bs-stats-grid {
@@ -1050,11 +844,6 @@ function GlobalStyle() {
         border-radius: 0 !important;
         box-shadow: none !important;
       }
-      .bs-paper-panel, .bs-review-paper, .bs-file-card { border-radius: 0 !important; }
-      .bs-home-grid { gap: 28px !important; }
-      .bs-right-stack { gap: 18px !important; }
-      .bs-member-list, .bs-mini-calendar { padding: 0 !important; background: transparent !important; }
-      .bs-member { margin-top: 14px !important; }
       .bs-books-grid {
         display: grid !important;
         grid-template-columns: minmax(0, 1fr) !important;
@@ -1257,39 +1046,10 @@ function GlobalStyle() {
         color: #222222 !important; font-size: 15px !important; line-height: 1.85 !important;
       }
       .bs-quote-comment { margin: 6px 0 4px !important; color: #666666 !important; }
-      .bs-review-paper {
-        position: relative !important;
-        padding: 46px clamp(24px, 4vw, 60px) 38px !important;
-        overflow: visible !important;
-        background: #ffffff !important;
-        border: 1px solid #d0d0d0 !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-      }
-      .bs-review-paper::before {
-        content: '' !important; position: absolute !important; inset: -10px auto auto 28px !important;
-        width: 10px !important; height: 27px !important; border: 1px solid #858585 !important;
-        border-bottom-color: #bdbdbd !important; border-radius: 7px 7px 4px 4px !important;
-        background: #f7f7f7 !important; transform: rotate(17deg) !important;
-      }
-      .bs-review-paper::after {
-        content: none !important; display: none !important;
-      }
-      .bs-paper-no { color: #777777 !important; }
-      .bs-review-byline, .bs-review-tags, .bs-comments-panel { border-color: #d0d0d0 !important; }
-      .bs-review-body blockquote {
-        margin: 22px 0 !important; padding: 14px 18px !important;
-        border: 0 !important; border-left: 2px solid #999999 !important;
-        border-radius: 0 !important; background: #f1f1f1 !important;
-        box-shadow: none !important; color: #333333 !important;
-      }
       .bs-tag, .bs-tag.bs-green, .bs-tag.bs-blue {
         background: #eeeeee !important; border: 1px solid #d8d8d8 !important;
         color: #555555 !important; border-radius: 0 !important; box-shadow: none !important;
       }
-      .bs-file-label { color: #666666 !important; }
-      .bs-file-detail { border-top: 1px solid #d0d0d0 !important; }
-      .bs-page-footer, .bs-footer-wrap { display: none !important; }
       button, .bs-btn, .bs-filter-btn, .bs-icon-button, .bs-link-button, .bs-row-action,
       input, select, textarea, .bs-comment-input, .bs-editor-box .ProseMirror {
         font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
@@ -1316,9 +1076,7 @@ function GlobalStyle() {
         background: #111111 !important; border-color: #111111 !important; color: #ffffff !important;
       }
       .bs-btn-primary:hover { background: #333333 !important; }
-      .bs-btn-small { min-height: 32px !important; }
       .bs-icon-button { min-width: 40px !important; min-height: 40px !important; }
-      .bs-row-action { color: #555555 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
       input, select, textarea, .bs-comment-input, .bs-editor-box .ProseMirror {
         min-height: 40px;
         color: #111111 !important;
@@ -1367,9 +1125,6 @@ function GlobalStyle() {
         .bs-content { padding: 34px 26px 54px !important; }
         .bs-sidebar { width: 210px !important; padding: 26px 18px 20px !important; }
         .bs-main { width: calc(100% - 210px) !important; margin-left: 210px !important; }
-        .bs-review-layout { grid-template-columns: minmax(0,1fr) !important; }
-        .bs-review-side { grid-template-columns: repeat(2,minmax(0,1fr)); }
-        .bs-home-intro { grid-template-columns: minmax(0,1fr) !important; }
       }
       @media (max-width: 620px) {
         .bs-sidebar {
@@ -1391,13 +1146,11 @@ function GlobalStyle() {
         .bs-sidebar.bs-mobile-nav-open .bs-sidebar-search { display: block !important; padding: 14px 2px 8px !important; }
         .bs-sidebar.bs-mobile-nav-open .bs-nav { display: flex !important; flex-direction: column !important; padding-top: 8px !important; margin-top: 5px !important; }
         .bs-sidebar.bs-mobile-nav-open .bs-side-bottom { display: flex !important; padding: 8px 8px 0 !important; }
-        .bs-nav-secondary { border: 0 !important; padding-top: 0 !important; margin-top: 8px !important; }
         .bs-nav button { width: 100% !important; justify-content: flex-start !important; }
         .bs-main { width: 100% !important; margin-left: 0 !important; }
         .bs-content { padding: 30px 18px 42px !important; }
         .bs-page-head { align-items: flex-start !important; flex-direction: column !important; margin-bottom: 18px !important; padding-bottom: 16px !important; gap: 12px !important; }
         .bs-h1 { font-size: clamp(31px, 8vw, 40px) !important; }
-        .bs-home-intro { grid-template-columns: minmax(0,1fr) !important; }
         .bs-books-grid { grid-template-columns: minmax(0,1fr) !important; gap: 0 !important; }
         .bs-book-card { padding: 18px 0 !important; }
         .bs-book-card-main { grid-template-columns: 76px minmax(0,1fr) !important; gap: 15px !important; }
@@ -1409,9 +1162,6 @@ function GlobalStyle() {
         .bs-reader-name { max-width: 90px !important; }
         .bs-record-row { grid-template-columns: 48px minmax(0,1fr) !important; gap: 12px !important; padding: 16px 0 !important; }
         .bs-record-row .bs-book-cover { width: 48px !important; height: 65px !important; }
-        .bs-review-paper { padding: 34px 20px 28px !important; }
-        .bs-review-side { grid-template-columns: minmax(0,1fr) !important; }
-        .bs-comment-form { flex-wrap: wrap; }
         .bs-comment-form .bs-btn { flex: 1 1 100%; }
         .bs-sidebar::after { display: none !important; }
       }
@@ -1479,7 +1229,6 @@ function GlobalStyle() {
         padding: 0 !important;
         border: 0 !important;
       }
-      .bs-nav-secondary { display: none !important; }
       .bs-nav button {
         min-height: 33px !important;
         width: 100% !important;
@@ -1910,6 +1659,149 @@ function GlobalStyle() {
         .bs-record-cta > span:first-child { font-size: 20px !important; }
         .bs-record-cta > span:last-child { display: none !important; }
       }
+
+      .bs-rating-input { min-width: 0 !important; flex-wrap: wrap !important; gap: 10px !important; }
+      .bs-rating-stars-input { display: inline-flex !important; align-items: center !important; gap: 2px !important; }
+      .bs-rating-star-button, .bs-rating-star-button:hover, .bs-rating-star-button:active { min-width: 0 !important; min-height: 0 !important; padding: 0 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; overflow: visible !important; background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; transform: none !important; }
+      .bs-rating-star-button:focus-visible { outline: 1px solid #555555 !important; outline-offset: 2px !important; }
+      .bs-rating-value { color: #333333 !important; white-space: nowrap !important; }
+      /* Responsive reference layout: book-only shelf, book-centered detail, and clipping scrapbook. */
+
+      .bs-community-shelf-page .bs-books-grid { grid-template-columns: minmax(0,1fr) !important; gap: 0 !important; border-top: 1px solid #cccccc !important; }
+      .bs-community-shelf-page .bs-book-card { width: 100% !important; min-height: 0 !important; padding: 18px 0 !important; display: block !important; background: transparent !important; border: 0 !important; border-bottom: 1px solid #cccccc !important; border-radius: 0 !important; box-shadow: none !important; transform: none !important; }
+      .bs-community-shelf-page .bs-book-card::before { display: none !important; content: none !important; }
+      .bs-community-shelf-page .bs-book-card:hover { background: #eeeeee !important; }
+      .bs-community-shelf-page .bs-book-card-main { grid-template-columns: 88px minmax(0,1fr) !important; gap: 22px !important; align-items: center !important; }
+      .bs-community-shelf-page .bs-book-card-cover { width: 88px !important; min-width: 88px !important; }
+      .bs-community-shelf-page .bs-book-card .bs-book-cover, .bs-community-shelf-page .bs-book-card .bs-cover-img { width: 88px !important; height: 132px !important; object-fit: cover !important; }
+      .bs-community-shelf-page .bs-book-card-info { min-height: 132px !important; }
+      .bs-community-shelf-page .bs-book-card h3.bs-book-title { font-size: 18px !important; }
+      .bs-community-shelf-page .bs-book-card .bs-book-author { margin-top: 5px !important; font-size: 12px !important; }
+      .bs-community-shelf-page .bs-book-card-quote { margin-top: 12px !important; color: #333333 !important; font-size: 12px !important; line-height: 1.8 !important; }
+      .bs-community-shelf-page .bs-book-card-readers { justify-content: flex-start !important; margin-top: 12px !important; padding-top: 10px !important; }
+      @media (max-width: 700px) {
+        .bs-community-shelf-page .bs-book-card-main { grid-template-columns: 76px minmax(0,1fr) !important; gap: 17px !important; }
+        .bs-community-shelf-page .bs-book-card-cover { width: 76px !important; min-width: 76px !important; }
+        .bs-community-shelf-page .bs-book-card .bs-book-cover, .bs-community-shelf-page .bs-book-card .bs-cover-img { width: 76px !important; height: 114px !important; }
+        .bs-community-shelf-page .bs-book-card-info { min-height: 114px !important; }
+      }
+
+      .bs-mobile-bottom-nav { display: none !important; }
+      .bs-bookshelf-page .bs-h1, .bs-scrapbook-page .bs-h1 { font-size: clamp(32px, 4vw, 44px) !important; letter-spacing: -.05em !important; }
+      .bs-bookshelf-page .bs-page-head, .bs-scrapbook-page .bs-page-head { align-items: center !important; margin-bottom: 0 !important; }
+      .bs-bookshelf-page .bs-shelf-toolbar { margin-top: 32px !important; background: transparent !important; padding: 0 0 10px !important; border: 0 !important; border-bottom: 1px solid #cccccc !important; box-shadow: none !important; }
+      .bs-bookshelf-page .bs-filter-btn { min-height: 34px !important; padding: 6px 9px !important; }
+      .bs-bookshelf-page .bs-personal-book-list { display: grid !important; grid-template-columns: minmax(0,1fr) !important; border-top: 1px solid #cccccc !important; }
+      .bs-bookshelf-page .bs-personal-book-card { width: 100% !important; min-width: 0 !important; min-height: 170px !important; padding: 18px 0 !important; display: grid !important; grid-template-columns: 88px minmax(0,1fr) 20px !important; gap: 22px !important; align-items: center !important; text-align: left !important; color: #111111 !important; background: transparent !important; border: 0 !important; border-bottom: 1px solid #cccccc !important; border-radius: 0 !important; box-shadow: none !important; transform: none !important; }
+      .bs-bookshelf-page .bs-personal-book-card:hover { background: #eeeeee !important; }
+      .bs-personal-book-cover, .bs-personal-book-info { min-width: 0 !important; }
+      .bs-personal-book-cover .bs-book-cover, .bs-personal-book-cover .bs-cover-img { width: 88px !important; height: 132px !important; margin: 0 !important; object-fit: cover !important; }
+      .bs-personal-book-title { margin: 0 !important; font-size: 18px !important; font-weight: 750 !important; line-height: 1.4 !important; overflow-wrap: anywhere !important; }
+      .bs-personal-book-author { margin: 5px 0 0 !important; color: #666666 !important; font-size: 12px !important; }
+      .bs-personal-book-meta { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 12px !important; margin-top: 12px !important; }
+      .bs-personal-status { display: inline-flex !important; align-items: center !important; padding: 4px 7px !important; color: #555555 !important; background: #e8e8e8 !important; font-size: 10px !important; }
+      .bs-status-completed { color: #ffffff !important; background: #222222 !important; }
+      .bs-personal-rating { display: inline-flex !important; align-items: center !important; gap: 7px !important; font-size: 11px !important; }
+      .bs-personal-rating strong { font-weight: 700 !important; }
+      .bs-personal-book-date { display: block !important; margin-top: 12px !important; color: #888888 !important; font-size: 10px !important; }
+      .bs-personal-book-arrow { justify-self: end !important; align-self: start !important; color: #888888 !important; font-size: 15px !important; }
+      .bs-scrapbook-toolbar { margin: 42px 0 22px !important; display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 24px !important; }
+      .bs-scrapbook-toolbar .bs-main-search { margin: 0 !important; width: min(420px,100%) !important; }
+      .bs-scrapbook-toolbar .bs-search { height: 42px !important; min-height: 42px !important; padding-left: 34px !important; }
+      .bs-scrapbook-count { color: #777777 !important; font-size: 11px !important; white-space: nowrap !important; }
+      .bs-scrapbook-count strong { color: #111111 !important; font-size: 16px !important; }
+      .bs-scrapbook-list { display: grid !important; grid-template-columns: minmax(0,1fr) !important; border-top: 1px solid #cccccc !important; }
+      .bs-scrapbook-card { width: 100% !important; min-width: 0 !important; min-height: 0 !important; padding: 26px 0 !important; display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 24px !important; text-align: left !important; color: #111111 !important; background: transparent !important; border: 0 !important; border-bottom: 1px solid #cccccc !important; border-radius: 0 !important; box-shadow: none !important; transform: none !important; }
+      .bs-scrapbook-card:hover { background: #eeeeee !important; }
+      .bs-scrapbook-card-main { min-width: 0 !important; }
+      .bs-scrapbook-label { margin: 0 0 8px !important; color: #666666 !important; font-size: 9px !important; font-weight: 700 !important; letter-spacing: .08em !important; }
+      .bs-scrapbook-title { margin: 0 !important; color: #111111 !important; font-size: 18px !important; font-weight: 750 !important; line-height: 1.45 !important; overflow-wrap: anywhere !important; }
+      .bs-scrapbook-source { display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin: 7px 0 0 !important; color: #888888 !important; font-size: 10px !important; overflow-wrap: anywhere !important; }
+      .bs-scrapbook-source i { font-style: normal !important; }
+      .bs-scrapbook-excerpt { margin: 13px 0 0 !important; color: #444444 !important; font-size: 12px !important; line-height: 1.8 !important; white-space: pre-line !important; overflow-wrap: anywhere !important; }
+      .bs-scrapbook-meta { display: flex !important; flex-wrap: wrap !important; gap: 12px !important; margin-top: 12px !important; color: #777777 !important; font-size: 10px !important; }
+      .bs-scrapbook-arrow { flex-shrink: 0 !important; color: #777777 !important; font-size: 15px !important; }
+      .bs-book-detail-page { width: min(100%, 900px) !important; max-width: 900px !important; padding-top: 30px !important; }
+      .bs-book-detail-shell { border: 0 !important; background: transparent !important; box-shadow: none !important; }
+      .bs-book-detail-hero { margin-top: 28px !important; padding: 0 0 34px !important; display: grid !important; grid-template-columns: 140px minmax(0,1fr) !important; align-items: end !important; gap: 34px !important; border: 0 !important; border-bottom: 1px solid #cccccc !important; background: transparent !important; box-shadow: none !important; }
+      .bs-book-detail-cover { width: 140px !important; height: 208px !important; min-width: 0 !important; object-fit: cover !important; border: 1px solid #bbbbbb !important; background: #e7e7e7 !important; }
+      .bs-book-detail-hero h2 { font-size: clamp(30px,4vw,44px) !important; font-weight: 800 !important; line-height: 1.2 !important; letter-spacing: -.05em !important; }
+      .bs-book-detail-hero > div > div > div > button { min-height: 32px !important; }
+      .bs-book-rating-section { padding: 30px 0 !important; display: grid !important; grid-template-columns: 90px minmax(0,1fr) !important; gap: 30px !important; border-bottom: 1px solid #cccccc !important; }
+      .bs-book-rating-heading { margin: 0 !important; font-size: 15px !important; font-weight: 800 !important; }
+      .bs-book-rating-content { min-width: 0 !important; display: grid !important; gap: 10px !important; }
+      .bs-book-rating-row { display: grid !important; grid-template-columns: minmax(70px,100px) minmax(90px,1fr) 38px !important; align-items: center !important; gap: 10px !important; color: #555555 !important; font-size: 11px !important; }
+      .bs-book-rating-name { min-width: 0 !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+      .bs-book-rating-row strong { color: #222222 !important; font-size: 11px !important; }
+      .bs-book-rating-empty { margin: 0 !important; color: #777777 !important; font-size: 12px !important; }
+      .bs-book-my-rating { margin-top: 6px !important; padding-top: 14px !important; display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 14px !important; border-top: 1px solid #dddddd !important; color: #555555 !important; font-size: 11px !important; }
+      .bs-book-my-rating > p { margin: 0 !important; color: #777777 !important; }
+      .bs-book-detail-sections { display: block !important; }
+      .bs-book-detail-section { padding: 34px 0 !important; border-bottom: 1px solid #cccccc !important; background: transparent !important; }
+      .bs-book-detail-section h3 { margin: 0 !important; font-size: 15px !important; font-weight: 800 !important; }
+      .bs-book-community-panel { padding: 28px 0 !important; border: 0 !important; border-bottom: 1px solid #cccccc !important; background: transparent !important; }
+      .bs-scrap-detail-page .bs-content { max-width: 1000px !important; }
+      .bs-scrap-detail-page .scrap-detail-article { border: 0 !important; background: transparent !important; box-shadow: none !important; }
+      .bs-scrap-detail-page .scrap-detail-header { margin-top: 42px !important; padding: 0 0 34px !important; border: 0 !important; border-bottom: 1px solid #cccccc !important; background: transparent !important; }
+      .bs-scrap-detail-page .scrap-detail-content { width: min(640px,100%) !important; margin: 0 auto !important; padding: 36px 0 !important; border: 0 !important; background: transparent !important; font-size: 14px !important; line-height: 2 !important; }
+      .bs-scrap-detail-page .scrap-detail-content .ProseMirror { font-size: 14px !important; }
+      .bs-modal-backdrop { position: fixed !important; inset: 0 !important; z-index: 100 !important; display: flex !important; align-items: center !important; justify-content: center !important; overflow-y: auto !important; padding: 20px !important; background: rgba(17,17,17,.55) !important; }
+      .bs-modal-panel { width: min(620px,100%) !important; max-height: min(88vh,900px) !important; overflow-y: auto !important; margin: auto !important; padding: 24px !important; color: #111111 !important; background: #f7f7f7 !important; border: 1px solid #cccccc !important; box-shadow: 0 12px 40px rgba(0,0,0,.18) !important; }
+      .bs-modal-head { display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 16px !important; margin-bottom: 24px !important; padding-bottom: 14px !important; border-bottom: 1px solid #cccccc !important; }
+      .bs-modal-eyebrow { margin: 0 0 5px !important; color: #777777 !important; font-size: 9px !important; letter-spacing: .08em !important; }
+      .bs-modal-head h2 { margin: 0 !important; font-size: 23px !important; font-weight: 800 !important; }
+      .bs-book-search-form { margin-bottom: 22px !important; }
+      .bs-book-search-results { margin-top: 18px !important; border-top: 1px solid #cccccc !important; }
+      .bs-book-search-result { padding: 12px 0 !important; display: grid !important; grid-template-columns: 44px minmax(0,1fr) auto !important; gap: 12px !important; align-items: center !important; border-bottom: 1px solid #dddddd !important; }
+      .bs-book-search-result img, .bs-selected-book img { width: 44px !important; height: 64px !important; object-fit: cover !important; background: #e7e7e7 !important; border: 1px solid #cccccc !important; }
+      .bs-selected-book { margin-top: 18px !important; padding-top: 18px !important; border-top: 1px solid #cccccc !important; }
+      .bs-selected-book img { width: 56px !important; height: 80px !important; }
+      .bs-add-scrap > span:first-child, .bs-book-add-button > span:first-child { font-size: 20px !important; }
+      .bs-add-scrap, .bs-book-add-button { display: inline-flex !important; align-items: center !important; gap: 8px !important; }
+      @media (max-width: 700px) {
+        .bs-sidebar { position: sticky !important; inset: 0 auto auto 0 !important; width: 100% !important; min-height: 0 !important; height: auto !important; padding: 10px 14px 9px !important; display: block !important; border: 0 !important; border-bottom: 1px solid #dddddd !important; }
+        .bs-brand { display: flex !important; align-items: center !important; justify-content: space-between !important; padding: 0 2px !important; }
+        .bs-brand-title { font-size: 24px !important; line-height: .95 !important; }
+        .bs-sidebar .bs-side-spacer, .bs-sidebar .bs-side-bottom { display: none !important; }
+        .bs-sidebar .bs-nav { display: none !important; }
+        .bs-sidebar.bs-mobile-nav-open .bs-nav { display: flex !important; flex-direction: column !important; gap: 2px !important; margin-top: 10px !important; }
+        .bs-sidebar.bs-mobile-nav-open .bs-side-bottom { display: flex !important; margin-top: 14px !important; }
+        .bs-main { width: 100% !important; margin-left: 0 !important; }
+        .bs-content { max-width: none !important; padding: 38px 20px 108px !important; }
+        .bs-mobile-bottom-nav { position: fixed !important; inset: auto 12px 12px !important; z-index: 90 !important; min-height: 64px !important; padding: 6px !important; display: grid !important; grid-template-columns: repeat(3,minmax(0,1fr)) !important; background: #111111 !important; border: 1px solid #333333 !important; }
+        .bs-mobile-bottom-nav button { min-height: 50px !important; padding: 8px 4px !important; color: #999999 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; font-size: 10px !important; }
+        .bs-mobile-bottom-nav button.bs-active { color: #ffffff !important; background: #333333 !important; }
+        .bs-bookshelf-page .bs-personal-book-card { min-height: 148px !important; grid-template-columns: 76px minmax(0,1fr) 14px !important; gap: 17px !important; padding: 17px 0 !important; }
+        .bs-personal-book-cover .bs-book-cover, .bs-personal-book-cover .bs-cover-img { width: 76px !important; height: 114px !important; }
+        .bs-personal-book-title { font-size: 16px !important; }
+        .bs-scrapbook-toolbar { margin-top: 30px !important; align-items: stretch !important; flex-direction: column !important; gap: 10px !important; }
+        .bs-scrapbook-toolbar .bs-main-search { width: 100% !important; }
+        .bs-scrapbook-count { text-align: right !important; }
+        .bs-scrapbook-card { padding: 22px 0 !important; gap: 12px !important; }
+        .bs-scrapbook-title { font-size: 16px !important; }
+        .bs-book-detail-page { padding-top: 22px !important; padding-bottom: 100px !important; }
+        .bs-book-detail-hero { margin-top: 28px !important; grid-template-columns: 98px minmax(0,1fr) !important; gap: 20px !important; padding-bottom: 28px !important; }
+        .bs-book-detail-cover { width: 98px !important; height: 146px !important; }
+        .bs-book-detail-hero h2 { font-size: 28px !important; }
+        .bs-book-rating-section { padding: 26px 0 !important; grid-template-columns: 1fr !important; gap: 16px !important; }
+        .bs-book-rating-row { grid-template-columns: minmax(58px,90px) minmax(88px,1fr) 32px !important; gap: 7px !important; }
+        .bs-book-detail-section { padding: 28px 0 !important; }
+        .bs-scrap-detail-page .bs-content { padding: 30px 18px 100px !important; }
+        .bs-scrap-detail-page .scrap-detail-header { margin-top: 30px !important; }
+        .bs-scrap-detail-page .scrap-detail-content { padding: 28px 0 !important; }
+        .bs-modal-panel { padding: 18px !important; }
+        .bs-add-scrap, .bs-book-add-button { width: 42px !important; min-width: 42px !important; padding: 0 !important; justify-content: center !important; font-size: 0 !important; }
+        .bs-add-scrap > span:first-child, .bs-book-add-button > span:first-child { font-size: 22px !important; }
+      }
+      @media (max-width: 430px) {
+        .bs-personal-book-arrow { display: none !important; }
+        .bs-personal-book-card { grid-template-columns: 70px minmax(0,1fr) !important; gap: 13px !important; }
+        .bs-personal-book-cover .bs-book-cover, .bs-personal-book-cover .bs-cover-img { width: 70px !important; height: 105px !important; }
+        .bs-book-detail-hero { grid-template-columns: 84px minmax(0,1fr) !important; gap: 14px !important; }
+        .bs-book-detail-cover { width: 84px !important; height: 126px !important; }
+        .bs-book-detail-hero h2 { font-size: 24px !important; }
+        .bs-modal-panel { padding: 15px !important; }
+      }
     `}</style>
   );
 }
@@ -1964,29 +1856,28 @@ function RatingInput({
   const shown = hover || value;
 
   return (
-    <div className="flex items-center gap-3">
-      <div className="inline-flex items-center gap-0.5" onMouseLeave={() => setHover(0)}>
-        {[0, 1, 2, 3, 4].map((i) => (
-          <span key={i} className="relative inline-block" style={{ width: size, height: size }}>
-            <Star fill={Math.min(1, Math.max(0, shown - i))} size={size} />
-            <button
-              type="button"
-              aria-label={`${i + 0.5}점`}
-              className="absolute left-0 top-0 h-full w-1/2 focus:outline-none"
-              onMouseEnter={() => setHover(i + 0.5)}
-              onClick={() => onChange(value === i + 0.5 ? 0 : i + 0.5)}
-            />
-            <button
-              type="button"
-              aria-label={`${i + 1}점`}
-              className="absolute right-0 top-0 h-full w-1/2 focus:outline-none"
-              onMouseEnter={() => setHover(i + 1)}
-              onClick={() => onChange(value === i + 1 ? 0 : i + 1)}
-            />
-          </span>
+    <div className="bs-rating-input flex items-center gap-3" aria-label="별점 선택">
+      <div className="bs-rating-stars-input" onMouseLeave={() => setHover(0)}>
+        {[1, 2, 3, 4, 5].map((score) => (
+          <button
+            key={score}
+            type="button"
+            className="bs-rating-star-button"
+            style={{ width: size, height: size }}
+            aria-label={`${score}점`}
+            aria-pressed={value === score}
+            onMouseEnter={() => setHover(score)}
+            onFocus={() => setHover(score)}
+            onBlur={() => setHover(0)}
+            onClick={() => onChange(value === score ? 0 : score)}
+          >
+            <Star fill={Math.min(1, Math.max(0, shown - score + 1))} size={size} />
+          </button>
         ))}
       </div>
-      <span className="text-sm font-semibold">{value}점</span>
+      <span className="bs-rating-value text-sm font-semibold">
+        {value > 0 ? `${value.toFixed(1)}점` : '별점 선택'}
+      </span>
     </div>
   );
 }
@@ -3422,10 +3313,6 @@ function ReviewEditorPanel({
   );
 }
 
-function Footer() {
-  return null;
-}
-
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState('');
@@ -3448,6 +3335,7 @@ export default function Home() {
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
 
   const [tab, setTab] = useState<Tab>('shelf');
+  const [bookModalOpen, setBookModalOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [boardFilter, setBoardFilter] = useState('');
@@ -3468,6 +3356,7 @@ export default function Home() {
   const [clipFetchError, setClipFetchError] = useState('');
   const [clipModalOpen, setClipModalOpen] = useState(false);
   const [shelfFilter, setShelfFilter] = useState<'all' | Status>('all');
+  const [personalShelfFilter, setPersonalShelfFilter] = useState<'all' | Status>('all');
   const [drafts, setDrafts] = useState<Record<string, DraftRow>>({});
   const handleDraftChange = useCallback((reviewId: string, d: DraftRow | null) => {
     setDrafts((prev) => {
@@ -3493,13 +3382,16 @@ export default function Home() {
   }, [draft.sealImage]);
 
   useEffect(() => {
-    if (!clipModalOpen) return;
+    if (!clipModalOpen && !bookModalOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setClipModalOpen(false);
+      if (e.key === 'Escape') {
+        setClipModalOpen(false);
+        setBookModalOpen(false);
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [clipModalOpen]);
+  }, [clipModalOpen, bookModalOpen]);
 
   const navIdx = useRef(0);
 
@@ -3557,6 +3449,8 @@ export default function Home() {
     };
   };
   const nameOf = (userId: string) => profileOf(userId).nickname;
+
+  const shelfEntries = useMemo(() => buildShelfEntries(allReviews), [allReviews]);
 
   const myReviews = allReviews.filter((r) => r.user_id === user?.id);
   const activeReview = allReviews.find((r) => r.id === activeId) ?? null;
@@ -3873,6 +3767,7 @@ export default function Home() {
       if (dup) {
         alert('이미 서재에 있는 책이에요. 해당 글로 이동할게요.');
         setSelectedBook(null);
+        setBookModalOpen(false);
         navigate({ tab: 'mine', activeId: dup.id });
         return;
       }
@@ -3900,6 +3795,7 @@ export default function Home() {
       if (reviewError) throw reviewError;
 
       setSelectedBook(null);
+      setBookModalOpen(false);
       setRating(0);
       setRegStatus('completed');
       setSearchResults([]);
@@ -3912,20 +3808,25 @@ export default function Home() {
     }
   };
 
-  const handleUpdateStatus = async (nextStatus: Status, nextRating: number) => {
-    if (!activeReview || !isOwner) return;
+  const handleUpdateStatus = async (
+    nextStatus: Status,
+    nextRating: number,
+    target: Review | null = activeReview
+  ) => {
+    if (!target || !user || target.user_id !== user.id) return;
     const savedRating = nextStatus === 'completed' ? nextRating : 0;
 
     setAllReviews((prev) =>
       prev.map((r) =>
-        r.id === activeReview.id ? { ...r, status: nextStatus, rating: savedRating } : r
+        r.id === target.id ? { ...r, status: nextStatus, rating: savedRating } : r
       )
     );
 
     const { error } = await supabase
       .from('reviews')
       .update({ status: nextStatus, rating: savedRating })
-      .eq('id', activeReview.id);
+      .eq('id', target.id)
+      .eq('user_id', user.id);
 
     if (error) {
       alert(`저장 실패: ${error.message}`);
@@ -4002,7 +3903,7 @@ export default function Home() {
   };
 
   const openClip = (id: string) => {
-    navigate({ activeClipId: id });
+    navigate({ tab: 'scraps', activeId: null, activeSeries: null, activeClipId: id });
     setNoteDraftText('');
     window.scrollTo({ top: 0 });
   };
@@ -4302,7 +4203,7 @@ export default function Home() {
         value={boardFilter}
         onChange={(e) => setBoardFilter(e.target.value)}
         placeholder="책 제목 또는 저자 검색"
-        aria-label="책, 문장, 기록 검색"
+        aria-label="책 제목 또는 저자 검색"
       />
       {boardFilter && (
         <button
@@ -4317,6 +4218,7 @@ export default function Home() {
   );
 
   const header = (
+    <>
     <aside className={`bs-sidebar${mobileNavOpen ? ' bs-mobile-nav-open' : ''}`}>
       <div className="bs-brand">
         <div className="bs-brand-title">독-<br />서팟</div>
@@ -4333,9 +4235,9 @@ export default function Home() {
         </button>
       </div>
       <nav className="bs-nav" aria-label="주 메뉴">
-        {navItem('shelf', '서고', buildShelfEntries(allReviews).length)}
+        {navItem('shelf', '서고', shelfEntries.length)}
         {navItem('mine', '책장')}
-        {navItem('quotes', '스크랩북')}
+        {navItem('scraps', '스크랩북')}
       </nav>
       <div className="bs-side-spacer" />
       <div className="bs-side-bottom">
@@ -4373,6 +4275,12 @@ export default function Home() {
         </button>
       </div>
     </aside>
+    <nav className="bs-mobile-bottom-nav" aria-label="모바일 메뉴">
+      {navItem('shelf', '서고')}
+      {navItem('mine', '책장')}
+      {navItem('scraps', '스크랩북')}
+    </nav>
+    </>
   );
 
   const asRows = (list: Review[]): CommunityEntry[] =>
@@ -4494,6 +4402,8 @@ export default function Home() {
     const hasQuotes = (activeReview.quotes?.length || 0) > 0;
     const showReview = (isEditingContent && isOwner) || !!activeReview.content || (isOwner && !!drafts[activeReview.id]);
     const showQuotes = isOwner || hasQuotes;
+    const sameBookReviews = allReviews.filter((r) => r.book_isbn === activeReview.book_isbn);
+    const myBookReview = sameBookReviews.find((r) => r.user_id === user.id) ?? null;
     const readers = otherReviews.filter((r) => r.status !== 'wishlist');
     const hasSidebar = readers.length > 0;
     const seriesEntry = activeSeries
@@ -4506,7 +4416,7 @@ export default function Home() {
       <div className="bs-main">
         <GlobalStyle />
         {header}
-        <main className="max-w-[700px] mx-auto px-4 py-6 md:py-8 space-y-4">
+        <main className="bs-book-detail-page max-w-[900px] mx-auto px-4 py-6 md:py-8">
           <button onClick={goBack} className={`${LINK_BTN} min-h-[34px]`}>
             &larr; 목록으로 돌아가기
           </button>
@@ -4530,13 +4440,13 @@ export default function Home() {
             </div>
           )}
 
-          <article className="border border-[#d5d7da] bg-[#fafafa]">
-            <section className="p-5 md:p-6 border-b border-[#d5d7da]">
+          <article className="bs-book-detail-shell">
+            <section className="bs-book-detail-hero p-5 md:p-6 border-b border-[#d5d7da]">
               <div className="flex gap-4 sm:gap-5">
                 <img
                   src={activeReview.books.cover_url || undefined}
                   alt={activeReview.books.title}
-                  className="w-20 h-28 sm:w-24 sm:h-36 object-cover border border-[#d5d7da] bg-[#e7e9ec] transition duration-200 shrink-0"
+                  className="bs-book-detail-cover w-20 h-28 sm:w-24 sm:h-36 object-cover border border-[#d5d7da] bg-[#e7e9ec] transition duration-200 shrink-0"
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-start justify-between gap-3">
@@ -4549,6 +4459,7 @@ export default function Home() {
                         {activeReview.books.title}
                       </h2>
                       <p className="mt-1 text-sm text-[#555a62]">{activeReview.books.author}</p>
+                      {!isOwner && <div className="mt-3"><StatusCell review={activeReview} /></div>}
                     </div>
 
                     {isOwner && (
@@ -4584,32 +4495,54 @@ export default function Home() {
                     )}
                   </div>
 
-                  <div className="mt-4">
-                    {isOwner ? (
-                      activeReview.status === 'completed' && (
-                        <RatingInput
-                          value={activeReview.rating}
-                          onChange={(v) => handleUpdateStatus('completed', v)}
-                          size={26}
-                        />
-                      )
-                    ) : activeReview.status === 'completed' ? (
-                      <div className="flex items-center gap-2">
-                        <RatingDisplay value={activeReview.rating} size={22} />
-                        <span className="text-sm font-semibold">{activeReview.rating}점</span>
-                      </div>
-                    ) : (
-                      <StatusCell review={activeReview} />
-                    )}
-                  </div>
                 </div>
               </div>
             </section>
 
-            <div>
+            <section className="bs-book-rating-section">
+              <h3 className="bs-book-rating-heading">별점</h3>
+              <div className="bs-book-rating-content">
+                {sameBookReviews.filter((r) => r.status === 'completed' && r.rating > 0).length > 0 ? (
+                  sameBookReviews
+                    .filter((r) => r.status === 'completed' && r.rating > 0)
+                    .map((r) => (
+                      <div className="bs-book-rating-row" key={r.id}>
+                        <span className="bs-book-rating-name">{profileOf(r.user_id).nickname}</span>
+                        <RatingDisplay value={r.rating} size={15} />
+                        <strong>{r.rating.toFixed(1)}</strong>
+                      </div>
+                    ))
+                ) : (
+                  <p className="bs-book-rating-empty">아직 등록된 별점이 없어요.</p>
+                )}
+
+                <div className="bs-book-my-rating">
+                  <span>내 별점</span>
+                  {myBookReview?.status === 'completed' ? (
+                    <RatingInput
+                      value={myBookReview.rating}
+                      onChange={(v) => handleUpdateStatus('completed', v, myBookReview)}
+                      size={25}
+                    />
+                  ) : myBookReview ? (
+                    <p>완독으로 상태를 바꾸면 별점을 남길 수 있어요.</p>
+                  ) : (
+                    <button
+                      type="button"
+                      className={LINK_BTN}
+                      onClick={() => { goTab('mine'); setBookModalOpen(true); }}
+                    >
+                      내 책장에 추가하기
+                    </button>
+                  )}
+                </div>
+              </div>
+            </section>
+
+            <div className="bs-book-detail-sections">
               <div>
                 {showQuotes && (
-                  <section className={`p-5 md:p-6 ${showReview ? 'border-b border-[#d5d7da]' : ''}`}>
+                  <section className={`bs-book-detail-section ${showReview ? 'border-b border-[#d5d7da]' : ''}`}>
                     <h3 className="text-xl font-black tracking-tight">
                       인용문{' '}
                       <span className="text-sm font-semibold text-[#666b73]">
@@ -4658,7 +4591,7 @@ export default function Home() {
                 )}
 
                 {isEditingContent && isOwner ? (
-                  <section id="review-editor" className="p-5 md:p-6 space-y-3">
+                  <section id="review-editor" className="bs-book-detail-section space-y-3">
                     <h3 className="text-xl font-black tracking-tight">독후감</h3>
                     <ReviewEditorPanel
                       key={activeReview.id}
@@ -4673,7 +4606,7 @@ export default function Home() {
                     />
                   </section>
                 ) : activeReview.content ? (
-                  <section className="p-5 md:p-6 space-y-3">
+                  <section className="bs-book-detail-section space-y-3">
                     <div className="flex flex-wrap justify-between items-center gap-2">
                       <h3 className="text-xl font-black tracking-tight">독후감</h3>
                       {isOwner && (
@@ -4688,7 +4621,7 @@ export default function Home() {
                     <ReviewBody review={activeReview} />
                   </section>
                 ) : isOwner && drafts[activeReview.id] ? (
-                  <section className="p-5 md:p-6 space-y-3">
+                  <section className="bs-book-detail-section space-y-3">
                     <div className="flex flex-wrap justify-between items-center gap-2">
                       <h3 className="text-xl font-black tracking-tight">독후감</h3>
                       <span className="bs-tag bs-green">임시 저장</span>
@@ -4704,7 +4637,7 @@ export default function Home() {
               </div>
 
               {hasSidebar && (
-                <aside className="border-t border-[#d5d7da] p-5 md:p-6 space-y-4">
+                <aside className="bs-book-community-panel border-t border-[#d5d7da] p-5 md:p-6 space-y-4">
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-xl font-black tracking-tight">
                       같은 책을 읽은 사람{' '}
@@ -4755,7 +4688,6 @@ export default function Home() {
             </div>
           </article>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -4823,7 +4755,7 @@ export default function Home() {
       ) : null;
 
     return (
-      <div className="bs-main">
+      <div className="bs-main bs-scrap-detail-page">
         <GlobalStyle />
         {header}
         <main className="mx-auto max-w-3xl lg:max-w-[66rem] px-4 py-6 md:py-8 pb-56 lg:pb-8">
@@ -4831,12 +4763,12 @@ export default function Home() {
             onClick={goBack}
             className={`${LINK_BTN} min-h-[34px]`}
           >
-            &larr; 내 서재로 돌아가기
+            &larr; 스크랩북으로 돌아가기
           </button>
 
           <div className="mt-2 lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-6">
-            <article className="min-w-0 border border-[#d5d7da] bg-[#fafafa]">
-              <section className="p-5 md:p-8 border-b border-[#d5d7da] space-y-3">
+            <article className="scrap-detail-article min-w-0 border border-[#d5d7da] bg-[#fafafa]">
+              <section className="scrap-detail-header p-5 md:p-8 border-b border-[#d5d7da] space-y-3">
                 <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Clipping</p>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight break-words">
                   {activeClip.title}
@@ -4869,7 +4801,7 @@ export default function Home() {
                 </div>
               </section>
 
-              <section className="p-5 md:p-8">
+              <section className="scrap-detail-content p-5 md:p-8">
                 <ClipArticle
                   content={activeClip.content}
                   highlights={activeClip.clip_highlights}
@@ -4879,7 +4811,7 @@ export default function Home() {
               </section>
 
               {notes.length > 0 && (
-                <section className="p-5 md:p-8 border-t border-[#d5d7da]">
+                <section className="scrap-detail-content p-5 md:p-8 border-t border-[#d5d7da]">
                   <h3 className="text-xl font-black tracking-tight">
                     각주{' '}
                     <span className="text-sm font-semibold text-[#666b73]">({notes.length})</span>
@@ -5216,7 +5148,6 @@ export default function Home() {
             </section>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -5251,6 +5182,7 @@ export default function Home() {
 
   const goWrite = () => {
     goTab('mine');
+    setBookModalOpen(true);
   };
 
   if (tab === 'shelf') {
@@ -5259,7 +5191,7 @@ export default function Home() {
     const statusOf = (e: ShelfEntry) => shelfStatusOf(e.reviews);
     const hasStatus = (e: ShelfEntry, s: Status) => e.reviews.some((r) => r.status === s);
     const visible = entries.filter((e) => filterKey === 'all' || hasStatus(e, filterKey));
-    const books = buildShelfEntries(allReviews);
+    const books = shelfEntries;
     const countOf = (s: Status) => books.filter((e) => statusOf(e) === s).length;
 
     const filters: ['all' | Status, string, number][] = [
@@ -5270,7 +5202,7 @@ export default function Home() {
     ];
 
     return (
-      <div className="bs-main">
+      <div className="bs-main bs-community-shelf-page">
         <GlobalStyle />
         {header}
         <div className="bs-content">
@@ -5316,6 +5248,10 @@ export default function Home() {
                 const latestQuote = e.reviews
                   .flatMap((review) => (review.quotes || []).map((quote) => ({ quote, review })))
                   .sort((a, b) => b.quote.created_at.localeCompare(a.quote.created_at))[0];
+                const ratedReviews = e.reviews.filter((review) => review.rating > 0);
+                const averageRating = ratedReviews.length
+                  ? ratedReviews.reduce((sum, review) => sum + review.rating, 0) / ratedReviews.length
+                  : 0;
                 return (
                   <article key={e.type === 'series' ? e.key : e.isbn} className="bs-book-card" onClick={() => openBook(e)}>
                     <div className="bs-book-card-main">
@@ -5325,21 +5261,15 @@ export default function Home() {
                       <div className="bs-book-card-info">
                         <h3 className="bs-h3 bs-book-title">{title}</h3>
                         <div className="bs-book-author">{author}</div>
-                        {e.reviews.some((review) => review.rating > 0) && (
-                          <div className="bs-book-rating" aria-label={`평점 ${(
-                            e.reviews.filter((review) => review.rating > 0).reduce((sum, review) => sum + review.rating, 0) /
-                            e.reviews.filter((review) => review.rating > 0).length
-                          ).toFixed(1)}점`}>
+                        {ratedReviews.length > 0 && (
+                          <div className="bs-book-rating" aria-label={`평점 ${averageRating.toFixed(1)}점`}>
                             <span className="bs-rating-stars" aria-hidden="true">
-                              {Array.from({ length: 5 }, (_, i) => {
-                                const rated = e.reviews.filter((review) => review.rating > 0);
-                                const avg = rated.reduce((sum, review) => sum + review.rating, 0) / rated.length;
-                                return <span key={i}>{i < Math.round(avg) ? '★' : '☆'}</span>;
-                              })}
+                              {Array.from({ length: 5 }, (_, i) => (
+                                <span key={i}>{i < Math.round(averageRating) ? '★' : '☆'}</span>
+                              ))}
                             </span>
                             <span className="bs-rating-meta">
-                              {(e.reviews.filter((review) => review.rating > 0).reduce((sum, review) => sum + review.rating, 0) /
-                                e.reviews.filter((review) => review.rating > 0).length).toFixed(1)} · {e.reviews.filter((review) => review.rating > 0).length}명
+                              {averageRating.toFixed(1)} · {ratedReviews.length}명
                             </span>
                           </div>
                         )}
@@ -5372,7 +5302,6 @@ export default function Home() {
             )}
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -5415,26 +5344,18 @@ export default function Home() {
             )}
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
 
-  if (tab === 'quotes') {
-    const mine = myReviews
-      .flatMap((r) => (r.quotes || []).map((q) => ({ q, r })))
-      .sort((a, b) => b.q.created_at.localeCompare(a.q.created_at));
-    const f = boardFilter.trim().toLowerCase();
-    const list = mine.filter(
-      ({ q, r }) =>
-        !f ||
-        q.content.toLowerCase().includes(f) ||
-        r.books.title.toLowerCase().includes(f) ||
-        r.books.author.toLowerCase().includes(f) ||
-        q.quote_comments.some((c) => c.content.toLowerCase().includes(f))
+  if (tab === 'scraps') {
+    const filterQ = boardFilter.trim().toLowerCase();
+    const clipList = clippings.filter(
+      (c) => !filterQ || `${c.title} ${c.source || ''}`.toLowerCase().includes(filterQ)
     );
+
     return (
-      <div className="bs-main">
+      <div className="bs-main bs-scrapbook-page">
         <GlobalStyle />
         {header}
         <div className="bs-content">
@@ -5442,160 +5363,319 @@ export default function Home() {
             <div className="bs-heading-copy">
               <h1 className="bs-h1">스크랩북</h1>
             </div>
-            <button className="bs-icon-button bs-add-scrap" onClick={() => goTab('mine')} aria-label="새 기록" title="새 기록">
-              ＋
+            <button
+              type="button"
+              className="bs-btn bs-btn-primary bs-add-scrap"
+              onClick={() => setClipModalOpen(true)}
+            >
+              <span aria-hidden="true">＋</span><span>스크랩 추가</span>
             </button>
           </div>
-          {boardSearch}
-          <div>
-            <div className="bs-records">
-              {list.length === 0 ? (
-                <div className="bs-empty-state">
-                  <strong>{mine.length === 0 ? '아직 모아둔 문장이 없어요.' : '찾는 문장이 없어요.'}</strong>
-                  <span>책 상세 화면에서 마음에 남은 문장을 적어 보세요.</span>
-                </div>
-              ) : (
-                list.map(({ q, r }) => (
-                  <article key={q.id} className="bs-record-row bs-quote-row" onClick={() => openReview(r)}>
-                    <div className="min-w-0">
-                      <div className="bs-record-excerpt bs-quote-full-text">
-                        <DiscordText text={q.content} wrapQuotes />
-                      </div>
-                      {q.quote_comments.map((c) => (
-                        <div key={c.id} className="bs-quote-comment">
-                          ↳ {plainText(c.content)}
-                        </div>
-                      ))}
-                      <div className="bs-record-meta">
-                        <span>{r.books.title}</span>
-                        <i className="bs-meta-dot" />
-                        <span>{fmtMD(q.created_at)}</span>
-                      </div>
-                    </div>
-                  </article>
-                ))
+
+          <div className="bs-scrapbook-toolbar">
+            <div className="bs-search-wrap bs-main-search">
+              <span className="bs-search-icon" aria-hidden="true">⌕</span>
+              <input
+                className="bs-search"
+                type="search"
+                value={boardFilter}
+                onChange={(e) => setBoardFilter(e.target.value)}
+                placeholder="스크랩 제목 또는 출처 검색"
+                aria-label="스크랩 제목 또는 출처 검색"
+              />
+              {boardFilter && (
+                <button
+                  type="button"
+                  className="bs-search-clear"
+                  onClick={() => setBoardFilter('')}
+                  aria-label="검색어 지우기"
+                >×</button>
               )}
             </div>
+            <div className="bs-scrapbook-count">
+              <strong>{clipList.length}</strong> / {clippings.length}개
+            </div>
+          </div>
+
+          <div className="bs-scrapbook-list">
+            {clipList.length === 0 ? (
+              <div className="bs-empty-state">
+                <strong>{clippings.length === 0 ? '아직 스크랩이 없어요.' : '찾는 스크랩이 없어요.'}</strong>
+                <span>{clippings.length === 0 ? '기사나 칼럼을 추가해 나만의 스크랩북을 만들어 보세요.' : '검색어를 바꿔 보세요.'}</span>
+              </div>
+            ) : (
+              clipList.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  className="bs-scrapbook-card"
+                  onClick={() => openClip(c.id)}
+                >
+                  <div className="bs-scrapbook-card-main">
+                    <p className="bs-scrapbook-label">CLIPPING</p>
+                    <h2 className="bs-scrapbook-title">{c.title}</h2>
+                    <p className="bs-scrapbook-source">
+                      {c.source && <><span>{c.source}</span><i>·</i></>}
+                      <span>{new Date(c.created_at).toLocaleDateString('ko-KR')}</span>
+                    </p>
+                    <p className="bs-scrapbook-excerpt">{excerptOf(c.content, 150)}</p>
+                    <div className="bs-scrapbook-meta">
+                      <span>형광펜 {c.clip_highlights.filter((h) => h.color !== 'erase').length}</span>
+                      <span>각주 {c.clip_notes.length}</span>
+                    </div>
+                  </div>
+                  <span className="bs-scrapbook-arrow" aria-hidden="true">↗</span>
+                </button>
+              ))
+            )}
           </div>
         </div>
-        <Footer />
+
+        {clipModalOpen && (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="new-clipping-title"
+            onClick={() => setClipModalOpen(false)}
+            className="bs-modal-backdrop"
+          >
+            <div onClick={(e) => e.stopPropagation()} className="bs-modal-panel">
+              <div className="bs-modal-head">
+                <div>
+                  <p className="bs-modal-eyebrow">NEW CLIPPING</p>
+                  <h2 id="new-clipping-title">스크랩 추가</h2>
+                </div>
+                <button type="button" onClick={() => setClipModalOpen(false)} className={LINK_BTN}>
+                  닫기
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveClipping} className="space-y-5">
+                <div>
+                  <label className={LABEL}>기사 링크 (선택)</label>
+                  <div className="flex gap-2 items-end">
+                    <input
+                      type="text"
+                      inputMode="url"
+                      value={clipSource}
+                      onChange={(e) => setClipSource(e.target.value)}
+                      onPaste={handleClipLinkPaste}
+                      placeholder="링크를 붙여넣으면 본문을 불러와요"
+                      className={`${INPUT} flex-1`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fetchArticle(clipSource)}
+                      disabled={clipFetching || !clipSource.trim()}
+                      className={`${BTN_OUTLINE} shrink-0`}
+                    >
+                      {clipFetching ? '불러오는 중' : '불러오기'}
+                    </button>
+                  </div>
+                  {clipFetchError && (
+                    <p className="mt-1 text-xs font-semibold text-[#26292e] break-words">{clipFetchError}</p>
+                  )}
+                  <p className="mt-1 text-xs text-[#666b73]">
+                    링크 대신 매체 이름을 적어도 돼요. 일부 사이트는 불러오지 못할 수 있어요.
+                  </p>
+                </div>
+
+                <div>
+                  <label className={LABEL}>제목</label>
+                  <input
+                    type="text"
+                    value={clipTitle}
+                    onChange={(e) => setClipTitle(e.target.value)}
+                    placeholder="비우면 본문 첫 줄을 제목으로 써요"
+                    className={INPUT}
+                  />
+                </div>
+
+                <div>
+                  <label className={LABEL}>본문</label>
+                  <textarea
+                    rows={12}
+                    value={clipContent}
+                    onChange={(e) => setClipContent(e.target.value)}
+                    placeholder="기사나 칼럼을 복사해서 붙여넣어도 돼요"
+                    className={`${TEXTAREA_BOX} mt-2`}
+                  />
+                  <p className="mt-1 text-xs text-[#666b73]">
+                    저장한 뒤에는 본문을 고칠 수 없어요. 형광펜과 각주 위치가 어긋나기 때문이에요. 불필요한 부분은 저장 전에 지워 주세요.
+                  </p>
+                </div>
+
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => setClipModalOpen(false)} className={`${BTN_OUTLINE} flex-1`}>
+                    취소
+                  </button>
+                  <button type="submit" disabled={clipSaving} className={`${BTN} flex-1`}>
+                    {clipSaving ? '저장 중...' : '스크랩 저장'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
-  const myShelf = myReviews.filter((r) => r.status !== 'wishlist');
-  const myWishlist = myReviews.filter((r) => r.status === 'wishlist');
-  const shelfList = myShelf.filter(matchesFilter);
-  const wishList = myWishlist.filter(matchesFilter);
-  const filterQ = boardFilter.trim().toLowerCase();
-  const clipList = clippings.filter(
-    (c) => !filterQ || `${c.title} ${c.source || ''}`.toLowerCase().includes(filterQ)
-  );
+  const myBooks = myReviews.filter((r) => {
+    const q = boardFilter.trim().toLowerCase();
+    const matchesText = !q || r.books.title.toLowerCase().includes(q) || r.books.author.toLowerCase().includes(q);
+    const matchesStatus = personalShelfFilter === 'all' || r.status === personalShelfFilter;
+    return matchesText && matchesStatus;
+  });
+  const countMyStatus = (status: 'all' | Status) =>
+    myReviews.filter((r) => status === 'all' || r.status === status).length;
+  const personalFilters: ['all' | Status, string, number][] = [
+    ['all', '전체', countMyStatus('all')],
+    ['wishlist', '읽고 싶은 책', countMyStatus('wishlist')],
+    ['reading', '읽는 중', countMyStatus('reading')],
+    ['completed', '완독', countMyStatus('completed')],
+  ];
 
-  const searchOpen = searchResults.length > 0 || !!selectedBook;
+  const closeBookModal = () => {
+    setBookModalOpen(false);
+    clearSearch();
+    setRating(0);
+    setRegStatus('completed');
+  };
 
   return (
-    <div className="bs-main">
+    <div className="bs-main bs-bookshelf-page">
       <GlobalStyle />
       {header}
       <div className="bs-content">
         <div className="bs-page-head">
           <div className="bs-heading-copy">
-            <div className="bs-eyebrow">MY DESK · PERSONAL RECORDS</div>
             <h1 className="bs-h1">책장</h1>
-            <p className="bs-lead">
-              내가 고른 책과 남긴 기록, 붙여 둔 스크랩을 한곳에서 정리합니다.
-            </p>
           </div>
+          <button type="button" className="bs-btn bs-btn-primary bs-book-add-button" onClick={() => setBookModalOpen(true)}>
+            <span aria-hidden="true">＋</span><span>책 추가</span>
+          </button>
         </div>
         {boardSearch}
-        <div className="border border-[#d5d7da] bg-[#fafafa] grid grid-cols-1 lg:grid-cols-12">
-          <section
-            className={`${
-              searchOpen ? 'lg:col-span-4' : 'lg:col-span-3'
-            } min-w-0 p-4 sm:p-5 border-b lg:border-b-0 lg:border-r border-[#d5d7da] space-y-5`}
-          >
-            <div className="border-b border-[#d5d7da] pb-2">
-              <p className="text-[11px] uppercase tracking-widest text-[#666b73]">New Entry</p>
-              <h2 className="text-xl font-black tracking-tight">책 추가</h2>
+
+        <div className="bs-shelf-toolbar">
+          <div className="bs-filter-group">
+            {personalFilters.map(([key, label, count]) => (
+              <button
+                key={key}
+                type="button"
+                className={`bs-filter-btn${personalShelfFilter === key ? ' bs-active' : ''}`}
+                onClick={() => setPersonalShelfFilter(key)}
+              >
+                {label} <span>{count}</span>
+              </button>
+            ))}
+          </div>
+          <div className="bs-shelf-count">{myBooks.length}권</div>
+        </div>
+
+        <div className="bs-personal-book-list">
+          {myBooks.length === 0 ? (
+            <div className="bs-empty-state">
+              <strong>{myReviews.length === 0 ? '책장에 아직 책이 없어요.' : '찾는 책이 없어요.'}</strong>
+              <span>{myReviews.length === 0 ? '책 추가를 눌러 첫 책을 등록해 보세요.' : '검색어나 분류를 바꿔 보세요.'}</span>
+            </div>
+          ) : (
+            myBooks.map((r) => (
+              <button key={r.id} type="button" className="bs-personal-book-card" onClick={() => openReview(r)}>
+                <div className="bs-personal-book-cover">
+                  <BookCover title={r.books.title} author={r.books.author} src={r.books.cover_url} width={88} />
+                </div>
+                <div className="bs-personal-book-info">
+                  <h2 className="bs-personal-book-title">{r.books.title}</h2>
+                  <p className="bs-personal-book-author">{r.books.author}</p>
+                  <div className="bs-personal-book-meta">
+                    <span className={`bs-personal-status bs-status-${r.status}`}>{STATUS_LABEL[r.status]}</span>
+                    {r.status === 'completed' && r.rating > 0 && (
+                      <span className="bs-personal-rating">
+                        <RatingDisplay value={r.rating} size={13} />
+                        <strong>{r.rating.toFixed(1)}</strong>
+                      </span>
+                    )}
+                  </div>
+                  <span className="bs-personal-book-date">등록 {new Date(r.created_at).toLocaleDateString('ko-KR')}</span>
+                </div>
+                <span className="bs-personal-book-arrow" aria-hidden="true">↗</span>
+              </button>
+            ))
+          )}
+        </div>
+      </div>
+
+      {bookModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="new-book-title"
+          onClick={closeBookModal}
+          className="bs-modal-backdrop"
+        >
+          <div onClick={(e) => e.stopPropagation()} className="bs-modal-panel">
+            <div className="bs-modal-head">
+              <div>
+                <p className="bs-modal-eyebrow">NEW BOOK</p>
+                <h2 id="new-book-title">책 추가</h2>
+              </div>
+              <button type="button" onClick={closeBookModal} className={LINK_BTN}>닫기</button>
             </div>
 
-            <form onSubmit={handleSearch} className="flex gap-2 items-end">
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="책 제목 또는 저자 검색..."
-                className={`${INPUT} flex-1`}
-              />
-              <button type="submit" disabled={searchLoading} className={`${BTN} shrink-0`}>
-                {searchLoading ? '검색 중' : '검색'}
-              </button>
+            <form onSubmit={handleSearch} className="bs-book-search-form">
+              <label className={LABEL}>책 제목 또는 저자</label>
+              <div className="flex gap-2 items-end">
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="책 제목 또는 저자 검색..."
+                  className={`${INPUT} flex-1`}
+                  autoFocus
+                />
+                <button type="submit" disabled={searchLoading} className={`${BTN} shrink-0`}>
+                  {searchLoading ? '검색 중' : '검색'}
+                </button>
+              </div>
             </form>
 
             {searchResults.length > 0 && !selectedBook && (
-              <>
+              <div className="bs-book-search-results">
                 <div className="flex items-center justify-between gap-3">
                   <span className={LABEL}>검색 결과 {searchResults.length}건</span>
-                  <button type="button" onClick={clearSearch} className={`${DANGER_BTN} shrink-0`}>
-                    결과 지우기
-                  </button>
+                  <button type="button" onClick={clearSearch} className={DANGER_BTN}>결과 지우기</button>
                 </div>
-                <div className="divide-y divide-[#e4e6e9] border-y border-[#d5d7da] max-h-96 overflow-y-auto">
-                  {searchResults.map((book, idx) => (
-                    <div key={idx} className="py-3 flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <img
-                          src={book.thumbnail || undefined}
-                          alt={book.title}
-                          className="w-11 h-16 object-cover border border-[#d5d7da] bg-[#e7e9ec] shrink-0"
-                        />
-                        <div className="min-w-0">
-                          <p className="font-bold text-sm truncate">{book.title}</p>
-                          <p className="text-xs text-[#555a62] truncate">{book.authors.join(', ')}</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => setSelectedBook(book)}
-                        className={`${BTN_OUTLINE} !min-h-[28px] !px-3 shrink-0`}
-                      >
-                        선택
-                      </button>
+                {searchResults.map((book, idx) => (
+                  <div key={`${book.isbn}-${idx}`} className="bs-book-search-result">
+                    <img src={book.thumbnail || undefined} alt={book.title} />
+                    <div className="min-w-0">
+                      <p className="font-bold text-sm break-words">{book.title}</p>
+                      <p className="text-xs text-[#666b73]">{book.authors.join(', ')}</p>
                     </div>
-                  ))}
-                </div>
-              </>
+                    <button type="button" onClick={() => setSelectedBook(book)} className={`${BTN_OUTLINE} !min-h-[34px] !px-3 shrink-0`}>
+                      선택
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
 
             {selectedBook && (
-              <div className="border border-[#d5d7da] p-4 space-y-5">
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-sm font-black tracking-tight">새 책 서재에 추가</h3>
-                  <div className="flex items-center gap-3 shrink-0">
-                    {searchResults.length > 0 && (
-                      <button onClick={() => setSelectedBook(null)} className={DANGER_BTN}>
-                        다시 선택
-                      </button>
-                    )}
-                    <button onClick={clearSearch} className={DANGER_BTN}>
-                      취소
-                    </button>
+              <div className="bs-selected-book">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <img src={selectedBook.thumbnail || undefined} alt={selectedBook.title} />
+                    <div className="min-w-0">
+                      <p className="font-bold text-sm break-words">{selectedBook.title}</p>
+                      <p className="text-xs text-[#666b73]">{selectedBook.authors.join(', ')}</p>
+                    </div>
                   </div>
+                  <button type="button" onClick={() => setSelectedBook(null)} className={DANGER_BTN}>다시 선택</button>
                 </div>
 
-                <div className="flex items-center gap-3 border-y border-[#d5d7da] py-3">
-                  <img
-                    src={selectedBook.thumbnail || undefined}
-                    alt={selectedBook.title}
-                    className="w-12 h-16 object-cover border border-[#d5d7da] bg-[#e7e9ec] shrink-0"
-                  />
-                  <div className="min-w-0">
-                    <p className="font-bold text-sm break-words">{selectedBook.title}</p>
-                    <p className="text-xs text-[#555a62] truncate">{selectedBook.authors.join(', ')}</p>
-                  </div>
-                </div>
-
-                <form onSubmit={handleSubmitReview} className="space-y-5">
+                <form onSubmit={handleSubmitReview} className="space-y-5 mt-5">
                   <div className="grid grid-cols-2 gap-2">
                     <ToggleButton
                       className="w-full"
@@ -5616,212 +5696,22 @@ export default function Home() {
                   {regStatus === 'completed' && (
                     <div>
                       <label className={LABEL}>별점</label>
-                      <div className="mt-2">
-                        <RatingInput value={rating} onChange={setRating} size={26} />
-                      </div>
+                      <div className="mt-2"><RatingInput value={rating} onChange={setRating} size={26} /></div>
                     </div>
                   )}
 
-                  <button type="submit" className={`${BTN} w-full`}>
-                    {regStatus === 'wishlist' ? '읽고 싶은 책에 담기' : '내 서재에 등록하기'}
-                  </button>
+                  <div className="flex gap-2">
+                    <button type="button" onClick={closeBookModal} className={`${BTN_OUTLINE} flex-1`}>취소</button>
+                    <button type="submit" className={`${BTN} flex-1`}>
+                      {regStatus === 'wishlist' ? '읽고 싶은 책에 담기' : '내 서재에 등록하기'}
+                    </button>
+                  </div>
                 </form>
               </div>
             )}
-          </section>
-
-          <div className={`${searchOpen ? 'lg:col-span-8' : 'lg:col-span-9'} min-w-0`}>
-            <section>
-              <div className="flex flex-wrap justify-between items-end gap-3 px-4 sm:px-5 py-4 border-b border-[#d5d7da]">
-                <div>
-                  <p className="text-[11px] uppercase tracking-widest text-[#666b73]">My Shelf</p>
-                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight">내 서재</h2>
-                </div>
-              </div>
-
-              {shelfList.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 px-4 text-center text-[#666b73]">
-                  <p className="text-sm">
-                    {myShelf.length === 0
-                      ? '등록된 책이 없습니다. "책 추가"에서 책을 검색해 첫 글을 만들어 보세요.'
-                      : '검색 결과가 없습니다.'}
-                  </p>
-                </div>
-              ) : (
-                renderBoard(asRows(shelfList), false)
-              )}
-            </section>
-
-            <section className="border-t border-[#d5d7da]">
-              <div className="px-4 sm:px-5 py-4 border-b border-[#d5d7da]">
-                <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Wish List</p>
-                <h2 className="text-2xl sm:text-3xl font-black tracking-tight">읽고 싶은 책</h2>
-              </div>
-
-              {wishList.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-[#666b73]">
-                  <p className="text-sm">
-                    {myWishlist.length === 0
-                      ? '읽고 싶은 책이 없습니다. 책을 검색해 "읽고 싶은 책"으로 담아 보세요.'
-                      : '검색 결과가 없습니다.'}
-                  </p>
-                </div>
-              ) : (
-                renderBoard(asRows(wishList), false)
-              )}
-            </section>
-
-            <section className="border-t border-[#d5d7da]">
-              <div className="flex items-end justify-between gap-3 px-4 sm:px-5 py-4 border-b border-[#d5d7da]">
-                <div>
-                  <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Clippings</p>
-                  <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
-                    스크랩{' '}
-                    <span className="text-sm font-semibold text-[#666b73]">총 {clippings.length}개</span>
-                  </h2>
-                </div>
-                <button
-                  type="button"
-                  aria-label="스크랩 추가"
-                  title="스크랩 추가"
-                  onClick={() => setClipModalOpen(true)}
-                  className={`${BTN} !px-0 w-[34px] text-lg leading-none`}
-                >
-                  +
-                </button>
-              </div>
-
-              {clipList.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-[#666b73]">
-                  <p className="text-sm">
-                    {clippings.length === 0
-                      ? '스크랩이 없습니다. 위의 + 버튼으로 기사 링크나 칼럼을 추가해 보세요.'
-                      : '검색 결과가 없습니다.'}
-                  </p>
-                </div>
-              ) : (
-                <ul>
-                  {clipList.map((c) => (
-                    <li
-                      key={c.id}
-                      onClick={() => openClip(c.id)}
-                      className="px-4 sm:px-5 py-4 border-b border-[#d5d7da] last:border-b-0 hover:bg-[#e9ebee] cursor-pointer transition-colors duration-200 group"
-                    >
-                      <p className="font-bold text-base break-words underline-offset-4 decoration-2 decoration-[#26292e] group-hover:underline">
-                        {c.title}
-                      </p>
-                      <p className="mt-1 text-xs text-[#666b73] flex flex-wrap gap-x-3 gap-y-0.5">
-                        {c.source && <span className="truncate max-w-full">{c.source}</span>}
-                        <span>{new Date(c.created_at).toLocaleDateString('ko-KR')}</span>
-                        <span>
-                          형광펜 {c.clip_highlights.filter((h) => h.color !== 'erase').length} &middot; 각주{' '}
-                          {c.clip_notes.length}
-                        </span>
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          </div>
-        </div>
-      </div>
-
-      {clipModalOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setClipModalOpen(false)}
-          className="fixed inset-0 z-50 flex justify-center bg-[#34373d]/60 p-4 overflow-y-auto"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-xl my-auto border border-[#d5d7da] bg-[#fafafa] p-5 sm:p-6"
-          >
-            <div className="flex items-end justify-between gap-3 border-b border-[#d5d7da] pb-2 mb-5">
-              <div>
-                <p className="text-[11px] uppercase tracking-widest text-[#666b73]">New Clipping</p>
-                <h2 className="text-xl font-black tracking-tight">스크랩 만들기</h2>
-              </div>
-              <button type="button" onClick={() => setClipModalOpen(false)} className={LINK_BTN}>
-                닫기
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveClipping} className="space-y-5">
-              <div>
-                <label className={LABEL}>기사 링크 (선택)</label>
-                <div className="flex gap-2 items-end">
-                  <input
-                    type="text"
-                    inputMode="url"
-                    value={clipSource}
-                    onChange={(e) => setClipSource(e.target.value)}
-                    onPaste={handleClipLinkPaste}
-                    placeholder="링크를 붙여넣으면 본문을 불러와요"
-                    className={`${INPUT} flex-1`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fetchArticle(clipSource)}
-                    disabled={clipFetching || !clipSource.trim()}
-                    className={`${BTN_OUTLINE} shrink-0`}
-                  >
-                    {clipFetching ? '불러오는 중' : '불러오기'}
-                  </button>
-                </div>
-                {clipFetchError && (
-                  <p className="mt-1 text-xs font-semibold text-[#26292e] break-words">{clipFetchError}</p>
-                )}
-                <p className="mt-1 text-xs text-[#666b73]">
-                  링크 대신 매체 이름을 적어도 돼요. 일부 사이트는 불러오지 못할 수 있어요.
-                </p>
-              </div>
-
-              <div>
-                <label className={LABEL}>제목</label>
-                <input
-                  type="text"
-                  value={clipTitle}
-                  onChange={(e) => setClipTitle(e.target.value)}
-                  placeholder="비우면 본문 첫 줄을 제목으로 써요"
-                  className={INPUT}
-                />
-              </div>
-
-              <div>
-                <label className={LABEL}>본문</label>
-                <textarea
-                  rows={12}
-                  value={clipContent}
-                  onChange={(e) => setClipContent(e.target.value)}
-                  placeholder="기사나 칼럼을 복사해서 붙여넣어도 돼요"
-                  className={`${TEXTAREA_BOX} mt-2`}
-                />
-                <p className="mt-1 text-xs text-[#666b73]">
-                  저장한 뒤에는 본문을 고칠 수 없어요. 형광펜과 각주 위치가 어긋나기 때문이에요. 불필요한
-                  부분은 저장 전에 지워 주세요.
-                </p>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setClipModalOpen(false)}
-                  className={`${BTN_OUTLINE} flex-1`}
-                >
-                  취소
-                </button>
-                <button type="submit" disabled={clipSaving} className={`${BTN} flex-1`}>
-                  {clipSaving ? '저장 중...' : '스크랩 저장'}
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}
-
-      <Footer />
     </div>
   );
 }
