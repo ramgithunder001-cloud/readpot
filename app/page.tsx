@@ -1878,7 +1878,7 @@ function GlobalStyle() {
       .bs-highlight-records h3 { font-weight: 500 !important; }
       .bs-highlight-record p { margin: 0 !important; font-weight: 400 !important; }
       .bs-book-rating-heading, .bs-book-detail-section h3 { font-weight: 600 !important; }
-      button:not(.bs-mobile-bottom-nav button):not(.bs-nav button):not(.bs-rating-star-button):not(.bs-delete-x):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-active):not([aria-pressed="true"]) {
+      button:not(.bs-mobile-bottom-nav button):not(.bs-nav button):not(.bs-rating-star-button):not(.bs-delete-x):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-add-scrap):not(.bs-active):not([aria-pressed="true"]) {
         background-color: transparent !important;
         font-weight: 400 !important;
         font-size: 11px !important;
@@ -1930,6 +1930,383 @@ function GlobalStyle() {
         .bs-book-detail-hero > div:first-child { grid-template-columns: 84px minmax(0, 1fr) !important; gap: 13px !important; }
         .bs-book-detail-hero > div:first-child > img { width: 84px !important; height: 126px !important; }
         .bs-book-detail-hero h2 { font-size: 22px !important; }
+      }
+
+
+      /* Shared layout and controls: aligned with the responsive reference ZIP. */
+      .bs-main {
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 100vh !important;
+      }
+      .bs-main > .bs-content,
+      .bs-main > .bs-book-detail-page {
+        box-sizing: border-box !important;
+        min-height: 100vh !important;
+        flex: 1 0 auto !important;
+      }
+      .bs-sidebar .bs-nav button {
+        min-height: 36px !important;
+        padding: 0 12px !important;
+        border: 1px solid transparent !important;
+        border-radius: 4px !important;
+        color: #666666 !important;
+        background: transparent !important;
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        letter-spacing: 0 !important;
+        line-height: 1.4 !important;
+        text-align: left !important;
+        box-shadow: none !important;
+      }
+      .bs-sidebar .bs-nav button:hover {
+        color: #111111 !important;
+        background: #e8e8e8 !important;
+        border-color: transparent !important;
+      }
+      .bs-sidebar .bs-nav button.bs-active {
+        color: #111111 !important;
+        background: #dddddd !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+        font-weight: 700 !important;
+      }
+      .bs-sidebar .bs-nav button:focus-visible {
+        outline: 2px solid #777777 !important;
+        outline-offset: 2px !important;
+      }
+      .bs-main button:not(.bs-nav button):not(.bs-rating-star-button):not(.bs-delete-x):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-search-clear):not(.bs-row-action):not(.bs-profile-settings):not(.bs-logout-icon):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-add-scrap) {
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        min-height: 36px !important;
+        padding: 8px 12px !important;
+        border-radius: 4px !important;
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+        font-size: 12px !important;
+        font-weight: 400 !important;
+        letter-spacing: 0 !important;
+        line-height: 1.4 !important;
+        white-space: normal !important;
+        overflow-wrap: break-word !important;
+        word-break: keep-all !important;
+        box-shadow: none !important;
+        transform: none !important;
+      }
+      .bs-main button:not(.bs-nav button):not(.bs-rating-star-button):not(.bs-delete-x):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-search-clear):not(.bs-row-action):not(.bs-profile-settings):not(.bs-logout-icon):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-add-scrap):not(.bs-active):not([aria-pressed="true"]) {
+        color: inherit !important;
+        background-color: transparent !important;
+      }
+      .bs-main button.bs-active:not(.bs-rating-star-button),
+      .bs-main button[aria-pressed="true"]:not(.bs-rating-star-button) {
+        color: #111111 !important;
+        background-color: #e7e7e7 !important;
+        border-color: #cfcfcf !important;
+        border-radius: 4px !important;
+        box-shadow: none !important;
+      }
+      .bs-main button:hover:not(.bs-nav button):not(.bs-rating-star-button):not(.bs-delete-x):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-search-clear):not(.bs-row-action):not(.bs-profile-settings):not(.bs-logout-icon):not(.bs-mobile-menu-toggle):not(.bs-add-scrap) {
+        box-shadow: none !important;
+        transform: none !important;
+      }
+      .bs-main .bs-btn-primary,
+      .bs-main .bs-btn-primary:hover {
+        color: #111111 !important;
+        background-color: transparent !important;
+        border-color: #c9c9c9 !important;
+      }
+      .bs-delete-x {
+        width: 24px !important;
+        min-width: 24px !important;
+        min-height: 24px !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 4px !important;
+        color: #c98e96 !important;
+        background: transparent !important;
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+        font-size: 20px !important;
+        font-weight: 400 !important;
+        line-height: 1 !important;
+        box-shadow: none !important;
+      }
+      .bs-delete-x:hover {
+        color: #b9757e !important;
+        background: rgba(201, 142, 150, .08) !important;
+      }
+      .bs-book-rating-row .bs-rating-input {
+        min-width: 0 !important;
+        gap: 4px !important;
+      }
+      .bs-book-rating-row .bs-rating-value { display: none !important; }
+      .bs-series-count {
+        margin: 7px 0 0 !important;
+        color: #777777 !important;
+        font-size: 10px !important;
+        font-weight: 400 !important;
+        letter-spacing: 0 !important;
+      }
+      .bs-series-volume-tabs {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 6px !important;
+        margin-top: 14px !important;
+        min-width: 0 !important;
+      }
+      .bs-series-volume-tabs button {
+        min-height: 30px !important;
+        padding: 5px 10px !important;
+        font-size: 11px !important;
+        border: 1px solid #cccccc !important;
+        border-radius: 4px !important;
+        background: transparent !important;
+        color: #555555 !important;
+      }
+      .bs-series-volume-tabs button[aria-pressed="true"] {
+        background: #e5e5e5 !important;
+        color: #111111 !important;
+        border-color: #bdbdbd !important;
+      }
+      .bs-quote-list {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        border-top: 1px solid #cccccc !important;
+      }
+      .bs-quote-row {
+        display: block !important;
+        min-width: 0 !important;
+        padding: 22px 0 !important;
+        border-bottom: 1px solid #cccccc !important;
+      }
+      .bs-quote-row-main {
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: space-between !important;
+        gap: 14px !important;
+        min-width: 0 !important;
+      }
+      .bs-quote-text {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        color: #222222 !important;
+        font-size: 17px !important;
+        font-style: normal !important;
+        font-weight: 500 !important;
+        line-height: 1.8 !important;
+        overflow-wrap: anywhere !important;
+        word-break: normal !important;
+      }
+      .bs-quote-text > div { white-space: pre-line !important; overflow-wrap: anywhere !important; }
+      .bs-quote-text p { margin: 0 0 8px !important; }
+      .bs-quote-editable { cursor: pointer !important; }
+      .bs-quote-editable:hover { color: #444444 !important; }
+      .bs-quote-comments {
+        display: grid !important;
+        gap: 9px !important;
+        margin: 15px 0 0 18px !important;
+      }
+      .bs-quote-comment-row {
+        display: flex !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+        min-width: 0 !important;
+        color: #555555 !important;
+        font-size: 12px !important;
+        line-height: 1.7 !important;
+      }
+      .bs-quote-comment-form {
+        display: flex !important;
+        align-items: flex-end !important;
+        gap: 8px !important;
+        margin: 14px 0 0 18px !important;
+      }
+      .bs-scrapbook-label { display: none !important; }
+      .bs-scrapbook-page .bs-page-head { min-width: 0 !important; }
+      .bs-scrapbook-page .bs-add-scrap {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: auto !important;
+        min-width: max-content !important;
+        max-width: 100% !important;
+        min-height: 36px !important;
+        flex: 0 0 auto !important;
+        flex-shrink: 0 !important;
+        padding: 8px 12px !important;
+        gap: 8px !important;
+        border-radius: 4px !important;
+        font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important;
+        font-size: 12px !important;
+        font-weight: 400 !important;
+        letter-spacing: 0 !important;
+        line-height: 1.4 !important;
+        white-space: nowrap !important;
+        overflow-wrap: normal !important;
+        word-break: keep-all !important;
+        overflow: visible !important;
+      }
+      .bs-scrapbook-page .bs-add-scrap > span:first-child { flex: 0 0 auto !important; font-size: 17px !important; }
+      .bs-scrapbook-page .bs-add-scrap > span:last-child { display: inline !important; min-width: 0 !important; font-size: 12px !important; overflow-wrap: normal !important; }
+      .bs-scrapbook-page .bs-scrapbook-card { min-width: 0 !important; }
+      .bs-scrapbook-page .bs-scrapbook-card-main { min-width: 0 !important; overflow-wrap: anywhere !important; }
+      .bs-mobile-drawer-launcher,
+      .bs-mobile-drawer-backdrop { display: none !important; }
+
+      @media (max-width: 700px) {
+        .bs-sidebar {
+          position: fixed !important;
+          inset: 0 auto 0 0 !important;
+          width: min(225px, 84vw) !important;
+          height: 100vh !important;
+          height: 100dvh !important;
+          min-height: 100vh !important;
+          display: flex !important;
+          flex-direction: column !important;
+          padding: 25px 22px 24px !important;
+          overflow-x: hidden !important;
+          overflow-y: auto !important;
+          background: #f2f2f2 !important;
+          border: 0 !important;
+          border-right: 1px solid #dddddd !important;
+          box-shadow: none !important;
+          z-index: 50 !important;
+          transform: translateX(-105%) !important;
+          transition: transform .24s ease, visibility 0s linear .24s !important;
+          visibility: hidden !important;
+        }
+        .bs-sidebar.bs-mobile-nav-open {
+          transform: translateX(0) !important;
+          transition: transform .24s ease, visibility 0s !important;
+          visibility: visible !important;
+        }
+        .bs-sidebar .bs-brand {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          gap: 12px !important;
+          padding: 0 6px 18px !important;
+          border: 0 !important;
+          border-bottom: 1px solid #dddddd !important;
+        }
+        .bs-sidebar .bs-brand-title {
+          font-size: 24px !important;
+          line-height: .95 !important;
+          font-weight: 700 !important;
+        }
+        .bs-sidebar .bs-nav {
+          display: grid !important;
+          grid-template-columns: minmax(0, 1fr) !important;
+          gap: 4px !important;
+          margin-top: 22px !important;
+          padding: 0 !important;
+          overflow: visible !important;
+        }
+        .bs-sidebar .bs-nav button {
+          width: 100% !important;
+          min-height: 36px !important;
+          padding: 0 12px !important;
+          justify-content: flex-start !important;
+          font-size: 14px !important;
+        }
+        .bs-sidebar .bs-side-spacer { display: block !important; flex: 1 0 24px !important; }
+        .bs-sidebar .bs-side-bottom {
+          display: flex !important;
+          margin-top: 20px !important;
+          padding: 18px 4px 0 !important;
+          border-top: 1px solid #dddddd !important;
+        }
+        .bs-sidebar .bs-mobile-menu-toggle {
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 34px !important;
+          height: 34px !important;
+          min-width: 34px !important;
+          min-height: 34px !important;
+          padding: 0 !important;
+          border: 0 !important;
+          border-radius: 4px !important;
+          background: transparent !important;
+          color: #111111 !important;
+          box-shadow: none !important;
+        }
+        .bs-mobile-drawer-launcher {
+          position: fixed !important;
+          top: 14px !important;
+          left: 14px !important;
+          z-index: 60 !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 38px !important;
+          height: 38px !important;
+          min-width: 38px !important;
+          min-height: 38px !important;
+          padding: 8px !important;
+          color: #111111 !important;
+          background: #f7f7f7 !important;
+          border: 1px solid #cccccc !important;
+          border-radius: 4px !important;
+          box-shadow: none !important;
+        }
+        .bs-mobile-drawer-launcher.is-open { display: none !important; }
+        .bs-mobile-drawer-backdrop {
+          position: fixed !important;
+          inset: 0 !important;
+          z-index: 45 !important;
+          display: block !important;
+          width: 100vw !important;
+          height: 100vh !important;
+          height: 100dvh !important;
+          padding: 0 !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          background: rgba(0, 0, 0, .24) !important;
+          box-shadow: none !important;
+        }
+        .bs-main { width: 100% !important; margin-left: 0 !important; }
+        .bs-main > .bs-content {
+          width: 100% !important;
+          max-width: none !important;
+          min-height: 100vh !important;
+          padding: 70px 20px 42px !important;
+        }
+        .bs-main > .bs-book-detail-page {
+          width: 100% !important;
+          max-width: 900px !important;
+          min-height: 100vh !important;
+          padding: 70px 20px 42px !important;
+        }
+        .bs-scrap-detail-page .bs-content { padding: 70px 20px 42px !important; }
+        .bs-scrapbook-page .bs-page-head { align-items: flex-start !important; flex-wrap: wrap !important; gap: 14px !important; }
+        .bs-scrapbook-page .bs-add-scrap {
+          width: auto !important;
+          min-width: max-content !important;
+          max-width: 100% !important;
+          min-height: 36px !important;
+          flex: 0 0 auto !important;
+          flex-shrink: 0 !important;
+          padding: 8px 12px !important;
+          border-radius: 4px !important;
+          font-size: 12px !important;
+          white-space: nowrap !important;
+          overflow-wrap: normal !important;
+          word-break: keep-all !important;
+        }
+        .bs-scrapbook-page .bs-add-scrap > span:first-child { font-size: 17px !important; }
+        .bs-scrapbook-page .bs-add-scrap > span:last-child { display: inline !important; font-size: 12px !important; }
+        .bs-book-detail-hero > div:first-child { grid-template-columns: 84px minmax(0,1fr) !important; gap: 14px !important; }
+        .bs-book-detail-hero > div:first-child > img { width: 84px !important; height: 126px !important; }
+        .bs-book-detail-hero h2 { font-size: clamp(21px, 5vw, 28px) !important; overflow-wrap: anywhere !important; }
+        .bs-book-rating-section { grid-template-columns: minmax(0,1fr) !important; gap: 16px !important; }
+        .bs-book-rating-row { grid-template-columns: minmax(54px, 84px) minmax(0,1fr) 30px !important; gap: 8px !important; }
+        .bs-quote-text { font-size: 16px !important; }
+        .bs-quote-comment-form { margin-left: 0 !important; flex-wrap: wrap !important; }
+        .bs-quote-comment-form input { min-width: 0 !important; flex: 1 1 160px !important; }
+        .bs-quote-comment-form button { flex: 0 0 auto !important; }
       }
     `}</style>
   );
@@ -2387,15 +2764,13 @@ function QuoteList({
   };
 
   return (
-    <div className="divide-y divide-[#e4e6e9]">
+    <div className="bs-quote-list">
       {quotes.map((q) => (
-        <div key={q.id} className="py-4 first:pt-0">
-          <div className="flex justify-between items-start gap-3">
+        <div key={q.id} className="bs-quote-row">
+          <div className="bs-quote-row-main">
             <div
               onClick={isOwner ? () => toggle(q.id) : undefined}
-              className={`min-w-0 text-base font-bold italic leading-relaxed ${
-                isOwner ? 'cursor-pointer hover:text-[#26292e] transition-colors duration-200' : ''
-              }`}
+              className={`bs-quote-text ${isOwner ? 'bs-quote-editable' : ''}`}
             >
               <DiscordText text={q.content} wrapQuotes />
             </div>
@@ -2413,9 +2788,9 @@ function QuoteList({
           </div>
 
           {q.quote_comments.length > 0 && (
-            <div className="mt-2 ml-2 space-y-1.5">
+            <div className="bs-quote-comments">
               {q.quote_comments.map((c) => (
-                <div key={c.id} className="flex items-start gap-1.5 text-sm text-[#555a62]">
+                <div key={c.id} className="bs-quote-comment-row">
                   <ReplyIcon />
                   <DiscordText text={c.content} className="flex-1 min-w-0 leading-relaxed" />
                   {isOwner && onDeleteComment && (
@@ -2435,7 +2810,7 @@ function QuoteList({
           )}
 
           {isOwner && openId === q.id && (
-            <form onSubmit={(e) => submit(e, q.id)} className="mt-3 ml-2 flex gap-2 items-end">
+            <form onSubmit={(e) => submit(e, q.id)} className="bs-quote-comment-form">
               <input
                 type="text"
                 autoFocus
@@ -4178,31 +4553,6 @@ export default function Home() {
     );
   };
 
-  const handleDeleteHighlight = async (highlightId: string) => {
-    if (!activeClip || !user || !confirm('이 형광펜을 삭제하시겠습니까?')) return;
-    const { error } = await supabase
-      .from('clip_highlights')
-      .delete()
-      .eq('id', highlightId)
-      .eq('clipping_id', activeClip.id)
-      .eq('user_id', user.id);
-    if (error) return alert(`형광펜 삭제 실패: ${error.message}`);
-    setClippings((prev) =>
-      prev.map((c) =>
-        c.id === activeClip.id
-          ? { ...c, clip_highlights: c.clip_highlights.filter((h) => h.id !== highlightId) }
-          : c
-      )
-    );
-  };
-
-  const handleClearHighlights = async () => {
-    if (!activeClip || !confirm('이 스크랩의 형광펜을 모두 지우시겠습니까?')) return;
-    const { error } = await supabase.from('clip_highlights').delete().eq('clipping_id', activeClip.id);
-    if (error) return alert(`삭제 실패: ${error.message}`);
-    setClippings((prev) => prev.map((c) => (c.id === activeClip.id ? { ...c, clip_highlights: [] } : c)));
-  };
-
   const handleDeleteClipping = async () => {
     if (!activeClip || !confirm('이 스크랩과 형광펜, 코멘트를 모두 삭제하시겠습니까?')) return;
     const { error } = await supabase.from('clippings').delete().eq('id', activeClip.id);
@@ -4378,67 +4728,81 @@ export default function Home() {
 
   const header = (
     <>
-    <aside className={`bs-sidebar${mobileNavOpen ? ' bs-mobile-nav-open' : ''}`}>
-      <div className="bs-brand">
-        <div className="bs-brand-title">독-<br />서팟</div>
+      <button
+        type="button"
+        className={`bs-mobile-drawer-launcher${mobileNavOpen ? ' is-open' : ''}`}
+        aria-label="메뉴 열기"
+        aria-expanded={mobileNavOpen}
+        onClick={() => setMobileNavOpen(true)}
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18" />
+        </svg>
+      </button>
+      {mobileNavOpen && (
         <button
           type="button"
-          className="bs-mobile-menu-toggle"
-          aria-label={mobileNavOpen ? '메뉴 닫기' : '메뉴 열기'}
-          aria-expanded={mobileNavOpen}
-          onClick={() => setMobileNavOpen((open) => !open)}
-        >
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-            {mobileNavOpen ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M3 6h18M3 12h18M3 18h18" />}
-          </svg>
-        </button>
-      </div>
-      <nav className="bs-nav" aria-label="주 메뉴">
-        {navItem('shelf', '서고', shelfEntries.length)}
-        {navItem('mine', '책장')}
-        {navItem('scraps', '스크랩북')}
-      </nav>
-      <div className="bs-side-spacer" />
-      <div className="bs-side-bottom">
-        <button
-          type="button"
-          className="bs-profile-settings"
-          onClick={() => { goTab('profile'); setMobileNavOpen(false); }}
-          aria-label="프로필 설정"
-          title="프로필 설정"
-        >
-          <Seal
-            text={profileOf(user.id).seal_text}
-            color={profileOf(user.id).seal_color}
-            styleType={profileOf(user.id).seal_style}
-            image={profileOf(user.id).seal_image}
-            size={31}
-          />
-          <span className="bs-profile-name">{profileOf(user.id).nickname}</span>
-          <svg className="bs-settings-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.8 1.8-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1 1.55V20h-2.55v-.11a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06-1.8-1.8.06-.06A1.7 1.7 0 0 0 8.17 15a1.7 1.7 0 0 0-1.55-1H6.5v-2.55h.12a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.8-1.8.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1-1.55V5.5h2.55v.12a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.8 1.8-.06.06A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.55 1h.12v2.55h-.12a1.7 1.7 0 0 0-1.55 1Z" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          className="bs-logout-icon"
-          onClick={handleLogout}
-          aria-label="로그아웃"
-          title="로그아웃"
-        >
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M10 17l5-5-5-5M15 12H3" />
-            <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" />
-          </svg>
-        </button>
-      </div>
-    </aside>
-    <nav className="bs-mobile-bottom-nav" aria-label="모바일 메뉴">
-      {navItem('shelf', '서고')}
-      {navItem('mine', '책장')}
-      {navItem('scraps', '스크랩북')}
-    </nav>
+          className="bs-mobile-drawer-backdrop"
+          aria-label="메뉴 닫기"
+          onClick={() => setMobileNavOpen(false)}
+        />
+      )}
+      <aside className={`bs-sidebar${mobileNavOpen ? ' bs-mobile-nav-open' : ''}`}>
+        <div className="bs-brand">
+          <div className="bs-brand-title">독-<br />서팟</div>
+          <button
+            type="button"
+            className="bs-mobile-menu-toggle"
+            aria-label="메뉴 닫기"
+            aria-expanded={mobileNavOpen}
+            onClick={() => setMobileNavOpen(false)}
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
+        <nav className="bs-nav" aria-label="주 메뉴">
+          {navItem('shelf', '서고', shelfEntries.length)}
+          {navItem('mine', '책장')}
+          {navItem('scraps', '스크랩북')}
+        </nav>
+        <div className="bs-side-spacer" />
+        <div className="bs-side-bottom">
+          <button
+            type="button"
+            className="bs-profile-settings"
+            onClick={() => { goTab('profile'); setMobileNavOpen(false); }}
+            aria-label="프로필 설정"
+            title="프로필 설정"
+          >
+            <Seal
+              text={profileOf(user.id).seal_text}
+              color={profileOf(user.id).seal_color}
+              styleType={profileOf(user.id).seal_style}
+              image={profileOf(user.id).seal_image}
+              size={31}
+            />
+            <span className="bs-profile-name">{profileOf(user.id).nickname}</span>
+            <svg className="bs-settings-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.8 1.8-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1 1.55V20h-2.55v-.11a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06-1.8-1.8.06-.06A1.7 1.7 0 0 0 8.17 15a1.7 1.7 0 0 0-1.55-1H6.5v-2.55h.12a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.8-1.8.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1-1.55V5.5h2.55v.12a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.8 1.8-.06.06A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.55 1h.12v2.55h-.12a1.7 1.7 0 0 0-1.55 1Z" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="bs-logout-icon"
+            onClick={handleLogout}
+            aria-label="로그아웃"
+            title="로그아웃"
+          >
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M10 17l5-5-5-5M15 12H3" />
+              <path d="M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" />
+            </svg>
+          </button>
+        </div>
+      </aside>
     </>
   );
 
@@ -4563,6 +4927,9 @@ export default function Home() {
     const showQuotes = isOwner || hasQuotes;
     const sameBookReviews = allReviews.filter((r) => r.book_isbn === activeReview.book_isbn);
     const myBookReview = sameBookReviews.find((r) => r.user_id === user.id) ?? null;
+    const ratingReviews = sameBookReviews.filter(
+      (r) => r.status === 'completed' && (r.rating > 0 || r.id === myBookReview?.id)
+    );
     const readers = otherReviews.filter((r) => r.status !== 'wishlist');
     const hasSidebar = readers.length > 0;
     const seriesEntry = activeSeries
@@ -4576,29 +4943,6 @@ export default function Home() {
         <GlobalStyle />
         {header}
         <main className="bs-book-detail-page max-w-[900px] mx-auto px-4 py-6 md:py-8">
-          <button onClick={goBack} className={`${LINK_BTN} min-h-[34px]`}>
-            &larr; 목록으로 돌아가기
-          </button>
-
-          {seriesEntry && (
-            <div className="border border-[#d5d7da] bg-[#fafafa] px-4 py-3">
-              <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Series</p>
-              <p className="font-black tracking-tight break-words">{seriesEntry.base}</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {seriesEntry.volumes.map((v) => (
-                  <ToggleButton
-                    key={v.volume}
-                    pressed={v.reviews.some((r) => r.id === activeReview.id)}
-                    onClick={() => openVolume(v)}
-                    className="!min-h-[28px] !px-3"
-                  >
-                    {v.label}
-                  </ToggleButton>
-                ))}
-              </div>
-            </div>
-          )}
-
           <article className="bs-book-detail-shell">
             <section className="bs-book-detail-hero p-5 md:p-6 border-b border-[#d5d7da]">
               <div className="flex gap-4 sm:gap-5">
@@ -4618,22 +4962,25 @@ export default function Home() {
                         {activeReview.books.title}
                       </h2>
                       <p className="mt-1 text-sm text-[#555a62]">{activeReview.books.author}</p>
+                      {seriesEntry && (
+                        <div className="bs-series-volume-tabs" aria-label="시리즈 권 선택">
+                          {seriesEntry.volumes.map((v) => (
+                            <ToggleButton
+                              key={v.volume}
+                              pressed={v.reviews.some((r) => r.id === activeReview.id)}
+                              onClick={() => openVolume(v)}
+                              className="bs-series-volume-button"
+                            >
+                              {v.label}
+                            </ToggleButton>
+                          ))}
+                        </div>
+                      )}
                       {!isOwner && <div className="mt-3"><StatusCell review={activeReview} /></div>}
                     </div>
 
                     {isOwner && (
                       <div className="flex flex-wrap gap-2 max-w-full">
-                        <ToggleButton
-                          pressed={activeReview.status === 'wishlist'}
-                          onClick={() =>
-                            handleUpdateStatus(
-                              activeReview.status === 'wishlist' ? 'completed' : 'wishlist',
-                              activeReview.rating
-                            )
-                          }
-                        >
-                          읽고 싶은 책
-                        </ToggleButton>
                         <ToggleButton
                           pressed={activeReview.status === 'reading'}
                           onClick={() =>
@@ -4661,40 +5008,25 @@ export default function Home() {
             <section className="bs-book-rating-section">
               <h3 className="bs-book-rating-heading">별점</h3>
               <div className="bs-book-rating-content">
-                {sameBookReviews.filter((r) => r.status === 'completed' && r.rating > 0).length > 0 ? (
-                  sameBookReviews
-                    .filter((r) => r.status === 'completed' && r.rating > 0)
-                    .map((r) => (
-                      <div className="bs-book-rating-row" key={r.id}>
-                        <span className="bs-book-rating-name">{profileOf(r.user_id).nickname}</span>
+                {ratingReviews.length > 0 ? (
+                  ratingReviews.map((r) => (
+                    <div className="bs-book-rating-row" key={r.id}>
+                      <span className="bs-book-rating-name">{profileOf(r.user_id).nickname}</span>
+                      {r.id === myBookReview?.id && r.status === 'completed' ? (
+                        <RatingInput
+                          value={r.rating}
+                          onChange={(v) => handleUpdateStatus('completed', v, r)}
+                          size={20}
+                        />
+                      ) : (
                         <RatingDisplay value={r.rating} size={15} />
-                        <strong>{r.rating.toFixed(1)}</strong>
-                      </div>
-                    ))
+                      )}
+                      <strong>{r.rating.toFixed(1)}</strong>
+                    </div>
+                  ))
                 ) : (
                   <p className="bs-book-rating-empty">아직 등록된 별점이 없어요.</p>
                 )}
-
-                <div className="bs-book-my-rating">
-                  <span>내 별점</span>
-                  {myBookReview?.status === 'completed' ? (
-                    <RatingInput
-                      value={myBookReview.rating}
-                      onChange={(v) => handleUpdateStatus('completed', v, myBookReview)}
-                      size={25}
-                    />
-                  ) : myBookReview ? (
-                    <p>완독으로 상태를 바꾸면 별점을 남길 수 있어요.</p>
-                  ) : (
-                    <button
-                      type="button"
-                      className={LINK_BTN}
-                      onClick={() => { goTab('mine'); setBookModalOpen(true); }}
-                    >
-                      내 책장에 추가하기
-                    </button>
-                  )}
-                </div>
               </div>
             </section>
 
@@ -4928,7 +5260,6 @@ export default function Home() {
           <div className="mt-2 lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-6">
             <article className="scrap-detail-article min-w-0 border border-[#d5d7da] bg-[#fafafa]">
               <section className="scrap-detail-header p-5 md:p-8 border-b border-[#d5d7da] space-y-3">
-                <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Clipping</p>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight break-words">
                   {activeClip.title}
                 </h2>
@@ -4949,11 +5280,6 @@ export default function Home() {
                   <span>{new Date(activeClip.created_at).toLocaleDateString('ko-KR')}</span>
                 </p>
                 <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1">
-                  {activeClip.clip_highlights.length > 0 && (
-                    <button onClick={handleClearHighlights} className={`${DANGER_BTN} min-h-[28px]`}>
-                      형광펜 전체 지우기
-                    </button>
-                  )}
                   <button onClick={handleDeleteClipping} className={`${DANGER_BTN} min-h-[28px]`}>
                     스크랩 삭제
                   </button>
@@ -4975,9 +5301,6 @@ export default function Home() {
                     <h3 className="text-base font-semibold">
                       형광펜 <span className="text-xs font-normal text-[#777777]">({activeClip.clip_highlights.length})</span>
                     </h3>
-                    <button type="button" onClick={handleClearHighlights} className="bs-delete-x" aria-label="형광펜 전체 삭제" title="형광펜 전체 삭제">
-                      ×
-                    </button>
                   </div>
                   <div className="mt-3 divide-y divide-[#e5e5e5]">
                     {[...activeClip.clip_highlights].sort(byCreated).map((h) => {
@@ -4987,15 +5310,6 @@ export default function Home() {
                         <div key={h.id} className="bs-highlight-record flex items-start gap-3 py-3">
                           <span className="bs-highlight-color shrink-0 mt-1" style={{ backgroundColor: markerColor }} aria-hidden="true" />
                           <p className="min-w-0 flex-1 text-sm leading-relaxed break-words">{excerpt}</p>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteHighlight(h.id)}
-                            className="bs-delete-x shrink-0"
-                            aria-label={`형광펜 삭제: ${excerpt.slice(0, 40)}`}
-                            title="이 형광펜 삭제"
-                          >
-                            ×
-                          </button>
                         </div>
                       );
                     })}
@@ -5460,6 +5774,9 @@ export default function Home() {
                       <div className="bs-book-card-info">
                         <h3 className="bs-h3 bs-book-title">{title}</h3>
                         <div className="bs-book-author">{author}</div>
+                        {e.type === 'series' && (
+                          <p className="bs-series-count">시리즈 · 전 {e.volumes.length}권</p>
+                        )}
                         {ratedReviews.length > 0 && (
                           <div className="bs-book-rating" aria-label={`평점 ${averageRating.toFixed(1)}점`}>
                             <span className="bs-rating-stars" aria-hidden="true">
@@ -5611,7 +5928,6 @@ export default function Home() {
                   onClick={() => openClip(c.id)}
                 >
                   <div className="bs-scrapbook-card-main">
-                    <p className="bs-scrapbook-label">CLIPPING</p>
                     <h2 className="bs-scrapbook-title">{c.title}</h2>
                     <p className="bs-scrapbook-source">
                       {c.source && <><span>{c.source}</span><i>·</i></>}
@@ -5641,7 +5957,6 @@ export default function Home() {
             <div onClick={(e) => e.stopPropagation()} className="bs-modal-panel">
               <div className="bs-modal-head">
                 <div>
-                  <p className="bs-modal-eyebrow">NEW CLIPPING</p>
                   <h2 id="new-clipping-title">스크랩 추가</h2>
                 </div>
                 <button type="button" onClick={() => setClipModalOpen(false)} className={LINK_BTN}>
