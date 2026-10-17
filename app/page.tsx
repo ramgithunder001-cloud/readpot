@@ -33,6 +33,7 @@ interface Review {
   user_id: string;
   book_isbn: string;
   rating: number;
+  rating_comment?: string | null;
   content: string;
   content_json?: JSONContent | null;
   status: Status;
@@ -225,7 +226,7 @@ function GlobalStyle() {
       .bs-book-detail-shell { width: 100% !important; max-width: 100% !important; margin: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
 
       /* Consistent buttons, fields and search bars. */
-      .bs-main button:not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]) {
+      .bs-main button:not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-rating-comment-edit):not(.bs-rating-comment-save):not(.bs-rating-comment-cancel):not(.bs-rating-comment-input):not(.bs-note-action):not(.bs-note-action-primary):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]) {
         box-sizing: border-box !important; display: inline-flex !important; min-width: 0 !important; max-width: 100% !important;
         width: auto !important; height: 34px !important; min-height: 34px !important; max-height: 34px !important;
         align-items: center !important; justify-content: center !important; gap: 7px !important;
@@ -236,8 +237,8 @@ function GlobalStyle() {
         white-space: nowrap !important; word-break: keep-all !important; overflow: hidden !important; text-overflow: ellipsis !important;
         transition: border-color .15s ease, background-color .15s ease !important;
       }
-      .bs-main button:not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]):hover {
-        color: #111 !important; background: #f1f1f1 !important; border-color: #9f9f9f !important; box-shadow: none !important;
+      .bs-main button:not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-rating-comment-edit):not(.bs-rating-comment-save):not(.bs-rating-comment-cancel):not(.bs-rating-comment-input):not(.bs-note-action):not(.bs-note-action-primary):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]):hover {
+        color: #111 !important; background: #f1f1f1 !important; border-color: transparent !important; box-shadow: none !important;
       }
       /* Keep base, primary, and selected toggle buttons at identical dimensions.
          State changes should alter color only, never the control's height or spacing. */
@@ -580,7 +581,7 @@ function GlobalStyle() {
       .bs-side-bottom, .bs-profile-name { font-size: 14px !important; }
       .bs-h1, .bs-page-head .bs-h1 { font-size: 38px !important; line-height: 1.2 !important; }
       .bs-h3, .bs-book-detail-section h3, .bs-book-community-panel h3, .bs-book-rating-heading { font-size: 20px !important; }
-      .bs-main button:not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]),
+      .bs-main button:not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-rating-comment-edit):not(.bs-rating-comment-save):not(.bs-rating-comment-cancel):not(.bs-rating-comment-input):not(.bs-note-action):not(.bs-note-action-primary):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]),
       .bs-main button.bs-btn-primary, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-top-nav button):not(.bs-filter-btn):not(.bs-rating-star-button) {
         font-size: 14px !important; line-height: 1.2 !important;
       }
@@ -708,6 +709,82 @@ function GlobalStyle() {
         .bs-book-card .bs-book-author, .bs-series-count { font-size: 12px !important; }
         .bs-book-card-quote { min-height: 2.65em !important; max-width: 700px !important; font-size: 12px !important; line-height: 1.35 !important; margin-top: 6px !important; }
         .bs-book-card-readers { top: 9px !important; right: 1px !important; max-width: 100px !important; gap: 3px !important; }
+      }
+
+
+      /* Stable hover/selection styling and compact navigation. */
+      .bs-sidebar { width: 218px !important; min-width: 218px !important; padding-left: 17px !important; padding-right: 17px !important; }
+      .bs-main { width: calc(100% - 218px) !important; margin-left: 218px !important; }
+      .bs-sidebar .bs-nav { gap: 2px !important; }
+      .bs-sidebar .bs-nav button,
+      .bs-sidebar .bs-nav button:hover,
+      .bs-sidebar .bs-nav button:focus,
+      .bs-sidebar .bs-nav button:focus-visible,
+      .bs-sidebar .bs-nav button.bs-active {
+        border-color: transparent !important; outline: none !important; box-shadow: none !important;
+        transform: none !important; font-size: 15px !important; transition: background-color .15s ease, color .15s ease !important;
+      }
+      .bs-sidebar .bs-nav button:hover { background: #eaeaea !important; }
+      .bs-sidebar .bs-nav button.bs-active { background: #e5e5e5 !important; }
+      .bs-sidebar .bs-nav-count, .bs-main .bs-top-nav .bs-nav-count { display: none !important; }
+      .bs-main .bs-top-nav button:hover,
+      .bs-main .bs-top-nav button:focus,
+      .bs-main .bs-top-nav button:focus-visible,
+      .bs-main .bs-top-nav button.bs-active { outline: none !important; box-shadow: none !important; transform: none !important; font-size: 21px !important; }
+      .bs-main .bs-top-nav button:hover { border-left-color: transparent !important; border-right-color: transparent !important; }
+      .bs-main button:hover, .bs-main a:hover, .bs-main [role="button"]:hover { transform: none !important; }
+      .bs-main button.bs-btn-primary, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-top-nav button):not(.bs-filter-btn):not(.bs-rating-star-button) { border-color: transparent !important; }
+      .bs-main button:not(.bs-top-nav button):not(.bs-nav button):not(.bs-rating-star-button):not(.bs-delete-x):hover { border-color: transparent !important; }
+      .bs-book-card:hover .bs-book-title, .bs-record-row:hover .bs-record-title,
+      .bs-personal-book-card:hover .bs-personal-book-title, .bs-scrapbook-card:hover .bs-scrapbook-title {
+        font-size: 19px !important; transform: none !important; text-decoration: none !important;
+      }
+      .bs-book-card-info { padding-top: 8px !important; }
+      .bs-book-card-readers { right: 14px !important; }
+      .bs-book-card h3.bs-book-title, .bs-record-title, .bs-personal-book-title, .bs-scrapbook-title { font-size: 19px !important; }
+      .bs-main .bs-filter-btn:hover, .bs-main .bs-filter-btn.bs-active { border-color: transparent !important; outline: none !important; box-shadow: none !important; }
+
+      /* Quote/comments: tighter spacing, larger comments, no leading rule. */
+      .bs-book-detail-section .bs-quote-list { margin-top: 5px !important; border-top: 0 !important; }
+      .bs-book-detail-section .bs-quote-row { padding-top: 12px !important; padding-bottom: 12px !important; }
+      .bs-quote-comments { gap: 5px !important; margin: 6px 0 0 12px !important; padding-left: 0 !important; border-left: 0 !important; }
+      .bs-quote-comment-row, .bs-quote-comment-row > div, .bs-quote-comment-row .ProseMirror, .bs-quote-comment-row .whitespace-pre-line { font-size: 14px !important; line-height: 1.55 !important; }
+      .bs-quote-comment-form { margin-top: 5px !important; }
+      .bs-delete-x:hover { color: #cfa5a5 !important; border-color: transparent !important; background: transparent !important; }
+
+      /* Rating row with a short editable comment. */
+      .bs-book-rating-row { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 6px 12px !important; min-height: 50px !important; padding: 7px 0 !important; }
+      .bs-book-rating-name { flex: 0 0 auto !important; max-width: 180px !important; font-size: 15px !important; font-weight: 750 !important; }
+      .bs-book-rating-main { display: flex !important; flex: 1 1 260px !important; min-width: 0 !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; }
+      .bs-rating-comment-text { min-width: 0 !important; color: #555 !important; font-size: 14px !important; line-height: 1.45 !important; overflow-wrap: anywhere !important; }
+      .bs-rating-comment-actions { display: inline-flex !important; flex: 0 0 auto !important; align-items: center !important; gap: 5px !important; }
+      .bs-rating-comment-edit { display: inline-flex !important; width: 24px !important; min-width: 24px !important; height: 24px !important; min-height: 24px !important; align-items: center !important; justify-content: center !important; padding: 0 !important; color: #777 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; font-size: 17px !important; line-height: 1 !important; }
+      .bs-rating-comment-edit:hover { color: #111 !important; border-color: transparent !important; background: transparent !important; }
+      .bs-rating-comment-form { display: inline-flex !important; flex: 1 1 260px !important; min-width: 220px !important; align-items: center !important; flex-wrap: wrap !important; gap: 5px !important; margin: 0 !important; padding: 0 !important; border: 0 !important; }
+      .bs-rating-comment-input { width: min(100%, 360px) !important; min-width: 140px !important; flex: 1 1 140px !important; height: 32px !important; min-height: 32px !important; padding: 0 8px !important; color: #111 !important; background: #fff !important; border: 1px solid #d4d4d4 !important; border-radius: 2px !important; font: inherit !important; font-size: 13px !important; }
+      .bs-rating-comment-save, .bs-rating-comment-cancel { display: inline-flex !important; height: 30px !important; min-height: 30px !important; align-items: center !important; justify-content: center !important; padding: 0 8px !important; color: #333 !important; background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; font-size: 12px !important; }
+      .bs-rating-comment-save:hover, .bs-rating-comment-cancel:hover { background: #eee !important; border-color: transparent !important; }
+      .bs-note-icon { width: auto !important; min-width: 20px !important; font-size: 13px !important; font-weight: 650 !important; white-space: nowrap !important; }
+      .bs-note-action { border: 0 !important; outline: none !important; }
+
+      @media (max-width: 1200px) and (min-width: 721px) {
+        .bs-sidebar { width: 218px !important; min-width: 218px !important; padding-left: 17px !important; padding-right: 17px !important; }
+        .bs-main { width: calc(100% - 218px) !important; margin-left: 218px !important; }
+        .bs-book-card h3.bs-book-title, .bs-record-title, .bs-personal-book-title, .bs-scrapbook-title { font-size: 19px !important; }
+      }
+      @media (max-width: 720px) {
+        .bs-sidebar { width: min(280px, 84vw) !important; min-width: 0 !important; padding-left: 18px !important; padding-right: 18px !important; }
+        .bs-main { width: 100% !important; margin-left: 0 !important; }
+        .bs-sidebar .bs-nav { gap: 2px !important; }
+        .bs-sidebar .bs-nav button, .bs-sidebar .bs-nav button:hover, .bs-sidebar .bs-nav button.bs-active { min-height: 42px !important; height: 42px !important; font-size: 15px !important; border-color: transparent !important; }
+        .bs-book-card-info { padding-top: 7px !important; }
+        .bs-book-card-readers { right: 10px !important; }
+        .bs-book-card h3.bs-book-title, .bs-record-title, .bs-personal-book-title, .bs-scrapbook-title { font-size: 18px !important; }
+        .bs-book-card:hover .bs-book-title, .bs-record-row:hover .bs-record-title, .bs-personal-book-card:hover .bs-personal-book-title, .bs-scrapbook-card:hover .bs-scrapbook-title { font-size: 18px !important; }
+        .bs-rating-comment-form { min-width: 100% !important; }
+        .bs-book-rating-name { font-size: 14px !important; }
+        .bs-quote-comments { margin-left: 4px !important; }
+        .bs-quote-comment-row, .bs-quote-comment-row > div, .bs-quote-comment-row .whitespace-pre-line { font-size: 13px !important; }
       }
     `}</style>
   );
@@ -2255,6 +2332,9 @@ export default function Home() {
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [regStatus, setRegStatus] = useState<Status>('completed');
   const [rating, setRating] = useState<number>(0);
+  const [editingRatingCommentId, setEditingRatingCommentId] = useState<string | null>(null);
+  const [ratingCommentDraft, setRatingCommentDraft] = useState('');
+  const [ratingCommentSaving, setRatingCommentSaving] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
 
   const [allReviews, setAllReviews] = useState<Review[]>([]);
@@ -2390,15 +2470,17 @@ export default function Home() {
     : [];
 
   const loadData = useCallback(async (u: User) => {
-    const reviewSelect = (withJson: boolean) =>
+    const reviewSelect = (withJson: boolean, withRatingComment: boolean) =>
       supabase
         .from('reviews')
         .select(
-          `id, user_id, book_isbn, rating, status, content, ${withJson ? 'content_json, ' : ''}created_at, books(title, author, cover_url), quotes(id, content, created_at, quote_comments(id, content, created_at))`
+          `id, user_id, book_isbn, rating, status, content, ${withRatingComment ? 'rating_comment, ' : ''}${withJson ? 'content_json, ' : ''}created_at, books(title, author, cover_url), quotes(id, content, created_at, quote_comments(id, content, created_at))`
         )
         .order('created_at', { ascending: false });
-    let reviewsRes = await reviewSelect(true);
-    if (reviewsRes.error) reviewsRes = await reviewSelect(false);
+    let reviewsRes = await reviewSelect(true, true);
+    if (reviewsRes.error) reviewsRes = await reviewSelect(false, true);
+    if (reviewsRes.error) reviewsRes = await reviewSelect(true, false);
+    if (reviewsRes.error) reviewsRes = await reviewSelect(false, false);
 
     const queryProfiles = async (cols: string) =>
       (await supabase.from('profiles').select(cols)) as unknown as ProfilesResult;
@@ -2468,6 +2550,7 @@ export default function Home() {
         .map((r) => ({
           ...r,
           rating: Number(r.rating) || 0,
+          rating_comment: typeof r.rating_comment === 'string' ? r.rating_comment : null,
           quotes: (r.quotes || [])
             .map((q) => ({
               ...q,
@@ -2761,6 +2844,48 @@ export default function Home() {
       alert(`저장 실패: ${error.message}`);
       refresh();
     }
+  };
+
+  const handleSaveRatingComment = async (target: Review) => {
+    if (!user || target.user_id !== user.id) return;
+    const content = ratingCommentDraft.trim().replace(/\s+/g, ' ');
+    if (content.length > 120) return alert('한 줄 코멘트는 120자 이하로 입력해 주세요.');
+
+    setRatingCommentSaving(true);
+    const { error } = await supabase
+      .from('reviews')
+      .update({ rating_comment: content || null } as never)
+      .eq('id', target.id)
+      .eq('user_id', user.id);
+    setRatingCommentSaving(false);
+
+    if (error) {
+      alert(`별점 코멘트 저장 실패: ${error.message}\n\n새 컬럼이 없다면 동봉된 rating_comment_migration.sql을 Supabase SQL Editor에서 실행해 주세요.`);
+      return;
+    }
+
+    setAllReviews((prev) => prev.map((r) => r.id === target.id ? { ...r, rating_comment: content || null } : r));
+    setEditingRatingCommentId(null);
+    setRatingCommentDraft('');
+  };
+
+  const handleDeleteRatingComment = async (target: Review) => {
+    if (!user || target.user_id !== user.id) return;
+    if (!confirm('별점 코멘트를 삭제하시겠습니까?')) return;
+
+    const { error } = await supabase
+      .from('reviews')
+      .update({ rating_comment: null } as never)
+      .eq('id', target.id)
+      .eq('user_id', user.id);
+    if (error) {
+      alert(`별점 코멘트 삭제 실패: ${error.message}\n\n새 컬럼이 없다면 동봉된 rating_comment_migration.sql을 Supabase SQL Editor에서 실행해 주세요.`);
+      return;
+    }
+
+    setAllReviews((prev) => prev.map((r) => r.id === target.id ? { ...r, rating_comment: null } : r));
+    setEditingRatingCommentId(null);
+    setRatingCommentDraft('');
   };
 
   const handleAddQuote = async (e: React.FormEvent) => {
@@ -3233,7 +3358,7 @@ export default function Home() {
     <>
       <div className="bs-desktop-topbar">
         <nav className="bs-top-nav" aria-label="상단 주 메뉴">
-          {navItem('shelf', '서고', shelfEntries.length)}
+          {navItem('shelf', '서고')}
           {navItem('mine', '책장')}
           {navItem('scraps', '스크랩북')}
         </nav>
@@ -3273,7 +3398,7 @@ export default function Home() {
           </button>
         </div>
         <nav className="bs-nav" aria-label="주 메뉴">
-          {navItem('shelf', '서고', shelfEntries.length)}
+          {navItem('shelf', '서고')}
           {navItem('mine', '책장')}
           {navItem('scraps', '스크랩북')}
         </nav>
@@ -3519,20 +3644,72 @@ export default function Home() {
               <h3 className="bs-book-rating-heading">별점</h3>
               <div className="bs-book-rating-content">
                 {ratingReviews.length > 0 ? (
-                  ratingReviews.map((r) => (
-                    <div className="bs-book-rating-row" key={r.id}>
-                      <span className="bs-book-rating-name">{profileOf(r.user_id).nickname}</span>
-                      {r.id === myBookReview?.id && r.status === 'completed' ? (
-                        <RatingInput
-                          value={r.rating}
-                          onChange={(v) => handleUpdateStatus('completed', v, r)}
-                          size={20}
-                        />
-                      ) : (
-                        <RatingDisplay value={r.rating} size={15} />
-                      )}
-                    </div>
-                  ))
+                  ratingReviews.map((r) => {
+                    const canEditRatingComment = r.id === myBookReview?.id && r.status === 'completed';
+                    const isEditingRatingComment = editingRatingCommentId === r.id;
+                    return (
+                      <div className="bs-book-rating-row" key={r.id}>
+                        <strong className="bs-book-rating-name">{profileOf(r.user_id).nickname}</strong>
+                        <div className="bs-book-rating-main">
+                          {canEditRatingComment ? (
+                            <RatingInput
+                              value={r.rating}
+                              onChange={(v) => handleUpdateStatus('completed', v, r)}
+                              size={20}
+                            />
+                          ) : (
+                            <RatingDisplay value={r.rating} size={15} />
+                          )}
+
+                          {r.rating_comment && !isEditingRatingComment && (
+                            <span className="bs-rating-comment-text">{r.rating_comment}</span>
+                          )}
+
+                          {canEditRatingComment && (isEditingRatingComment ? (
+                            <form
+                              className="bs-rating-comment-form"
+                              onSubmit={(e) => { e.preventDefault(); void handleSaveRatingComment(r); }}
+                            >
+                              <input
+                                type="text"
+                                value={ratingCommentDraft}
+                                maxLength={120}
+                                onChange={(e) => setRatingCommentDraft(e.target.value)}
+                                placeholder="별점 한 줄 코멘트"
+                                aria-label="별점 한 줄 코멘트"
+                                className="bs-rating-comment-input"
+                              />
+                              <button type="submit" disabled={ratingCommentSaving} className="bs-rating-comment-save">
+                                {ratingCommentSaving ? '저장 중' : '저장'}
+                              </button>
+                              <button type="button" className="bs-rating-comment-cancel" onClick={() => { setEditingRatingCommentId(null); setRatingCommentDraft(''); }}>
+                                취소
+                              </button>
+                            </form>
+                          ) : (
+                            <div className="bs-rating-comment-actions">
+                              <button
+                                type="button"
+                                className="bs-rating-comment-edit"
+                                aria-label={r.rating_comment ? '별점 코멘트 수정' : '별점 코멘트 추가'}
+                                title={r.rating_comment ? '별점 코멘트 수정' : '별점 코멘트 추가'}
+                                onClick={() => { setEditingRatingCommentId(r.id); setRatingCommentDraft(r.rating_comment || ''); }}
+                              >✎</button>
+                              {r.rating_comment && (
+                                <button
+                                  type="button"
+                                  className="bs-delete-x"
+                                  aria-label="별점 코멘트 삭제"
+                                  title="별점 코멘트 삭제"
+                                  onClick={() => void handleDeleteRatingComment(r)}
+                                >×</button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })
                 ) : (
                   <p className="bs-book-rating-empty">아직 등록된 별점이 없어요.</p>
                 )}
@@ -3543,17 +3720,9 @@ export default function Home() {
               <div>
                 {showQuotes && (
                   <section className={`bs-book-detail-section ${showReview ? 'border-b border-[#d5d7da]' : ''}`}>
-                    <h3 className="text-xl font-black tracking-tight">
-                      인용문{' '}
-                      <span className="text-sm font-semibold text-[#666b73]">
-                        ({activeReview.quotes?.length || 0})
-                      </span>
-                    </h3>
-                    {isOwner && hasQuotes && (
-                      <p className="mt-1 text-xs text-[#666b73]">인용문을 누르면 코멘트를 달 수 있어요.</p>
-                    )}
+                    <h3 className="text-xl font-black tracking-tight">인용문</h3>
 
-                    <div className="mt-4">
+                    <div className="mt-2">
                       {hasQuotes ? (
                         <QuoteList
                           quotes={activeReview.quotes!}
@@ -3827,7 +3996,7 @@ export default function Home() {
                           </form>
                         ) : (
                           <div className="bs-note-record-row">
-                            <span className="bs-note-icon" aria-hidden="true" title={`각주 ${i + 1}`}>↳</span>
+                            <span className="bs-note-icon" aria-hidden="true" title={`각주 ${i + 1}`}>{i + 1})</span>
                             <div className="bs-note-record-content">
                               <DiscordText text={n.content} className="min-w-0 leading-relaxed" />
                             </div>
@@ -3839,7 +4008,12 @@ export default function Home() {
                                   onClick={() => { setEditingNoteId(n.id); setEditingNoteText(n.content); }}
                                   aria-label="각주 수정"
                                   title="각주 수정"
-                                >수정</button>
+                                >
+                                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                    <path d="M12 20h9" />
+                                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z" />
+                                  </svg>
+                                </button>
                               )}
                               <button
                                 type="button"
