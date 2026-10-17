@@ -226,7 +226,7 @@ function GlobalStyle() {
       .bs-book-detail-shell { width: 100% !important; max-width: 100% !important; margin: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
 
       /* Consistent buttons, fields and search bars. */
-      .bs-main button:not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-rating-comment-edit):not(.bs-rating-comment-save):not(.bs-rating-comment-cancel):not(.bs-rating-comment-input):not(.bs-note-action):not(.bs-note-action-primary):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]) {
+      .bs-main button:not(.bs-pagination button):not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-rating-comment-edit):not(.bs-rating-comment-save):not(.bs-rating-comment-cancel):not(.bs-rating-comment-input):not(.bs-note-action):not(.bs-note-action-primary):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]) {
         box-sizing: border-box !important; display: inline-flex !important; min-width: 0 !important; max-width: 100% !important;
         width: auto !important; height: 34px !important; min-height: 34px !important; max-height: 34px !important;
         align-items: center !important; justify-content: center !important; gap: 7px !important;
@@ -237,7 +237,7 @@ function GlobalStyle() {
         white-space: nowrap !important; word-break: keep-all !important; overflow: hidden !important; text-overflow: ellipsis !important;
         transition: border-color .15s ease, background-color .15s ease !important;
       }
-      .bs-main button:not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-rating-comment-edit):not(.bs-rating-comment-save):not(.bs-rating-comment-cancel):not(.bs-rating-comment-input):not(.bs-note-action):not(.bs-note-action-primary):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]):hover {
+      .bs-main button:not(.bs-pagination button):not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-rating-comment-edit):not(.bs-rating-comment-save):not(.bs-rating-comment-cancel):not(.bs-rating-comment-input):not(.bs-note-action):not(.bs-note-action-primary):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]):hover {
         color: #111 !important; background: #f1f1f1 !important; border-color: transparent !important; box-shadow: none !important;
       }
       /* Keep base, primary, and selected toggle buttons at identical dimensions.
@@ -581,7 +581,7 @@ function GlobalStyle() {
       .bs-side-bottom, .bs-profile-name { font-size: 14px !important; }
       .bs-h1, .bs-page-head .bs-h1 { font-size: 38px !important; line-height: 1.2 !important; }
       .bs-h3, .bs-book-detail-section h3, .bs-book-community-panel h3, .bs-book-rating-heading { font-size: 20px !important; }
-      .bs-main button:not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-rating-comment-edit):not(.bs-rating-comment-save):not(.bs-rating-comment-cancel):not(.bs-rating-comment-input):not(.bs-note-action):not(.bs-note-action-primary):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]),
+      .bs-main button:not(.bs-pagination button):not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-rating-comment-edit):not(.bs-rating-comment-save):not(.bs-rating-comment-cancel):not(.bs-rating-comment-input):not(.bs-note-action):not(.bs-note-action-primary):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]),
       .bs-main button.bs-btn-primary, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-top-nav button):not(.bs-filter-btn):not(.bs-rating-star-button) {
         font-size: 14px !important; line-height: 1.2 !important;
       }
@@ -786,6 +786,108 @@ function GlobalStyle() {
         .bs-quote-comments { margin-left: 4px !important; }
         .bs-quote-comment-row, .bs-quote-comment-row > div, .bs-quote-comment-row .whitespace-pre-line { font-size: 13px !important; }
       }
+
+
+      /* Final fixes requested: stable hover, topbar only on mobile, pagination and tidy notes. */
+      .bs-desktop-topbar { display: none !important; }
+      .bs-sidebar .bs-nav-count, .bs-top-nav .bs-nav-count { display: none !important; }
+      .bs-book-rating-row strong.bs-book-rating-name { display: inline-flex !important; visibility: visible !important; flex: 0 0 auto !important; align-items: center !important; }
+
+      .bs-book-card h3.bs-book-title,
+      .bs-book-card h3.bs-book-title:hover,
+      .bs-record-title, .bs-record-row:hover .bs-record-title,
+      .bs-personal-book-title, .bs-personal-book-card:hover .bs-personal-book-title,
+      .bs-scrapbook-title, .bs-scrapbook-card:hover .bs-scrapbook-title {
+        font-size: 19px !important;
+        line-height: 1.24 !important;
+        letter-spacing: inherit !important;
+        font-stretch: normal !important;
+        transform: none !important;
+        scale: none !important;
+        text-decoration: none !important;
+        transition: none !important;
+      }
+      .bs-main button.bs-personal-book-card,
+      .bs-main button.bs-personal-book-card:hover,
+      .bs-main button.bs-personal-book-card:focus,
+      .bs-main button.bs-personal-book-card:hover:not(.bs-top-nav button):not(.bs-nav button):not(.bs-rating-star-button):not(.bs-delete-x) {
+        border-top: 0 !important;
+        border-left: 0 !important;
+        border-right: 0 !important;
+        border-bottom: 1px solid #d4d4d4 !important;
+        border-bottom-color: #d4d4d4 !important;
+      }
+
+      .bs-rating-comment-edit {
+        width: 20px !important; min-width: 20px !important;
+        height: 24px !important; min-height: 24px !important;
+        padding: 0 !important; color: #858585 !important;
+        border: 0 !important; border-radius: 0 !important;
+        background: transparent !important; box-shadow: none !important;
+        font-size: 12px !important; line-height: 1 !important;
+      }
+      .bs-rating-comment-edit svg { display: block !important; width: 12px !important; height: 12px !important; }
+      .bs-rating-comment-edit:hover { color: #858585 !important; background: transparent !important; border-color: transparent !important; }
+
+      .bs-note-record { padding: 7px 0 !important; border-bottom: 1px solid #e4e4e4 !important; }
+      .bs-note-record:last-child { border-bottom: 0 !important; }
+      .bs-note-record-row { gap: 6px !important; }
+      .bs-note-record-content { line-height: 1.45 !important; }
+
+      .bs-pagination {
+        display: flex !important; align-items: center !important; justify-content: center !important;
+        flex-wrap: wrap !important; gap: 5px !important; width: 100% !important; margin: 24px 0 8px !important;
+      }
+      .bs-main .bs-pagination button.bs-page-number,
+      .bs-main .bs-pagination button.bs-page-step {
+        display: inline-flex !important; align-items: center !important; justify-content: center !important;
+        width: 32px !important; min-width: 32px !important; max-width: 32px !important;
+        height: 32px !important; min-height: 32px !important; max-height: 32px !important;
+        margin: 0 !important; padding: 0 !important;
+        color: #555 !important; background: transparent !important;
+        border: 1px solid transparent !important; border-radius: 2px !important;
+        box-shadow: none !important; transform: none !important;
+        font-size: 14px !important; font-weight: 500 !important; line-height: 1 !important;
+        text-align: center !important; text-decoration: none !important;
+      }
+      .bs-main .bs-pagination button.bs-page-number:hover,
+      .bs-main .bs-pagination button.bs-page-step:hover:not(:disabled) {
+        color: #111 !important; background: #ededed !important; border-color: transparent !important;
+      }
+      .bs-main .bs-pagination button.bs-page-number.is-current {
+        color: #fff !important; background: #171717 !important; border-color: #171717 !important; font-weight: 700 !important;
+      }
+      .bs-main .bs-pagination button.bs-page-step:disabled { color: #b5b5b5 !important; opacity: .45 !important; cursor: default !important; }
+      .bs-page-ellipsis { display: inline-flex !important; min-width: 14px !important; align-items: center !important; justify-content: center !important; color: #888 !important; }
+
+      .bs-main .bs-mobile-topbar-trigger,
+      .bs-main .bs-mobile-topbar-trigger:hover,
+      .bs-main .bs-mobile-topbar-trigger:focus,
+      .bs-main .bs-mobile-topbar-trigger:focus-visible {
+        display: none !important; width: auto !important; min-width: 0 !important;
+        height: auto !important; min-height: 0 !important; max-height: none !important;
+        margin: 0 !important; padding: 0 !important;
+        color: #111 !important; background: transparent !important;
+        border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+        font-family: var(--sans) !important; font-size: 19px !important; font-weight: 800 !important;
+        letter-spacing: -.04em !important; line-height: 1 !important; text-decoration: none !important;
+        transform: none !important; outline: none !important;
+      }
+      @media (max-width: 720px) {
+        .bs-mobile-topbar { display: flex !important; }
+        .bs-main .bs-mobile-topbar-trigger,
+        .bs-main .bs-mobile-topbar-trigger:hover,
+        .bs-main .bs-mobile-topbar-trigger:focus,
+        .bs-main .bs-mobile-topbar-trigger:focus-visible {
+          display: inline-flex !important; align-items: center !important; justify-content: flex-start !important;
+        }
+        .bs-book-card h3.bs-book-title,
+        .bs-book-card h3.bs-book-title:hover,
+        .bs-record-title, .bs-record-row:hover .bs-record-title,
+        .bs-personal-book-title, .bs-personal-book-card:hover .bs-personal-book-title,
+        .bs-scrapbook-title, .bs-scrapbook-card:hover .bs-scrapbook-title { font-size: 18px !important; }
+      }
+
     `}</style>
   );
 }
@@ -2063,6 +2165,52 @@ function ReviewBody({ review }: { review: Review }) {
 
 type SaveState = 'saved' | 'dirty' | 'saving' | 'error';
 
+const PAGE_SIZE = 10;
+
+function Pagination({
+  page,
+  totalItems,
+  onPageChange,
+}: {
+  page: number;
+  totalItems: number;
+  onPageChange: (page: number) => void;
+}) {
+  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+  if (totalPages <= 1) return null;
+  const startPage = Math.max(1, Math.min(page - 2, totalPages - 4));
+  const endPage = Math.min(totalPages, startPage + 4);
+  const pages: (number | 'start-gap' | 'end-gap')[] = [];
+  if (startPage > 1) {
+    pages.push(1);
+    if (startPage > 2) pages.push('start-gap');
+  }
+  for (let n = startPage; n <= endPage; n += 1) pages.push(n);
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) pages.push('end-gap');
+    pages.push(totalPages);
+  }
+
+  return (
+    <nav className="bs-pagination" aria-label="목록 페이지">
+      <button type="button" className="bs-page-step" disabled={page <= 1} onClick={() => onPageChange(page - 1)} aria-label="이전 페이지">‹</button>
+      {pages.map((item) => typeof item === 'number' ? (
+        <button
+          type="button"
+          key={item}
+          className={`bs-page-number${item === page ? ' is-current' : ''}`}
+          aria-current={item === page ? 'page' : undefined}
+          aria-label={`${item}페이지`}
+          onClick={() => onPageChange(item)}
+        >{item}</button>
+      ) : (
+        <span key={item} className="bs-page-ellipsis" aria-hidden="true">…</span>
+      ))}
+      <button type="button" className="bs-page-step" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)} aria-label="다음 페이지">›</button>
+    </nav>
+  );
+}
+
 function ReviewEditorPanel({
   review,
   userId,
@@ -2341,6 +2489,10 @@ export default function Home() {
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
 
   const [tab, setTab] = useState<Tab>('shelf');
+  const [shelfPage, setShelfPage] = useState(1);
+  const [reviewPage, setReviewPage] = useState(1);
+  const [scrapsPage, setScrapsPage] = useState(1);
+  const [minePage, setMinePage] = useState(1);
   const [bookModalOpen, setBookModalOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -2389,6 +2541,13 @@ export default function Home() {
   useEffect(() => {
     setSealImageBroken(false);
   }, [draft.sealImage]);
+
+  useEffect(() => {
+    setShelfPage(1);
+    setReviewPage(1);
+    setScrapsPage(1);
+    setMinePage(1);
+  }, [boardFilter, shelfFilter, personalShelfFilter, allReviews, clippings, tab]);
 
   useEffect(() => {
     if (!clipModalOpen && !bookModalOpen) return;
@@ -3342,15 +3501,6 @@ export default function Home() {
         placeholder="책 제목 또는 저자 검색"
         aria-label="책 제목 또는 저자 검색"
       />
-      {boardFilter && (
-        <button
-          type="button"
-          className="bs-search-clear"
-          onClick={() => setBoardFilter('')}
-          aria-label="검색어 지우기"
-          title="검색어 지우기"
-        >×</button>
-      )}
     </div>
   );
 
@@ -3694,7 +3844,12 @@ export default function Home() {
                                 aria-label={r.rating_comment ? '별점 코멘트 수정' : '별점 코멘트 추가'}
                                 title={r.rating_comment ? '별점 코멘트 수정' : '별점 코멘트 추가'}
                                 onClick={() => { setEditingRatingCommentId(r.id); setRatingCommentDraft(r.rating_comment || ''); }}
-                              >✎</button>
+                              >
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                  <path d="M12 20h9" />
+                                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z" />
+                                </svg>
+                              </button>
                               {r.rating_comment && (
                                 <button
                                   type="button"
@@ -4384,6 +4539,7 @@ export default function Home() {
     const statusOf = (e: ShelfEntry) => shelfStatusOf(e.reviews);
     const hasStatus = (e: ShelfEntry, s: Status) => e.reviews.some((r) => r.status === s);
     const visible = entries.filter((e) => filterKey === 'all' || hasStatus(e, filterKey));
+    const pagedVisible = visible.slice((shelfPage - 1) * PAGE_SIZE, shelfPage * PAGE_SIZE);
     const books = shelfEntries;
     const countOf = (s: Status) => books.filter((e) => statusOf(e) === s).length;
 
@@ -4431,7 +4587,7 @@ export default function Home() {
                 <span>다른 분류를 선택하거나 검색어를 바꿔 보세요.</span>
               </div>
             ) : (
-              visible.map((e) => {
+              pagedVisible.map((e) => {
                 const readingUsers = Array.from(
                   new Set(e.reviews.filter((r) => r.status === 'reading').map((r) => r.user_id))
                 );
@@ -4494,6 +4650,7 @@ export default function Home() {
               })
             )}
           </div>
+          <Pagination page={shelfPage} totalItems={visible.length} onPageChange={setShelfPage} />
         </div>
       </div>
     );
@@ -4501,6 +4658,7 @@ export default function Home() {
 
   if (tab === 'reviews') {
     const list = writtenAll.filter(matchesFilter);
+    const pagedReviews = list.slice((reviewPage - 1) * PAGE_SIZE, reviewPage * PAGE_SIZE);
     return (
       <div className="bs-main">
         <GlobalStyle />
@@ -4533,9 +4691,10 @@ export default function Home() {
                 <span>{writtenAll.length === 0 ? '책 상세에서 “독후감 추가”를 눌러 시작해 보세요.' : '검색어를 바꿔 보세요.'}</span>
               </div>
             ) : (
-              list.map(renderEntryRow)
+              pagedReviews.map(renderEntryRow)
             )}
           </div>
+          <Pagination page={reviewPage} totalItems={list.length} onPageChange={setReviewPage} />
         </div>
       </div>
     );
@@ -4546,6 +4705,7 @@ export default function Home() {
     const clipList = clippings.filter(
       (c) => !filterQ || `${c.title} ${c.source || ''}`.toLowerCase().includes(filterQ)
     );
+    const pagedClipList = clipList.slice((scrapsPage - 1) * PAGE_SIZE, scrapsPage * PAGE_SIZE);
 
     return (
       <div className="bs-main bs-scrapbook-page">
@@ -4576,14 +4736,6 @@ export default function Home() {
                 placeholder="스크랩 제목 또는 출처 검색"
                 aria-label="스크랩 제목 또는 출처 검색"
               />
-              {boardFilter && (
-                <button
-                  type="button"
-                  className="bs-search-clear"
-                  onClick={() => setBoardFilter('')}
-                  aria-label="검색어 지우기"
-                >×</button>
-              )}
             </div>
             <div className="bs-scrapbook-count">
               <strong>{clipList.length}</strong> / {clippings.length}개
@@ -4597,7 +4749,7 @@ export default function Home() {
                 <span>{clippings.length === 0 ? '기사나 칼럼을 추가해 나만의 스크랩북을 만들어 보세요.' : '검색어를 바꿔 보세요.'}</span>
               </div>
             ) : (
-              clipList.map((c) => (
+              pagedClipList.map((c) => (
                 <button
                   key={c.id}
                   type="button"
@@ -4621,6 +4773,7 @@ export default function Home() {
               ))
             )}
           </div>
+          <Pagination page={scrapsPage} totalItems={clipList.length} onPageChange={setScrapsPage} />
         </div>
 
         {clipModalOpen && (
@@ -4718,6 +4871,7 @@ export default function Home() {
     const matchesStatus = personalShelfFilter === 'all' || r.status === personalShelfFilter;
     return matchesText && matchesStatus;
   });
+  const pagedMyBooks = myBooks.slice((minePage - 1) * PAGE_SIZE, minePage * PAGE_SIZE);
   const countMyStatus = (status: 'all' | Status) =>
     myReviews.filter((r) => status === 'all' || r.status === status).length;
   const personalFilters: ['all' | Status, string, number][] = [
@@ -4772,7 +4926,7 @@ export default function Home() {
               <span>{myReviews.length === 0 ? '책 추가를 눌러 첫 책을 등록해 보세요.' : '검색어나 분류를 바꿔 보세요.'}</span>
             </div>
           ) : (
-            myBooks.map((r) => (
+            pagedMyBooks.map((r) => (
               <button key={r.id} type="button" className="bs-personal-book-card" onClick={() => openReview(r)}>
                 <div className="bs-personal-book-cover">
                   <BookCover title={r.books.title} author={r.books.author} src={r.books.cover_url} width={88} />
@@ -4795,6 +4949,7 @@ export default function Home() {
             ))
           )}
         </div>
+        <Pagination page={minePage} totalItems={myBooks.length} onPageChange={setMinePage} />
       </div>
 
       {bookModalOpen && (
