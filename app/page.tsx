@@ -120,7 +120,7 @@ function GlobalStyle() {
       body {
         margin: 0 !important; min-width: 320px; min-height: 100vh;
         color: var(--text) !important; background: var(--bg) !important;
-        background-image: none !important; font-size: 13px !important; line-height: 1.55 !important;
+        background-image: none !important; font-size: 16px !important; line-height: 1.6 !important;
       }
       button, input, textarea, select { color: inherit; font: inherit; }
       button { cursor: pointer; }
@@ -132,16 +132,16 @@ function GlobalStyle() {
       /* The same fixed desktop rail used in the reference app. */
       .bs-main {
         display: block !important; position: relative !important;
-        width: calc(100% - 202px) !important; min-height: 100vh !important;
-        margin: 0 0 0 202px !important; padding: 0 !important;
+        width: calc(100% - 250px) !important; min-height: 100vh !important;
+        margin: 0 0 0 250px !important; padding: 0 !important;
         color: #111 !important; background: #f7f7f7 !important;
         overflow: visible !important;
       }
       .bs-sidebar {
         position: fixed !important; inset: 0 auto 0 0 !important; z-index: 30 !important;
         display: flex !important; flex-direction: column !important; align-items: stretch !important;
-        width: 202px !important; min-width: 202px !important; height: 100vh !important; height: 100dvh !important;
-        padding: 27px 19px !important; overflow-x: hidden !important; overflow-y: auto !important;
+        width: 250px !important; min-width: 250px !important; height: 100vh !important; height: 100dvh !important;
+        padding: 30px 23px !important; overflow-x: hidden !important; overflow-y: auto !important;
         color: #111 !important; background: #f1f1f1 !important;
         border: 0 !important; border-right: 1px solid #d4d4d4 !important; border-radius: 0 !important;
         box-shadow: none !important; transform: none; transition: transform .2s ease !important;
@@ -154,7 +154,7 @@ function GlobalStyle() {
       .bs-brand-title {
         display: block !important; margin: 0 !important; padding: 0 !important;
         color: #111 !important; background: transparent !important; border: 0 !important;
-        font-size: 31px !important; font-weight: 900 !important; letter-spacing: -.13em !important;
+        font-size: 50pt !important; font-weight: 900 !important; letter-spacing: -.09em !important;
         line-height: .83 !important; text-shadow: none !important;
       }
       .bs-brand-title br { display: block; }
@@ -164,7 +164,7 @@ function GlobalStyle() {
         align-items: center !important; justify-content: space-between !important; gap: 8px !important;
         margin: 0 !important; padding: 0 10px !important; color: #111 !important; text-align: left !important;
         background: transparent !important; border: 1px solid transparent !important; border-radius: 2px !important;
-        box-shadow: none !important; transform: none !important; font-size: 12px !important; font-weight: 500 !important;
+        box-shadow: none !important; transform: none !important; font-size: 16px !important; font-weight: 500 !important;
         letter-spacing: 0 !important; line-height: 1.4 !important; white-space: nowrap !important;
       }
       .bs-sidebar .bs-nav button:hover { background: #eaeaea !important; border-color: transparent !important; }
@@ -176,28 +176,28 @@ function GlobalStyle() {
         display: grid !important; min-width: 17px !important; width: auto !important; height: 17px !important;
         place-items: center !important; margin: 0 !important; padding: 0 3px !important;
         color: #fff !important; background: #171717 !important; border: 0 !important;
-        font-size: 9px !important; font-weight: 500 !important; line-height: 1 !important;
+        font-size: 12px !important; font-weight: 500 !important; line-height: 1 !important;
       }
       .bs-side-spacer { display: block !important; flex: 1 0 24px !important; min-height: 24px !important; }
       .bs-side-bottom {
         display: flex !important; align-items: center !important; gap: 7px !important; margin: 0 !important;
         padding: 14px 0 0 !important; border-top: 1px solid #d4d4d4 !important; color: #737373 !important;
-        background: transparent !important; font-size: 10px !important;
+        background: transparent !important; font-size: 13px !important;
       }
       .bs-profile-settings {
         display: flex !important; align-items: center !important; gap: 8px !important; flex: 1 1 auto !important;
         min-width: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important;
         color: #111 !important; box-shadow: none !important; text-align: left !important;
       }
-      .bs-profile-name { overflow: hidden !important; min-width: 0 !important; color: #333 !important; font-size: 10px !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+      .bs-profile-name { overflow: hidden !important; min-width: 0 !important; color: #333 !important; font-size: 14px !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
       .bs-settings-icon { flex: 0 0 auto; color: #737373; }
       .bs-logout-icon { display: grid !important; width: 26px !important; min-width: 26px !important; height: 28px !important; min-height: 28px !important; place-items: center !important; padding: 0 !important; border: 0 !important; background: transparent !important; color: #737373 !important; box-shadow: none !important; }
       .bs-mobile-menu-toggle, .bs-mobile-drawer-launcher, .bs-mobile-drawer-backdrop { display: none !important; }
 
       /* Page geometry and headings. */
       .bs-content {
-        position: relative !important; width: min(940px, 100%) !important; max-width: 940px !important;
-        min-height: 100vh !important; margin: 0 !important; padding: 49px 44px 90px 49px !important;
+        position: relative !important; width: min(1020px, 100%) !important; max-width: 1020px !important;
+        min-height: 100vh !important; margin: 0 !important; padding: 50px 48px 90px 52px !important;
         background: transparent !important; color: #111 !important; box-shadow: none !important;
       }
       .bs-page-head {
@@ -207,19 +207,19 @@ function GlobalStyle() {
       }
       .bs-heading-copy { max-width: none !important; min-width: 0 !important; }
       .bs-h1, .bs-page-head .bs-h1 {
-        margin: 0 !important; color: #111 !important; font-size: 30px !important; font-weight: 850 !important;
+        margin: 0 !important; color: #111 !important; font-size: 38px !important; font-weight: 850 !important;
         letter-spacing: -.055em !important; line-height: 1.2 !important; text-shadow: none !important;
         overflow-wrap: break-word !important; word-break: normal !important;
       }
-      .bs-h3 { color: #111 !important; font-size: 16px !important; font-weight: 800 !important; letter-spacing: -.035em !important; }
+      .bs-h3 { color: #111 !important; font-size: 21px !important; font-weight: 800 !important; letter-spacing: -.035em !important; }
       .bs-eyebrow, .bs-lead, .bs-head-mark, .bs-brand-sub, .bs-side-label { display: none !important; }
       .bs-main > main:not(.bs-book-detail-page) {
-        width: min(940px, 100%) !important; max-width: 940px !important; min-height: 100vh !important;
-        margin: 0 !important; padding: 49px 44px 90px 49px !important; background: transparent !important;
+        width: min(1020px, 100%) !important; max-width: 1020px !important; min-height: 100vh !important;
+        margin: 0 !important; padding: 50px 48px 90px 52px !important; background: transparent !important;
       }
       .bs-book-detail-page {
-        display: block !important; width: min(940px, 100%) !important; max-width: 940px !important;
-        min-height: 100vh !important; margin: 0 !important; padding: 49px 44px 90px 49px !important;
+        display: block !important; width: min(1020px, 100%) !important; max-width: 1020px !important;
+        min-height: 100vh !important; margin: 0 !important; padding: 50px 48px 90px 52px !important;
         background: transparent !important;
       }
       .bs-book-detail-shell { width: 100% !important; max-width: 100% !important; margin: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
@@ -231,8 +231,8 @@ function GlobalStyle() {
         align-items: center !important; justify-content: center !important; gap: 7px !important;
         padding: 0 13px !important; color: #111 !important; background: #fff !important; border: 1px solid #d4d4d4 !important;
         border-radius: 2px !important; box-shadow: none !important; transform: none !important;
-        font-family: var(--sans) !important; font-size: 11px !important; font-weight: 650 !important;
-        letter-spacing: 0 !important; line-height: 1 !important; text-decoration: none !important;
+        font-family: var(--sans) !important; font-size: 14px !important; font-weight: 600 !important;
+        letter-spacing: 0 !important; line-height: 1.15 !important; text-decoration: none !important;
         white-space: nowrap !important; word-break: keep-all !important; overflow: hidden !important; text-overflow: ellipsis !important;
         transition: border-color .15s ease, background-color .15s ease !important;
       }
@@ -248,7 +248,7 @@ function GlobalStyle() {
         align-items: center !important; justify-content: center !important; gap: 7px !important; padding: 0 13px !important;
         border-width: 1px !important; border-style: solid !important; border-radius: 2px !important;
         box-shadow: none !important; transform: none !important; font-family: var(--sans) !important;
-        font-size: 11px !important; font-weight: 650 !important; letter-spacing: 0 !important; line-height: 1 !important;
+        font-size: 14px !important; font-weight: 600 !important; letter-spacing: 0 !important; line-height: 1.15 !important;
         text-decoration: none !important; white-space: nowrap !important; word-break: keep-all !important;
         overflow: hidden !important; text-overflow: ellipsis !important;
       }
@@ -274,7 +274,7 @@ function GlobalStyle() {
       .bs-main input::placeholder, .bs-main textarea::placeholder { color: #9a9a9a !important; opacity: 1 !important; }
       .bs-main .bs-search-wrap { position: relative !important; display: flex !important; width: 100% !important; max-width: 800px !important; height: 34px !important; align-items: center !important; gap: 10px !important; margin: 14px 0 15px !important; padding: 0 11px !important; border: 1px solid #d4d4d4 !important; background: #fff !important; }
       .bs-main .bs-search-icon { position: static !important; display: inline-block !important; transform: none !important; color: #737373 !important; font-size: 15px !important; }
-      .bs-main .bs-search-wrap .bs-search { width: auto !important; min-width: 0 !important; height: 30px !important; min-height: 30px !important; flex: 1 1 auto !important; margin: 0 !important; padding: 0 !important; border: 0 !important; outline: 0 !important; background: transparent !important; color: #111 !important; box-shadow: none !important; font-size: 11px !important; }
+      .bs-main .bs-search-wrap .bs-search { width: auto !important; min-width: 0 !important; height: 30px !important; min-height: 30px !important; flex: 1 1 auto !important; margin: 0 !important; padding: 0 !important; border: 0 !important; outline: 0 !important; background: transparent !important; color: #111 !important; box-shadow: none !important; font-size: 15px !important; }
       .bs-search-clear { display: grid !important; width: 24px !important; min-width: 24px !important; height: 24px !important; min-height: 24px !important; place-items: center !important; padding: 0 !important; border: 0 !important; background: transparent !important; color: #737373 !important; font-size: 16px !important; }
 
       /* Community book archive: book rows, not floating cards. */
@@ -283,17 +283,17 @@ function GlobalStyle() {
       .bs-shelf-toolbar {
         display: flex !important; align-items: center !important; justify-content: space-between !important; flex-wrap: wrap !important;
         gap: 14px !important; margin: 28px 0 20px !important; padding: 0 0 10px !important;
-        background: transparent !important; border: 0 !important; border-bottom: 1px solid #d4d4d4 !important; border-radius: 0 !important; box-shadow: none !important;
+        background: transparent !important; border: 0 !important; border-bottom: 0 !important; border-radius: 0 !important; box-shadow: none !important;
       }
       .bs-filter-group { display: flex !important; flex-wrap: wrap !important; gap: 5px !important; width: auto !important; }
       .bs-filter-btn {
         display: inline-flex !important; height: 30px !important; min-height: 30px !important; max-height: 30px !important; align-items: center !important; gap: 6px !important;
         padding: 0 8px !important; color: #737373 !important; background: transparent !important;
-        border: 1px solid transparent !important; border-radius: 2px !important; font-size: 10px !important; font-weight: 500 !important;
+        border: 1px solid transparent !important; border-radius: 2px !important; font-size: 14px !important; font-weight: 500 !important;
       }
       .bs-filter-btn.bs-active { color: #111 !important; background: #e5e5e5 !important; border-color: #9f9f9f !important; font-weight: 700 !important; }
       .bs-filter-btn:hover { background: #eaeaea !important; border-color: #d4d4d4 !important; }
-      .bs-shelf-count, .bs-scrapbook-count { color: #737373 !important; font-size: 11px !important; white-space: nowrap !important; }
+      .bs-shelf-count, .bs-scrapbook-count { color: #737373 !important; font-size: 14px !important; white-space: nowrap !important; }
       .bs-books-grid, .bs-personal-book-list, .bs-records, .bs-scrapbook-list {
         display: block !important; width: 100% !important; margin: 14px 0 0 !important; padding: 0 !important;
         border: 0 !important; border-top: 1px solid #d4d4d4 !important; background: transparent !important;
@@ -326,17 +326,17 @@ function GlobalStyle() {
       .bs-book-card-info { display: flex !important; min-width: 0 !important; min-height: 112px !important; flex-direction: column !important; align-items: stretch !important; justify-content: center !important; padding: 0 !important; }
       .bs-book-card h3.bs-book-title, .bs-book-card h3.bs-book-title:hover, .bs-record-title, .bs-personal-book-title, .bs-scrapbook-title {
         display: block !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important;
-        color: #111 !important; font-size: 16px !important; font-weight: 800 !important; letter-spacing: -.035em !important;
+        color: #111 !important; font-size: 19px !important; font-weight: 750 !important; letter-spacing: -.025em !important;
         line-height: 1.45 !important; text-align: left !important; text-shadow: none !important;
         overflow-wrap: break-word !important; word-break: normal !important;
       }
-      .bs-book-card .bs-book-author, .bs-personal-book-author { margin: 5px 0 0 !important; color: #737373 !important; font-size: 10px !important; font-weight: 400 !important; line-height: 1.55 !important; text-align: left !important; }
+      .bs-book-card .bs-book-author, .bs-personal-book-author { margin: 5px 0 0 !important; color: #737373 !important; font-size: 14px !important; font-weight: 400 !important; line-height: 1.55 !important; text-align: left !important; }
       .bs-book-card-quote { display: -webkit-box !important; overflow: hidden !important; margin: 12px 0 0 !important; color: #333 !important; font-size: 11px !important; font-style: normal !important; font-weight: 400 !important; line-height: 1.7 !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; }
       .bs-book-rating { display: flex !important; align-items: center !important; gap: 7px !important; margin-top: 8px !important; color: #737373 !important; font-size: 10px !important; }
       .bs-rating-stars { color: #111 !important; letter-spacing: .03em !important; }
-      .bs-rating-meta { color: #737373 !important; font-size: 9px !important; }
+      .bs-rating-meta { color: #737373 !important; font-size: 12px !important; }
       .bs-book-card-readers, .bs-book-readers { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; margin-top: 10px !important; padding: 0 !important; border: 0 !important; }
-      .bs-book-reader { display: inline-flex !important; align-items: center !important; gap: 5px !important; color: #737373 !important; font-size: 10px !important; }
+      .bs-book-reader { display: inline-flex !important; align-items: center !important; gap: 5px !important; color: #737373 !important; font-size: 13px !important; }
       .bs-reader-name { max-width: 110px !important; overflow: hidden !important; color: #737373 !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
       .bs-record-row {
         display: grid !important; width: 100% !important; min-height: 142px !important;
@@ -348,7 +348,7 @@ function GlobalStyle() {
       .bs-record-row:hover { background: #f3f3f3 !important; box-shadow: none !important; }
       .bs-record-row .bs-cover-img, .bs-record-row .bs-book-cover { width: 75px !important; height: 112px !important; }
       .bs-record-title { font-size: 16px !important; }
-      .bs-record-excerpt { display: -webkit-box !important; overflow: hidden !important; margin: 12px 0 !important; color: #333 !important; font-size: 11px !important; line-height: 1.7 !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; }
+      .bs-record-excerpt { display: -webkit-box !important; overflow: hidden !important; margin: 12px 0 !important; color: #333 !important; font-size: 14px !important; line-height: 1.7 !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; }
       .bs-record-meta { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; color: #737373 !important; font-size: 9px !important; }
       .bs-meta-dot { display: inline-block !important; width: 3px !important; height: 3px !important; border-radius: 50% !important; background: #9a9a9a !important; }
 
@@ -382,12 +382,12 @@ function GlobalStyle() {
       }
       .bs-scrapbook-card:hover { background: #f3f3f3 !important; }
       .bs-scrapbook-card-main { min-width: 0 !important; flex: 1 1 auto !important; overflow-wrap: break-word !important; }
-      .bs-scrapbook-title { font-size: 16px !important; font-weight: 800 !important; letter-spacing: -.025em !important; }
+      .bs-scrapbook-title { font-size: 19px !important; font-weight: 750 !important; letter-spacing: -.025em !important; }
       .bs-scrapbook-card:hover .bs-scrapbook-title { text-decoration: underline !important; text-underline-offset: 3px !important; }
-      .bs-scrapbook-source { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 7px !important; margin: 7px 0 0 !important; color: #737373 !important; font-size: 9px !important; }
+      .bs-scrapbook-source { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 7px !important; margin: 7px 0 0 !important; color: #737373 !important; font-size: 12px !important; }
       .bs-scrapbook-source i { font-style: normal !important; }
       .bs-scrapbook-excerpt { display: -webkit-box !important; overflow: hidden !important; margin: 13px 0 !important; color: #444 !important; font-size: 11px !important; line-height: 1.7 !important; text-overflow: ellipsis !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; }
-      .bs-scrapbook-meta { display: flex !important; align-items: center !important; gap: 12px !important; color: #737373 !important; font-size: 9px !important; }
+      .bs-scrapbook-meta { display: flex !important; align-items: center !important; gap: 12px !important; color: #737373 !important; font-size: 12px !important; }
       .bs-scrapbook-arrow { flex: 0 0 auto !important; }
       .bs-empty-state { padding: 70px 0 !important; color: #737373 !important; border: 0 !important; border-top: 1px solid #d4d4d4 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; text-align: center !important; }
       .bs-empty-state strong { display: block !important; margin: 0 0 8px !important; color: #111 !important; font-size: 15px !important; font-weight: 700 !important; }
@@ -407,11 +407,11 @@ function GlobalStyle() {
       .bs-series-volume-tabs { display: flex !important; flex-wrap: wrap !important; gap: 5px !important; margin-top: 12px !important; }
       .bs-series-volume-button { min-height: 30px !important; padding: 0 9px !important; font-size: 10px !important; }
       .bs-book-rating-section { display: block !important; margin: 48px 0 0 !important; padding: 0 0 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
-      .bs-book-rating-heading { display: block !important; margin: 0 0 0 !important; padding: 0 0 10px !important; color: #111 !important; border-bottom: 1px solid #9f9f9f !important; font-size: 17px !important; font-weight: 800 !important; letter-spacing: -.03em !important; }
+      .bs-book-rating-heading { display: block !important; margin: 0 0 0 !important; padding: 0 0 10px !important; color: #111 !important; border-bottom: 1px solid #9f9f9f !important; font-size: 21px !important; font-weight: 750 !important; letter-spacing: -.02em !important; }
       .bs-book-rating-content { display: block !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; }
-      .bs-book-rating-row { display: grid !important; grid-template-columns: minmax(0,1fr) auto 100px !important; gap: 10px !important; align-items: center !important; min-height: 46px !important; margin: 0 !important; padding: 0 !important; color: #111 !important; border-bottom: 1px solid #d4d4d4 !important; background: transparent !important; }
-      .bs-book-rating-name { min-width: 0 !important; overflow: hidden !important; color: #111 !important; font-size: 11px !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
-      .bs-book-rating-row strong { color: #111 !important; font-size: 11px !important; font-weight: 700 !important; text-align: right !important; }
+      .bs-book-rating-row { display: flex !important; justify-content: flex-start !important; gap: 12px !important; align-items: center !important; min-height: 50px !important; margin: 0 !important; padding: 0 !important; color: #111 !important; border-bottom: 1px solid #d4d4d4 !important; background: transparent !important; }
+      .bs-book-rating-name { min-width: 0 !important; overflow: hidden !important; color: #111 !important; font-size: 15px !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+      .bs-book-rating-row strong { display: none !important; }
       .bs-book-rating-empty { margin: 0 !important; padding: 16px 0 !important; color: #737373 !important; border-bottom: 1px solid #d4d4d4 !important; font-size: 11px !important; }
       .bs-book-detail-sections { display: block !important; margin: 0 !important; padding: 0 !important; }
       .bs-book-detail-sections > div { display: block !important; min-width: 0 !important; }
@@ -428,7 +428,7 @@ function GlobalStyle() {
       .bs-quote-list { display: block !important; margin-top: 14px !important; padding: 0 !important; border-top: 1px solid #d4d4d4 !important; }
       .bs-quote-row { display: block !important; min-width: 0 !important; margin: 0 !important; padding: 22px 2px !important; background: transparent !important; border: 0 !important; border-bottom: 1px solid #d4d4d4 !important; border-radius: 0 !important; box-shadow: none !important; }
       .bs-quote-row-main { display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 12px !important; min-width: 0 !important; }
-      .bs-quote-text { flex: 1 1 auto !important; min-width: 0 !important; margin: 0 !important; color: #111 !important; font-size: 14px !important; font-weight: 600 !important; line-height: 1.85 !important; overflow-wrap: break-word !important; word-break: normal !important; }
+      .bs-quote-text { flex: 1 1 auto !important; min-width: 0 !important; margin: 0 !important; color: #111 !important; font-size: 17px !important; font-weight: 600 !important; line-height: 1.85 !important; overflow-wrap: break-word !important; word-break: normal !important; }
       .bs-quote-text p { margin: 0 0 8px !important; }
       .bs-quote-editable { cursor: pointer !important; }
       .bs-delete-x { display: inline-flex !important; width: 20px !important; min-width: 20px !important; height: 24px !important; min-height: 24px !important; align-items: center !important; justify-content: center !important; margin: 0 !important; padding: 0 !important; color: #cfa5a5 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; font-size: 16px !important; font-weight: 400 !important; line-height: 1 !important; }
@@ -491,11 +491,12 @@ function GlobalStyle() {
       }
       @media (max-width: 720px) {
         .bs-mobile-drawer-launcher {
-          position: fixed !important; top: 9px !important; right: 13px !important; z-index: 45 !important;
-          display: inline-flex !important; width: 34px !important; min-width: 34px !important; height: 34px !important; min-height: 34px !important;
-          align-items: center !important; justify-content: center !important; padding: 0 !important;
-          color: #111 !important; background: #f1f1f1 !important; border: 1px solid #d4d4d4 !important; border-radius: 2px !important; box-shadow: none !important;
+          position: fixed !important; top: 16px !important; left: 0 !important; right: auto !important; z-index: 45 !important;
+          display: inline-flex !important; width: 38px !important; min-width: 38px !important; height: auto !important; min-height: 0 !important;
+          align-items: center !important; justify-content: center !important; padding: 12px 7px !important;
+          color: #111 !important; background: #f1f1f1 !important; border: 1px solid #d4d4d4 !important; border-left: 0 !important; border-radius: 0 3px 3px 0 !important; box-shadow: none !important;
         }
+        .bs-vertical-wordmark { writing-mode: vertical-rl !important; text-orientation: upright !important; white-space: nowrap !important; font-size: 15px !important; font-weight: 900 !important; letter-spacing: .08em !important; line-height: 1.15 !important; }
         .bs-mobile-drawer-launcher.is-open { display: none !important; }
         .bs-mobile-drawer-backdrop { position: fixed !important; inset: 0 !important; z-index: 25 !important; display: block !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: rgba(0,0,0,.3) !important; }
         .bs-sidebar {
@@ -506,29 +507,29 @@ function GlobalStyle() {
         }
         .bs-sidebar.bs-mobile-nav-open { transform: translateX(0) !important; }
         .bs-brand { position: relative !important; margin-bottom: 40px !important; padding: 0 32px 0 6px !important; }
-        .bs-brand-title { font-size: 31px !important; line-height: .83 !important; }
+        .bs-brand-title { font-size: 50pt !important; line-height: .88 !important; letter-spacing: -.09em !important; }
         .bs-mobile-menu-toggle { position: absolute !important; top: 0 !important; right: 0 !important; display: inline-flex !important; width: 30px !important; min-width: 30px !important; height: 30px !important; min-height: 30px !important; align-items: center !important; justify-content: center !important; padding: 0 !important; color: #111 !important; background: transparent !important; border: 1px solid #d4d4d4 !important; border-radius: 2px !important; box-shadow: none !important; }
         .bs-nav { display: grid !important; gap: 5px !important; margin-top: 0 !important; }
-        .bs-sidebar .bs-nav button { width: 100% !important; min-height: 33px !important; height: 33px !important; justify-content: space-between !important; padding: 0 10px !important; font-size: 12px !important; }
+        .bs-sidebar .bs-nav button { width: 100% !important; min-height: 44px !important; height: 44px !important; justify-content: space-between !important; padding: 0 12px !important; font-size: 17px !important; }
         .bs-side-spacer { display: block !important; flex: 1 0 24px !important; }
         .bs-side-bottom { display: flex !important; margin-top: 20px !important; }
         .bs-main { width: 100% !important; margin-left: 0 !important; padding: 0 !important; overflow: clip !important; }
         .bs-content, .bs-main > main:not(.bs-book-detail-page), .bs-book-detail-page, .bs-scrap-detail-page > main {
-          width: 100% !important; max-width: none !important; min-height: 100vh !important; margin: 0 !important; padding: 49px 16px 70px !important;
+          width: 100% !important; max-width: none !important; min-height: 100vh !important; margin: 0 !important; padding: 42px 18px 70px 58px !important;
         }
         .bs-page-head { min-height: 54px !important; align-items: flex-start !important; justify-content: space-between !important; gap: 12px !important; flex-wrap: wrap !important; margin-bottom: 13px !important; }
-        .bs-h1, .bs-page-head .bs-h1 { font-size: 27px !important; line-height: 1.2 !important; }
+        .bs-h1, .bs-page-head .bs-h1 { font-size: 32px !important; line-height: 1.2 !important; }
         .bs-search-wrap { max-width: none !important; }
         .bs-shelf-toolbar { align-items: flex-start !important; gap: 8px !important; margin-top: 24px !important; }
         .bs-filter-group { width: 100% !important; }
-        .bs-filter-btn { min-height: 30px !important; padding: 0 7px !important; }
+        .bs-filter-btn { min-height: 36px !important; height: 36px !important; padding: 0 9px !important; font-size: 13px !important; }
         .bs-books-grid, .bs-personal-book-list, .bs-records, .bs-scrapbook-list { margin-top: 14px !important; }
         .bs-book-card { min-height: 124px !important; padding: 15px 1px !important; }
         .bs-book-card-main { grid-template-columns: 61px minmax(0,1fr) !important; gap: 12px !important; }
         .bs-book-card-cover, .bs-book-card .bs-book-cover, .bs-book-card .bs-cover-img { width: 61px !important; min-width: 61px !important; height: 92px !important; }
         .bs-book-card-info { min-height: 92px !important; }
-        .bs-book-card h3.bs-book-title, .bs-book-card h3.bs-book-title:hover, .bs-record-title, .bs-personal-book-title, .bs-scrapbook-title { font-size: 15px !important; }
-        .bs-book-card-quote, .bs-record-excerpt, .bs-scrapbook-excerpt { margin-top: 8px !important; font-size: 10px !important; -webkit-line-clamp: 1 !important; }
+        .bs-book-card h3.bs-book-title, .bs-book-card h3.bs-book-title:hover, .bs-record-title, .bs-personal-book-title, .bs-scrapbook-title { font-size: 17px !important; }
+        .bs-book-card-quote, .bs-record-excerpt, .bs-scrapbook-excerpt { margin-top: 8px !important; font-size: 13px !important; -webkit-line-clamp: 1 !important; }
         .bs-book-card-readers, .bs-book-readers { gap: 7px !important; margin-top: 8px !important; }
         .bs-record-row { min-height: 124px !important; grid-template-columns: 61px minmax(0,1fr) !important; gap: 12px !important; padding: 15px 1px !important; }
         .bs-record-row .bs-cover-img, .bs-record-row .bs-book-cover { width: 61px !important; height: 92px !important; }
@@ -547,7 +548,7 @@ function GlobalStyle() {
         .bs-book-detail-cover { width: 88px !important; height: 124px !important; }
         .bs-book-detail-hero h2 { font-size: 24px !important; letter-spacing: -.04em !important; }
         .bs-book-rating-section, .bs-book-detail-section, .bs-book-community-panel { margin-top: 35px !important; }
-        .bs-book-rating-row { grid-template-columns: minmax(0,1fr) auto 32px !important; gap: 7px !important; }
+        .bs-book-rating-row { grid-template-columns: auto minmax(0,1fr) !important; gap: 10px !important; }
         .bs-book-detail-section form { align-items: stretch !important; flex-direction: column !important; }
         .bs-quote-row { padding: 18px 0 !important; }
         .bs-quote-text { font-size: 14px !important; }
@@ -560,6 +561,82 @@ function GlobalStyle() {
         .scrap-detail-article > aside { display: none !important; }
         .bs-modal-panel { padding: 18px !important; }
         .bs-main > main > div { grid-template-columns: minmax(0,1fr) !important; }
+      }
+
+      /* Readability pass: larger type and fixed responsive shell. */
+      body, body * { text-rendering: optimizeLegibility; }
+      body { font-size: 16px !important; }
+      .bs-main small, .bs-main .text-xs, .bs-main [class*="text-[9px]"], .bs-main [class*="text-[10px]"], .bs-main [class*="text-[11px]"], .bs-main [class*="text-[12px]"] { font-size: 13px !important; }
+      .bs-main .text-sm { font-size: 15px !important; }
+      .bs-main .text-base { font-size: 17px !important; }
+      .bs-sidebar { width: 250px !important; min-width: 250px !important; padding: 30px 23px !important; }
+      .bs-main { width: calc(100% - 250px) !important; margin-left: 250px !important; }
+      .bs-content, .bs-main > main:not(.bs-book-detail-page), .bs-book-detail-page, .bs-scrap-detail-page > main {
+        width: min(1020px, 100%) !important; max-width: 1020px !important; padding: 50px 48px 90px 52px !important;
+      }
+      .bs-brand-title { font-size: 50pt !important; line-height: .88 !important; letter-spacing: -.09em !important; }
+      .bs-sidebar .bs-nav button { min-height: 44px !important; height: 44px !important; font-size: 17px !important; }
+      .bs-nav-count { min-width: 20px !important; height: 20px !important; font-size: 12px !important; }
+      .bs-side-bottom, .bs-profile-name { font-size: 14px !important; }
+      .bs-h1, .bs-page-head .bs-h1 { font-size: 38px !important; line-height: 1.2 !important; }
+      .bs-h3, .bs-book-detail-section h3, .bs-book-community-panel h3, .bs-book-rating-heading { font-size: 21px !important; }
+      .bs-main button:not(.bs-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]),
+      .bs-main button.bs-btn-primary, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-filter-btn):not(.bs-rating-star-button) {
+        font-size: 14px !important; line-height: 1.2 !important;
+      }
+      .bs-main input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), .bs-main textarea, .bs-main select, .bs-main .bs-search-wrap .bs-search { font-size: 15px !important; }
+      .bs-filter-btn { height: 36px !important; min-height: 36px !important; font-size: 14px !important; padding: 0 10px !important; }
+      .bs-shelf-count, .bs-scrapbook-count { font-size: 14px !important; }
+      .bs-book-card h3.bs-book-title, .bs-record-title, .bs-personal-book-title, .bs-scrapbook-title { font-size: 19px !important; }
+      .bs-book-card .bs-book-author, .bs-personal-book-author, .bs-record-excerpt, .bs-book-card-quote, .bs-scrapbook-excerpt { font-size: 14px !important; }
+      .bs-record-meta, .bs-scrapbook-source, .bs-scrapbook-meta, .bs-book-reader, .bs-reader-name, .bs-personal-book-date { font-size: 12px !important; }
+      .bs-book-detail-hero h2 { font-size: 36px !important; line-height: 1.25 !important; }
+      .bs-quote-text, .bs-review-body, .bs-prose .ProseMirror { font-size: 17px !important; }
+      .bs-quote-comment, .bs-comment-text, .bs-note-record { font-size: 15px !important; }
+      .bs-shelf-toolbar { border-bottom: 0 !important; padding-bottom: 0 !important; }
+      .bs-book-rating-row { display: flex !important; justify-content: flex-start !important; gap: 12px !important; min-height: 50px !important; }
+      .bs-book-rating-name { flex: 0 0 auto !important; max-width: 200px !important; font-size: 15px !important; }
+      .bs-book-rating-row strong { display: none !important; }
+      .bs-rating-input { gap: 4px !important; }
+      .bs-rating-star-button { display: block !important; padding: 0 !important; margin: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+      .bs-rating-value { display: none !important; }
+      .bs-note-record { display: block !important; padding: 16px 0 !important; border-bottom: 1px solid #d4d4d4 !important; }
+      .bs-note-record-quote { margin: 0 0 8px !important; padding-left: 12px !important; border-left: 3px solid #b0b0b0 !important; font-size: 15px !important; font-weight: 650 !important; line-height: 1.65 !important; }
+      .bs-note-record-content { margin-left: 15px !important; color: #555 !important; font-size: 15px !important; line-height: 1.7 !important; }
+      .bs-mobile-drawer-launcher { display: none !important; }
+      .bs-mobile-drawer-launcher.is-open { display: none !important; }
+      .bs-mobile-bottom-nav { display: none !important; }
+      @media (max-width: 1200px) and (min-width: 721px) {
+        .bs-sidebar { width: 230px !important; min-width: 230px !important; }
+        .bs-main { width: calc(100% - 230px) !important; margin-left: 230px !important; }
+        .bs-content, .bs-main > main:not(.bs-book-detail-page), .bs-book-detail-page, .bs-scrap-detail-page > main { padding: 40px 28px 70px !important; }
+        .bs-brand-title { font-size: 42pt !important; }
+        .bs-sidebar .bs-nav button { font-size: 16px !important; }
+      }
+      @media (max-width: 720px) {
+        .bs-main { width: 100% !important; margin-left: 0 !important; }
+        .bs-sidebar { width: min(300px, 86vw) !important; min-width: 0 !important; padding: 26px 22px !important; }
+        .bs-brand-title { font-size: 50pt !important; }
+        .bs-sidebar .bs-nav button { min-height: 46px !important; height: 46px !important; font-size: 17px !important; }
+        .bs-mobile-drawer-launcher, .bs-mobile-drawer-launcher.is-open {
+          display: inline-flex !important; position: fixed !important; top: 18px !important; left: 0 !important; right: auto !important;
+          width: 38px !important; min-width: 38px !important; height: auto !important; min-height: 0 !important;
+          padding: 12px 7px !important; background: #f1f1f1 !important; border: 1px solid #d4d4d4 !important; border-left: 0 !important;
+          border-radius: 0 3px 3px 0 !important; color: #111 !important; z-index: 45 !important;
+        }
+        .bs-mobile-drawer-launcher.is-open { display: none !important; }
+        .bs-vertical-wordmark { writing-mode: vertical-rl !important; text-orientation: upright !important; font-size: 15px !important; font-weight: 900 !important; line-height: 1.15 !important; letter-spacing: .08em !important; }
+        .bs-mobile-menu-toggle { display: inline-flex !important; width: 36px !important; min-width: 36px !important; height: 36px !important; min-height: 36px !important; }
+        .bs-content, .bs-main > main:not(.bs-book-detail-page), .bs-book-detail-page, .bs-scrap-detail-page > main {
+          width: 100% !important; max-width: none !important; min-height: 100vh !important; padding: 36px 18px 72px 58px !important;
+        }
+        .bs-h1, .bs-page-head .bs-h1 { font-size: 32px !important; }
+        .bs-book-detail-hero h2 { font-size: 27px !important; }
+        .bs-book-card h3.bs-book-title, .bs-record-title, .bs-personal-book-title, .bs-scrapbook-title { font-size: 17px !important; }
+        .bs-book-card .bs-book-author, .bs-personal-book-author, .bs-record-excerpt, .bs-book-card-quote, .bs-scrapbook-excerpt { font-size: 13px !important; }
+        .bs-book-rating-row { gap: 8px !important; }
+        .bs-book-rating-name { max-width: 110px !important; font-size: 14px !important; }
+        .bs-rating-star-button { flex: 0 0 auto !important; }
       }
     `}</style>
   );
@@ -615,28 +692,36 @@ function RatingInput({
   const shown = hover || value;
 
   return (
-    <div className="bs-rating-input flex items-center gap-3" aria-label="별점 선택">
-      <div className="bs-rating-stars-input" onMouseLeave={() => setHover(0)}>
-        {[1, 2, 3, 4, 5].map((score) => (
-          <button
-            key={score}
-            type="button"
-            className="bs-rating-star-button"
-            style={{ width: size, height: size }}
-            aria-label={`${score}점`}
-            aria-pressed={value === score}
-            onMouseEnter={() => setHover(score)}
-            onFocus={() => setHover(score)}
-            onBlur={() => setHover(0)}
-            onClick={() => onChange(value === score ? 0 : score)}
-          >
-            <Star fill={Math.min(1, Math.max(0, shown - score + 1))} size={size} />
-          </button>
+    <div className="bs-rating-input flex items-center gap-1" aria-label="별점 선택">
+      <div className="bs-rating-stars-input flex items-center" onMouseLeave={() => setHover(0)}>
+        {[0, 1, 2, 3, 4].map((index) => (
+          <span key={index} className="relative inline-block shrink-0" style={{ width: size, height: size }}>
+            <Star fill={Math.min(1, Math.max(0, shown - index))} size={size} />
+            <button
+              type="button"
+              className="bs-rating-star-button"
+              style={{ position: 'absolute', left: 0, top: 0, width: '50%', height: '100%', padding: 0, margin: 0, border: 0, borderRadius: 0, background: 'transparent', boxShadow: 'none', zIndex: 1 }}
+              aria-label={`${index + 0.5}점`}
+              aria-pressed={value === index + 0.5}
+              onMouseEnter={() => setHover(index + 0.5)}
+              onFocus={() => setHover(index + 0.5)}
+              onBlur={() => setHover(0)}
+              onClick={() => onChange(value === index + 0.5 ? 0 : index + 0.5)}
+            />
+            <button
+              type="button"
+              className="bs-rating-star-button"
+              style={{ position: 'absolute', left: '50%', top: 0, width: '50%', height: '100%', padding: 0, margin: 0, border: 0, borderRadius: 0, background: 'transparent', boxShadow: 'none', zIndex: 1 }}
+              aria-label={`${index + 1}점`}
+              aria-pressed={value === index + 1}
+              onMouseEnter={() => setHover(index + 1)}
+              onFocus={() => setHover(index + 1)}
+              onBlur={() => setHover(0)}
+              onClick={() => onChange(value === index + 1 ? 0 : index + 1)}
+            />
+          </span>
         ))}
       </div>
-      <span className="bs-rating-value text-sm font-semibold">
-        {value > 0 ? `${value.toFixed(1)}점` : '별점 선택'}
-      </span>
     </div>
   );
 }
@@ -1384,7 +1469,7 @@ const ClipArticle = memo(function ClipArticle({
           key={`s${a}`}
           data-start={a}
           style={color ? { backgroundColor: HL_COLORS[color] } : undefined}
-          className={noted ? 'underline decoration-[#d9364f] decoration-2 underline-offset-4' : undefined}
+          className={noted ? 'underline decoration-[#999999] decoration-1 underline-offset-4' : undefined}
         >
           {content.slice(a, b)}
         </span>
@@ -2745,13 +2830,72 @@ export default function Home() {
 
   const applyHighlight = async (color: 'red' | 'blue' | 'erase') => {
     if (!activeClip || !user || !selection) return;
+    const start = Math.min(selection.start, selection.end);
+    const end = Math.max(selection.start, selection.end);
+    if (end <= start) return;
+
+    if (color === 'erase') {
+      // Physically remove only the selected portion of existing colored marks.
+      // If the selection cuts through the middle of a mark, preserve the unselected halves.
+      const overlaps = activeClip.clip_highlights.filter(
+        (h) => h.color !== 'erase' && h.start_offset < end && h.end_offset > start
+      );
+      const updated: ClipHighlight[] = [...activeClip.clip_highlights];
+      for (const h of overlaps) {
+        const keepLeft = h.start_offset < start;
+        const keepRight = h.end_offset > end;
+        if (keepLeft && keepRight) {
+          const { data: rightPart, error: insertError } = await supabase
+            .from('clip_highlights')
+            .insert({
+              clipping_id: activeClip.id,
+              user_id: user.id,
+              start_offset: end,
+              end_offset: h.end_offset,
+              color: h.color,
+            })
+            .select('id, start_offset, end_offset, color, created_at')
+            .single();
+          if (insertError || !rightPart) return alert(`형광펜 지우기 실패: ${insertError?.message || '남은 영역을 저장하지 못했어요.'}`);
+          const { error: updateError } = await supabase
+            .from('clip_highlights')
+            .update({ end_offset: start })
+            .eq('id', h.id);
+          if (updateError) {
+            await supabase.from('clip_highlights').delete().eq('id', rightPart.id);
+            return alert(`형광펜 지우기 실패: ${updateError.message}`);
+          }
+          const index = updated.findIndex((item) => item.id === h.id);
+          if (index >= 0) updated[index] = { ...h, end_offset: start };
+          updated.push(rightPart as ClipHighlight);
+          continue;
+        }
+
+        if (keepLeft || keepRight) {
+          const patch = keepLeft ? { end_offset: start } : { start_offset: end };
+          const { error } = await supabase.from('clip_highlights').update(patch).eq('id', h.id);
+          if (error) return alert(`형광펜 지우기 실패: ${error.message}`);
+          const index = updated.findIndex((item) => item.id === h.id);
+          if (index >= 0) updated[index] = { ...h, ...patch };
+        } else {
+          const { error } = await supabase.from('clip_highlights').delete().eq('id', h.id);
+          if (error) return alert(`형광펜 지우기 실패: ${error.message}`);
+          const index = updated.findIndex((item) => item.id === h.id);
+          if (index >= 0) updated.splice(index, 1);
+        }
+      }
+      setClippings((prev) => prev.map((c) => c.id === activeClip.id ? { ...c, clip_highlights: updated } : c));
+      clearSelection();
+      return;
+    }
+
     const { data, error } = await supabase
       .from('clip_highlights')
       .insert({
         clipping_id: activeClip.id,
         user_id: user.id,
-        start_offset: selection.start,
-        end_offset: selection.end,
+        start_offset: start,
+        end_offset: end,
         color,
       })
       .select('id, start_offset, end_offset, color, created_at')
@@ -2988,9 +3132,7 @@ export default function Home() {
         aria-expanded={mobileNavOpen}
         onClick={() => setMobileNavOpen(true)}
       >
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-          <path d="M3 6h18M3 12h18M3 18h18" />
-        </svg>
+        <span className="bs-vertical-wordmark">독-서팟</span>
       </button>
       {mobileNavOpen && (
         <button
@@ -3274,7 +3416,6 @@ export default function Home() {
                       ) : (
                         <RatingDisplay value={r.rating} size={15} />
                       )}
-                      <strong>{r.rating.toFixed(1)}</strong>
                     </div>
                   ))
                 ) : (
@@ -3442,7 +3583,7 @@ export default function Home() {
     const swatches: { key: 'red' | 'blue' | 'erase'; label: string; color: string }[] = [
       { key: 'red', label: '빨강', color: 'rgba(230, 45, 70, 0.58)' },
       { key: 'blue', label: '파랑', color: 'rgba(45, 125, 235, 0.56)' },
-      { key: 'erase', label: '지우개', color: '#FFFFFF' },
+      { key: 'erase', label: '지우개', color: 'transparent' },
     ];
     const keepSelection = (e: React.MouseEvent) => e.preventDefault();
 
@@ -3541,53 +3682,29 @@ export default function Home() {
                 />
               </section>
 
-              {activeClip.clip_highlights.length > 0 && (
-                <section className="scrap-detail-content bs-highlight-records p-5 md:p-8 border-t border-[#d5d7da]">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-base font-semibold">
-                      형광펜 <span className="text-xs font-normal text-[#777777]">({activeClip.clip_highlights.length})</span>
-                    </h3>
-                  </div>
-                  <div className="mt-3 divide-y divide-[#e5e5e5]">
-                    {[...activeClip.clip_highlights].sort(byCreated).map((h) => {
-                      const excerpt = activeClip.content.slice(h.start_offset, h.end_offset).trim() || '선택한 문장';
-                      const markerColor = h.color === 'red' ? '#d9364f' : h.color === 'blue' ? '#2d7deb' : '#999999';
-                      return (
-                        <div key={h.id} className="bs-highlight-record flex items-start gap-3 py-3">
-                          <span className="bs-highlight-color shrink-0 mt-1" style={{ backgroundColor: markerColor }} aria-hidden="true" />
-                          <p className="min-w-0 flex-1 text-sm leading-relaxed break-words">{excerpt}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </section>
-              )}
-
               {notes.length > 0 && (
                 <section className="scrap-detail-content p-5 md:p-8 border-t border-[#d5d7da]">
                   <h3 className="text-xl font-black tracking-tight">
                     각주{' '}
                     <span className="text-sm font-semibold text-[#666b73]">({notes.length})</span>
                   </h3>
-                  <div className="mt-4 divide-y divide-[#e4e6e9]">
+                  <div className="mt-3">
                     {notes.map((n, i) => (
-                      <div key={n.id} id={`note-${n.id}`} className="py-4 first:pt-0">
-                        <div className="flex justify-between items-start gap-3">
-                          <div className="min-w-0 text-base font-bold italic leading-relaxed whitespace-pre-line break-words">
-                            <span className="not-italic mr-1.5 text-xs font-black">{i + 1})</span>
+                      <div key={n.id} id={`note-${n.id}`} className="bs-note-record">
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="bs-note-record-quote min-w-0 flex-1 whitespace-pre-line break-words">
+                            <span className="mr-2 text-sm font-normal text-[#777]">{i + 1}.</span>
                             &quot;{n.quote_text}&quot;
-                          </div>
+                          </p>
                           <button
                             type="button"
                             onClick={() => handleDeleteNote(n.id)}
                             className="bs-delete-x shrink-0"
                             aria-label="각주 삭제"
                             title="각주 삭제"
-                          >
-                            ×
-                          </button>
+                          >×</button>
                         </div>
-                        <div className="mt-2 ml-2 flex items-start gap-1.5 text-sm text-[#555a62]">
+                        <div className="bs-note-record-content flex items-start gap-2">
                           <ReplyIcon />
                           <DiscordText text={n.content} className="flex-1 min-w-0 leading-relaxed" />
                         </div>
@@ -4031,7 +4148,7 @@ export default function Home() {
                               ))}
                             </span>
                             <span className="bs-rating-meta">
-                              {averageRating.toFixed(1)} · {ratedReviews.length}명
+                              {ratedReviews.length}명
                             </span>
                           </div>
                         )}
@@ -4352,7 +4469,6 @@ export default function Home() {
                   {r.status === 'completed' && r.rating > 0 && (
                     <span className="bs-personal-rating">
                       <RatingDisplay value={r.rating} size={13} />
-                      <strong>{r.rating.toFixed(1)}</strong>
                     </span>
                   )}
                 </div>
