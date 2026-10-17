@@ -227,21 +227,35 @@ function GlobalStyle() {
       /* Consistent buttons, fields and search bars. */
       .bs-main button:not(.bs-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]) {
         box-sizing: border-box !important; display: inline-flex !important; min-width: 0 !important; max-width: 100% !important;
-        min-height: 34px !important; align-items: center !important; justify-content: center !important; gap: 7px !important;
+        width: auto !important; height: 34px !important; min-height: 34px !important; max-height: 34px !important;
+        align-items: center !important; justify-content: center !important; gap: 7px !important;
         padding: 0 13px !important; color: #111 !important; background: #fff !important; border: 1px solid #d4d4d4 !important;
         border-radius: 2px !important; box-shadow: none !important; transform: none !important;
         font-family: var(--sans) !important; font-size: 11px !important; font-weight: 650 !important;
         letter-spacing: 0 !important; line-height: 1 !important; text-decoration: none !important;
-        white-space: normal !important; word-break: keep-all !important; overflow-wrap: normal !important;
+        white-space: nowrap !important; word-break: keep-all !important; overflow: hidden !important; text-overflow: ellipsis !important;
         transition: border-color .15s ease, background-color .15s ease !important;
       }
       .bs-main button:not(.bs-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]):hover {
         color: #111 !important; background: #f1f1f1 !important; border-color: #9f9f9f !important; box-shadow: none !important;
       }
-      .bs-main button.bs-btn-primary, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-filter-btn) {
+      /* Keep base, primary, and selected toggle buttons at identical dimensions.
+         State changes should alter color only, never the control's height or spacing. */
+      .bs-main button.bs-btn-primary,
+      .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-filter-btn):not(.bs-rating-star-button) {
+        box-sizing: border-box !important; display: inline-flex !important; min-width: 0 !important; max-width: 100% !important;
+        width: auto !important; height: 34px !important; min-height: 34px !important; max-height: 34px !important;
+        align-items: center !important; justify-content: center !important; gap: 7px !important; padding: 0 13px !important;
+        border-width: 1px !important; border-style: solid !important; border-radius: 2px !important;
+        box-shadow: none !important; transform: none !important; font-family: var(--sans) !important;
+        font-size: 11px !important; font-weight: 650 !important; letter-spacing: 0 !important; line-height: 1 !important;
+        text-decoration: none !important; white-space: nowrap !important; word-break: keep-all !important;
+        overflow: hidden !important; text-overflow: ellipsis !important;
+      }
+      .bs-main button.bs-btn-primary, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-filter-btn):not(.bs-rating-star-button) {
         color: #fff !important; background: #171717 !important; border-color: #171717 !important;
       }
-      .bs-main button.bs-btn-primary:hover, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-filter-btn):hover { color: #fff !important; background: #000 !important; }
+      .bs-main button.bs-btn-primary:hover, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-filter-btn):not(.bs-rating-star-button):hover { color: #fff !important; background: #000 !important; }
       .bs-main button[class*="underline"], .bs-main button.bs-link-button, .bs-main button.bs-row-action {
         min-height: 28px !important; padding: 0 4px !important; background: transparent !important;
         border-color: transparent !important; color: #737373 !important; box-shadow: none !important;
@@ -273,7 +287,7 @@ function GlobalStyle() {
       }
       .bs-filter-group { display: flex !important; flex-wrap: wrap !important; gap: 5px !important; width: auto !important; }
       .bs-filter-btn {
-        display: inline-flex !important; min-height: 30px !important; align-items: center !important; gap: 6px !important;
+        display: inline-flex !important; height: 30px !important; min-height: 30px !important; max-height: 30px !important; align-items: center !important; gap: 6px !important;
         padding: 0 8px !important; color: #737373 !important; background: transparent !important;
         border: 1px solid transparent !important; border-radius: 2px !important; font-size: 10px !important; font-weight: 500 !important;
       }
