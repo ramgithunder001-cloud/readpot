@@ -225,7 +225,7 @@ function GlobalStyle() {
       .bs-book-detail-shell { width: 100% !important; max-width: 100% !important; margin: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
 
       /* Consistent buttons, fields and search bars. */
-      .bs-main button:not(.bs-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]) {
+      .bs-main button:not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]) {
         box-sizing: border-box !important; display: inline-flex !important; min-width: 0 !important; max-width: 100% !important;
         width: auto !important; height: 34px !important; min-height: 34px !important; max-height: 34px !important;
         align-items: center !important; justify-content: center !important; gap: 7px !important;
@@ -236,13 +236,13 @@ function GlobalStyle() {
         white-space: nowrap !important; word-break: keep-all !important; overflow: hidden !important; text-overflow: ellipsis !important;
         transition: border-color .15s ease, background-color .15s ease !important;
       }
-      .bs-main button:not(.bs-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]):hover {
+      .bs-main button:not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]):hover {
         color: #111 !important; background: #f1f1f1 !important; border-color: #9f9f9f !important; box-shadow: none !important;
       }
       /* Keep base, primary, and selected toggle buttons at identical dimensions.
          State changes should alter color only, never the control's height or spacing. */
       .bs-main button.bs-btn-primary,
-      .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-filter-btn):not(.bs-rating-star-button) {
+      .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-top-nav button):not(.bs-filter-btn):not(.bs-rating-star-button) {
         box-sizing: border-box !important; display: inline-flex !important; min-width: 0 !important; max-width: 100% !important;
         width: auto !important; height: 34px !important; min-height: 34px !important; max-height: 34px !important;
         align-items: center !important; justify-content: center !important; gap: 7px !important; padding: 0 13px !important;
@@ -252,10 +252,10 @@ function GlobalStyle() {
         text-decoration: none !important; white-space: nowrap !important; word-break: keep-all !important;
         overflow: hidden !important; text-overflow: ellipsis !important;
       }
-      .bs-main button.bs-btn-primary, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-filter-btn):not(.bs-rating-star-button) {
+      .bs-main button.bs-btn-primary, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-top-nav button):not(.bs-filter-btn):not(.bs-rating-star-button) {
         color: #fff !important; background: #171717 !important; border-color: #171717 !important;
       }
-      .bs-main button.bs-btn-primary:hover, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-filter-btn):not(.bs-rating-star-button):hover { color: #fff !important; background: #000 !important; }
+      .bs-main button.bs-btn-primary:hover, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-top-nav button):not(.bs-filter-btn):not(.bs-rating-star-button):hover { color: #fff !important; background: #000 !important; }
       .bs-main button[class*="underline"], .bs-main button.bs-link-button, .bs-main button.bs-row-action {
         min-height: 28px !important; padding: 0 4px !important; background: transparent !important;
         border-color: transparent !important; color: #737373 !important; box-shadow: none !important;
@@ -579,9 +579,9 @@ function GlobalStyle() {
       .bs-nav-count { min-width: 20px !important; height: 20px !important; font-size: 12px !important; }
       .bs-side-bottom, .bs-profile-name { font-size: 14px !important; }
       .bs-h1, .bs-page-head .bs-h1 { font-size: 38px !important; line-height: 1.2 !important; }
-      .bs-h3, .bs-book-detail-section h3, .bs-book-community-panel h3, .bs-book-rating-heading { font-size: 21px !important; }
-      .bs-main button:not(.bs-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]),
-      .bs-main button.bs-btn-primary, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-filter-btn):not(.bs-rating-star-button) {
+      .bs-h3, .bs-book-detail-section h3, .bs-book-community-panel h3, .bs-book-rating-heading { font-size: 20px !important; }
+      .bs-main button:not(.bs-nav button):not(.bs-top-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]),
+      .bs-main button.bs-btn-primary, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-top-nav button):not(.bs-filter-btn):not(.bs-rating-star-button) {
         font-size: 14px !important; line-height: 1.2 !important;
       }
       .bs-main input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), .bs-main textarea, .bs-main select, .bs-main .bs-search-wrap .bs-search { font-size: 15px !important; }
@@ -590,8 +590,8 @@ function GlobalStyle() {
       .bs-book-card h3.bs-book-title, .bs-record-title, .bs-personal-book-title, .bs-scrapbook-title { font-size: 19px !important; }
       .bs-book-card .bs-book-author, .bs-personal-book-author, .bs-record-excerpt, .bs-book-card-quote, .bs-scrapbook-excerpt { font-size: 14px !important; }
       .bs-record-meta, .bs-scrapbook-source, .bs-scrapbook-meta, .bs-book-reader, .bs-reader-name, .bs-personal-book-date { font-size: 12px !important; }
-      .bs-book-detail-hero h2 { font-size: 36px !important; line-height: 1.25 !important; }
-      .bs-quote-text, .bs-review-body, .bs-prose .ProseMirror { font-size: 17px !important; }
+      .bs-book-detail-hero h2 { font-size: 35px !important; line-height: 1.25 !important; }
+      .bs-quote-text, .bs-review-body, .bs-prose .ProseMirror { font-size: 16px !important; }
       .bs-quote-comment, .bs-comment-text, .bs-note-record { font-size: 15px !important; }
       .bs-shelf-toolbar { border-bottom: 0 !important; padding-bottom: 0 !important; }
       .bs-book-rating-row { display: flex !important; justify-content: flex-start !important; gap: 12px !important; min-height: 50px !important; }
@@ -637,6 +637,77 @@ function GlobalStyle() {
         .bs-book-rating-row { gap: 8px !important; }
         .bs-book-rating-name { max-width: 110px !important; font-size: 14px !important; }
         .bs-rating-star-button { flex: 0 0 auto !important; }
+      }
+
+      /* Shared header navigation: prominent main tabs, quieter sidebar links. */
+      .bs-desktop-topbar { display: flex !important; position: sticky !important; top: 0 !important; z-index: 18 !important; width: 100% !important; min-height: 62px !important; align-items: stretch !important; padding: 0 52px !important; background: rgba(247,247,247,.97) !important; border-bottom: 1px solid #d4d4d4 !important; }
+      .bs-top-nav { display: flex !important; align-items: stretch !important; gap: 26px !important; margin: 0 !important; padding: 0 !important; }
+      .bs-main .bs-top-nav button { display: inline-flex !important; width: auto !important; min-width: 0 !important; height: 62px !important; min-height: 62px !important; max-height: 62px !important; align-items: center !important; justify-content: center !important; margin: 0 !important; padding: 0 3px !important; color: #666 !important; background: transparent !important; border: 0 !important; border-bottom: 3px solid transparent !important; border-radius: 0 !important; box-shadow: none !important; font-family: var(--sans) !important; font-size: 21px !important; font-weight: 550 !important; letter-spacing: 0 !important; line-height: 1 !important; white-space: nowrap !important; }
+      .bs-main .bs-top-nav button:hover { color: #111 !important; background: transparent !important; border-bottom-color: #bdbdbd !important; }
+      .bs-main .bs-top-nav button.bs-active { color: #111 !important; background: transparent !important; border-bottom-color: #111 !important; font-weight: 750 !important; }
+      .bs-main .bs-top-nav .bs-nav-count { display: inline-grid !important; min-width: 20px !important; width: auto !important; height: 20px !important; margin-left: 8px !important; padding: 0 4px !important; border: 0 !important; background: #171717 !important; color: #fff !important; font-size: 12px !important; }
+      .bs-mobile-topbar { display: none !important; }
+      .bs-mobile-topbar-trigger { display: none !important; }
+      .bs-sidebar .bs-nav button { font-size: 15px !important; }
+
+      /* Reduce general text slightly while retaining the requested emphasis. */
+      body { font-size: 15px !important; }
+      .bs-main .text-xs, .bs-main small, .bs-record-meta, .bs-scrapbook-source, .bs-scrapbook-meta { font-size: 12px !important; }
+      .bs-main .text-sm { font-size: 14px !important; }
+      .bs-main .text-base { font-size: 16px !important; }
+      .bs-h1, .bs-page-head .bs-h1 { font-size: 37px !important; }
+      .bs-book-card h3.bs-book-title, .bs-record-title, .bs-personal-book-title, .bs-scrapbook-title { font-size: 18px !important; }
+      .bs-book-card .bs-book-author, .bs-personal-book-author, .bs-record-excerpt, .bs-scrapbook-excerpt { font-size: 13px !important; }
+
+      /* Book rows: bigger covers, tighter title/byline spacing and a stable quote slot. */
+      .bs-book-card { min-height: 166px !important; padding: 16px 1px !important; }
+      .bs-book-card-main { position: static !important; grid-template-columns: 90px minmax(0,1fr) !important; gap: 20px !important; }
+      .bs-book-card-cover { width: 90px !important; min-width: 90px !important; }
+      .bs-book-card .bs-book-cover, .bs-book-card .bs-cover-img { width: 90px !important; min-width: 90px !important; height: 132px !important; }
+      .bs-book-card .bs-cover-img { object-fit: cover !important; }
+      .bs-book-card-info { min-height: 132px !important; padding-right: 54px !important; justify-content: flex-start !important; }
+      .bs-book-card h3.bs-book-title { line-height: 1.24 !important; }
+      .bs-book-author-row { display: flex !important; min-width: 0 !important; flex-wrap: wrap !important; align-items: baseline !important; gap: 0 9px !important; margin-top: 2px !important; }
+      .bs-book-card .bs-book-author { margin: 0 !important; line-height: 1.28 !important; }
+      .bs-series-count { display: inline !important; margin: 0 !important; color: #737373 !important; font-size: 13px !important; font-weight: 400 !important; line-height: 1.28 !important; white-space: nowrap !important; }
+      .bs-book-card-quote { display: -webkit-box !important; width: 100% !important; max-width: 700px !important; min-height: 2.8em !important; margin: 8px 0 0 !important; font-size: 13px !important; line-height: 1.4 !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; overflow: hidden !important; }
+      .bs-book-card-readers { position: absolute !important; top: 12px !important; right: 2px !important; z-index: 2 !important; display: flex !important; flex-wrap: nowrap !important; align-items: center !important; justify-content: flex-end !important; gap: 4px !important; max-width: 130px !important; margin: 0 !important; padding: 0 !important; }
+      .bs-book-card-readers .bs-book-reader { display: inline-flex !important; gap: 0 !important; flex: 0 0 auto !important; }
+      .bs-book-card-readers .bs-reader-name { display: none !important; }
+
+      /* Annotation list: icon first, editable text second, no quoted excerpt. */
+      .bs-note-record { padding: 13px 0 !important; }
+      .bs-note-record-row { display: grid !important; grid-template-columns: 20px minmax(0,1fr) auto !important; align-items: start !important; gap: 9px !important; }
+      .bs-note-icon { display: inline-flex !important; align-items: flex-start !important; justify-content: center !important; padding-top: 1px !important; color: #777 !important; font-size: 18px !important; line-height: 1.4 !important; }
+      .bs-note-record-content { min-width: 0 !important; margin: 0 !important; color: #333 !important; font-size: 15px !important; line-height: 1.6 !important; }
+      .bs-note-record-actions, .bs-note-edit-actions { display: inline-flex !important; align-items: center !important; justify-content: flex-end !important; gap: 7px !important; }
+      .bs-note-action { min-width: 28px !important; min-height: 28px !important; padding: 2px 5px !important; color: #737373 !important; background: transparent !important; border: 0 !important; border-radius: 2px !important; box-shadow: none !important; font-size: 12px !important; }
+      .bs-note-action:hover { color: #111 !important; background: #eee !important; }
+      .bs-note-action-primary { min-height: 30px !important; padding: 0 10px !important; color: #fff !important; background: #171717 !important; border: 1px solid #171717 !important; border-radius: 2px !important; font-size: 12px !important; }
+      .bs-note-edit-form { display: grid !important; gap: 8px !important; }
+      .bs-note-edit-input { width: 100% !important; min-width: 0 !important; padding: 9px 10px !important; border: 1px solid #d4d4d4 !important; background: #fff !important; color: #111 !important; font: inherit !important; font-size: 14px !important; line-height: 1.5 !important; resize: vertical !important; }
+
+      @media (max-width: 1200px) and (min-width: 721px) {
+        .bs-desktop-topbar { padding-left: 28px !important; }
+        .bs-book-card-main { grid-template-columns: 86px minmax(0,1fr) !important; gap: 16px !important; }
+        .bs-book-card-cover, .bs-book-card .bs-book-cover, .bs-book-card .bs-cover-img { width: 86px !important; min-width: 86px !important; height: 124px !important; }
+      }
+      @media (max-width: 720px) {
+        .bs-desktop-topbar { display: none !important; }
+        .bs-mobile-topbar { position: sticky !important; top: 0 !important; z-index: 22 !important; display: flex !important; width: 100% !important; min-height: 50px !important; align-items: center !important; justify-content: flex-start !important; padding: 0 18px !important; background: rgba(247,247,247,.98) !important; border-bottom: 1px solid #d4d4d4 !important; }
+        .bs-mobile-topbar-trigger { display: inline-flex !important; min-width: 0 !important; min-height: 44px !important; align-items: center !important; justify-content: flex-start !important; padding: 0 !important; color: #111 !important; background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; font-family: var(--sans) !important; font-size: 19px !important; font-weight: 800 !important; letter-spacing: -.04em !important; line-height: 1 !important; }
+        .bs-mobile-drawer-launcher { display: none !important; }
+        .bs-sidebar .bs-nav button { min-height: 42px !important; height: 42px !important; font-size: 15px !important; }
+        .bs-content, .bs-main > main:not(.bs-book-detail-page), .bs-book-detail-page, .bs-scrap-detail-page > main { padding-top: 28px !important; padding-left: 18px !important; padding-right: 18px !important; }
+        .bs-main { overflow: visible !important; }
+        .bs-book-card { min-height: 145px !important; padding: 13px 1px !important; }
+        .bs-book-card-main { grid-template-columns: 70px minmax(0,1fr) !important; gap: 13px !important; }
+        .bs-book-card-cover, .bs-book-card .bs-book-cover, .bs-book-card .bs-cover-img { width: 70px !important; min-width: 70px !important; height: 104px !important; }
+        .bs-book-card-info { min-height: 104px !important; padding-right: 46px !important; }
+        .bs-book-card h3.bs-book-title { font-size: 17px !important; line-height: 1.24 !important; }
+        .bs-book-card .bs-book-author, .bs-series-count { font-size: 12px !important; }
+        .bs-book-card-quote { min-height: 2.65em !important; max-width: 700px !important; font-size: 12px !important; line-height: 1.35 !important; margin-top: 6px !important; }
+        .bs-book-card-readers { top: 9px !important; right: 1px !important; max-width: 100px !important; gap: 3px !important; }
       }
     `}</style>
   );
@@ -1386,6 +1457,7 @@ interface ClipHighlight {
 
 interface ClipNote {
   id: string;
+  user_id?: string;
   start_offset: number;
   end_offset: number;
   quote_text: string;
@@ -2223,6 +2295,9 @@ export default function Home() {
   const [selection, setSelection] = useState<{ start: number; end: number; text: string } | null>(null);
   const [notePanelOpen, setNotePanelOpen] = useState(false);
   const [noteDraftText, setNoteDraftText] = useState('');
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [editingNoteText, setEditingNoteText] = useState('');
+  const [noteEditSaving, setNoteEditSaving] = useState(false);
   const articleRef = useRef<HTMLDivElement>(null);
 
   const [draft, setDraft] = useState({ nickname: '', sealText: '', sealColor: 'ink', sealStyle: 'solid', sealImage: '' });
@@ -2371,7 +2446,7 @@ export default function Home() {
     const clipRes = await supabase
       .from('clippings')
       .select(
-        'id, title, source, content, created_at, clip_highlights(id, start_offset, end_offset, color, created_at), clip_notes(id, start_offset, end_offset, quote_text, content, created_at)'
+        'id, title, source, content, created_at, clip_highlights(id, start_offset, end_offset, color, created_at), clip_notes(id, user_id, start_offset, end_offset, quote_text, content, created_at)'
       )
       .eq('user_id', u.id)
       .order('created_at', { ascending: false });
@@ -2926,7 +3001,7 @@ export default function Home() {
         quote_text: selection.text,
         content: text,
       })
-      .select('id, start_offset, end_offset, quote_text, content, created_at')
+      .select('id, user_id, start_offset, end_offset, quote_text, content, created_at')
       .single();
     if (error) return alert(`코멘트 저장 실패: ${error.message}`);
 
@@ -2939,8 +3014,35 @@ export default function Home() {
     clearSelection();
   };
 
+  const handleUpdateNote = async (e: React.FormEvent, noteId: string) => {
+    e.preventDefault();
+    if (!activeClip || !user) return;
+    const content = editingNoteText.trim();
+    if (!content) return alert('각주 내용을 입력해 주세요.');
+
+    setNoteEditSaving(true);
+    const { data, error } = await supabase
+      .from('clip_notes')
+      .update({ content })
+      .eq('id', noteId)
+      .eq('user_id', user.id)
+      .select('id')
+      .single();
+    setNoteEditSaving(false);
+    if (error || !data) return alert(`각주 수정 실패: ${error?.message || '수정 권한이 없거나 각주를 찾을 수 없습니다.'}`);
+
+    setClippings((prev) =>
+      prev.map((c) => c.id === activeClip.id
+        ? { ...c, clip_notes: c.clip_notes.map((n) => n.id === noteId ? { ...n, content } : n) }
+        : c
+      )
+    );
+    setEditingNoteId(null);
+    setEditingNoteText('');
+  };
+
   const handleDeleteNote = async (noteId: string) => {
-    if (!activeClip || !confirm('이 코멘트를 삭제하시겠습니까?')) return;
+    if (!activeClip || !confirm('이 각주를 삭제하시겠습니까?')) return;
     const { error } = await supabase.from('clip_notes').delete().eq('id', noteId);
     if (error) return alert(`삭제 실패: ${error.message}`);
     setClippings((prev) =>
@@ -2948,6 +3050,10 @@ export default function Home() {
         c.id === activeClip.id ? { ...c, clip_notes: c.clip_notes.filter((n) => n.id !== noteId) } : c
       )
     );
+    if (editingNoteId === noteId) {
+      setEditingNoteId(null);
+      setEditingNoteText('');
+    }
   };
 
   const handleDeleteClipping = async () => {
@@ -3125,15 +3231,24 @@ export default function Home() {
 
   const header = (
     <>
-      <button
-        type="button"
-        className={`bs-mobile-drawer-launcher${mobileNavOpen ? ' is-open' : ''}`}
-        aria-label="메뉴 열기"
-        aria-expanded={mobileNavOpen}
-        onClick={() => setMobileNavOpen(true)}
-      >
-        <span className="bs-vertical-wordmark">독-서팟</span>
-      </button>
+      <div className="bs-desktop-topbar">
+        <nav className="bs-top-nav" aria-label="상단 주 메뉴">
+          {navItem('shelf', '서고', shelfEntries.length)}
+          {navItem('mine', '책장')}
+          {navItem('scraps', '스크랩북')}
+        </nav>
+      </div>
+      <div className="bs-mobile-topbar">
+        <button
+          type="button"
+          className="bs-mobile-topbar-trigger"
+          aria-label="사이드바 메뉴 열기"
+          aria-expanded={mobileNavOpen}
+          onClick={() => setMobileNavOpen(true)}
+        >
+          독서팟
+        </button>
+      </div>
       {mobileNavOpen && (
         <button
           type="button"
@@ -3691,23 +3806,51 @@ export default function Home() {
                   <div className="mt-3">
                     {notes.map((n, i) => (
                       <div key={n.id} id={`note-${n.id}`} className="bs-note-record">
-                        <div className="flex items-start justify-between gap-3">
-                          <p className="bs-note-record-quote min-w-0 flex-1 whitespace-pre-line break-words">
-                            <span className="mr-2 text-sm font-normal text-[#777]">{i + 1}.</span>
-                            &quot;{n.quote_text}&quot;
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteNote(n.id)}
-                            className="bs-delete-x shrink-0"
-                            aria-label="각주 삭제"
-                            title="각주 삭제"
-                          >×</button>
-                        </div>
-                        <div className="bs-note-record-content flex items-start gap-2">
-                          <ReplyIcon />
-                          <DiscordText text={n.content} className="flex-1 min-w-0 leading-relaxed" />
-                        </div>
+                        {editingNoteId === n.id ? (
+                          <form onSubmit={(e) => handleUpdateNote(e, n.id)} className="bs-note-edit-form">
+                            <textarea
+                              autoFocus
+                              rows={3}
+                              value={editingNoteText}
+                              onChange={(e) => setEditingNoteText(e.target.value)}
+                              aria-label="각주 내용 수정"
+                              className="bs-note-edit-input"
+                            />
+                            <div className="bs-note-edit-actions">
+                              <button type="submit" disabled={noteEditSaving} className="bs-note-action-primary">
+                                {noteEditSaving ? '저장 중…' : '저장'}
+                              </button>
+                              <button type="button" className="bs-note-action" onClick={() => { setEditingNoteId(null); setEditingNoteText(''); }}>
+                                취소
+                              </button>
+                            </div>
+                          </form>
+                        ) : (
+                          <div className="bs-note-record-row">
+                            <span className="bs-note-icon" aria-hidden="true" title={`각주 ${i + 1}`}>↳</span>
+                            <div className="bs-note-record-content">
+                              <DiscordText text={n.content} className="min-w-0 leading-relaxed" />
+                            </div>
+                            <div className="bs-note-record-actions">
+                              {n.user_id === user?.id && (
+                                <button
+                                  type="button"
+                                  className="bs-note-action"
+                                  onClick={() => { setEditingNoteId(n.id); setEditingNoteText(n.content); }}
+                                  aria-label="각주 수정"
+                                  title="각주 수정"
+                                >수정</button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteNote(n.id)}
+                                className="bs-delete-x"
+                                aria-label="각주 삭제"
+                                title="각주 삭제"
+                              >×</button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -4136,10 +4279,10 @@ export default function Home() {
                       </div>
                       <div className="bs-book-card-info">
                         <h3 className="bs-h3 bs-book-title">{title}</h3>
-                        <div className="bs-book-author">{author}</div>
-                        {e.type === 'series' && (
-                          <p className="bs-series-count">시리즈 · 전 {e.volumes.length}권</p>
-                        )}
+                        <div className="bs-book-author-row">
+                          <span className="bs-book-author">{author}</span>
+                          {e.type === 'series' && <span className="bs-series-count">전{e.volumes.length}권</span>}
+                        </div>
                         {ratedReviews.length > 0 && (
                           <div className="bs-book-rating" aria-label={`평점 ${averageRating.toFixed(1)}점`}>
                             <span className="bs-rating-stars" aria-hidden="true">
@@ -4152,28 +4295,25 @@ export default function Home() {
                             </span>
                           </div>
                         )}
-                        {latestQuote && (
-                          <p className="bs-book-card-quote">
-                            “{plainText(latestQuote.quote.content)}”
-                          </p>
-                        )}
-                        {readingUsers.length > 0 && (
-                          <div className="bs-book-readers bs-book-card-readers" aria-label="현재 읽는 사람">
-                            {readingUsers.map((uid) => (
-                              <span key={uid} className="bs-book-reader" title={nameOf(uid)}>
-                                <Seal
-                                  text={profileOf(uid).seal_text}
-                                  color={profileOf(uid).seal_color}
-                                  styleType={profileOf(uid).seal_style}
-                                  image={profileOf(uid).seal_image}
-                                  size={22}
-                                />
-                                <span className="bs-reader-name">{nameOf(uid)}</span>
-                              </span>
-                            ))}
-                          </div>
-                        )}
+                        <p className="bs-book-card-quote" aria-label={latestQuote ? '최근 인용문' : undefined}>
+                          {latestQuote ? `“${plainText(latestQuote.quote.content)}”` : ' '}
+                        </p>
                       </div>
+                      {readingUsers.length > 0 && (
+                        <div className="bs-book-readers bs-book-card-readers" aria-label="현재 읽는 사람">
+                          {readingUsers.map((uid) => (
+                            <span key={uid} className="bs-book-reader" title={nameOf(uid)} aria-label={nameOf(uid)}>
+                              <Seal
+                                text={profileOf(uid).seal_text}
+                                color={profileOf(uid).seal_color}
+                                styleType={profileOf(uid).seal_style}
+                                image={profileOf(uid).seal_image}
+                                size={24}
+                              />
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </article>
                 );
