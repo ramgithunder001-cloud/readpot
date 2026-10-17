@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo, useRef, useId, memo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react';
 import { useEditor, useEditorState, EditorContent } from '@tiptap/react';
 import type { JSONContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -84,29 +84,503 @@ type ProfilesResult = { data: ProfileRow[] | null; error: { message: string } | 
 const byCreated = (a: { created_at: string }, b: { created_at: string }) =>
   new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
 
+const FOCUS =
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111111] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F2F2F2]';
+
+const BTN = `inline-flex items-center justify-center min-h-[44px] px-4 border border-[#111111] bg-[#111111] text-[#F2F2F2] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#F2F2F2] hover:text-[#111111] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN_OUTLINE = `inline-flex items-center justify-center min-h-[44px] px-4 border border-[#111111] bg-transparent text-[#111111] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#111111] hover:text-[#F2F2F2] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+const BTN_SM = `inline-flex items-center justify-center min-h-[36px] px-3 border border-[#111111] bg-[#111111] text-[#F2F2F2] text-xs font-semibold transition-all duration-200 hover:bg-[#F2F2F2] hover:text-[#111111] ${FOCUS}`;
+const BTN_ACTIVE = `inline-flex items-center justify-center min-h-[44px] px-4 border border-[#111111] bg-[#111111] text-[#F2F2F2] text-xs font-semibold tracking-widest ${FOCUS}`;
+const LINK_BTN = `text-xs text-[#111111] underline-offset-4 decoration-2 decoration-[#555555] hover:underline ${FOCUS}`;
+const DANGER_BTN = `text-xs text-[#525252] underline-offset-4 decoration-2 decoration-[#555555] hover:text-[#555555] hover:underline ${FOCUS}`;
+const INPUT = `w-full min-w-0 bg-transparent border-0 border-b-2 border-[#111111] px-3 py-2 text-sm text-[#111111] placeholder:text-[#737373] focus:bg-[#F0F0F0] focus:outline-none`;
+const TEXTAREA_BOX = `w-full bg-transparent border-0 border-b-2 border-[#111111] p-3 text-sm leading-relaxed text-[#111111] placeholder:text-[#737373] focus:bg-[#F0F0F0] focus:outline-none`;
+const LABEL = 'block text-xs font-semibold uppercase tracking-widest text-[#525252]';
+
+function GlobalStyle() {
+  return (
+    <style>{`
+      @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
+      :root {
+        --bg: #f7f7f7; --side: #f1f1f1; --surface: #fff; --text: #111;
+        --muted: #737373; --faint: #9a9a9a; --line: #d4d4d4;
+        --line-dark: #9f9f9f; --soft: #e9e9e9; --sans: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+        --paper: #f7f7f7; --paper-light: #fff; --paper-deep: #e9e9e9;
+        --ink: #111; --ink-soft: #737373; --ink-faint: #9a9a9a;
+        --line-dark: #9f9f9f; --rust: #111; --rust-light: #e9e9e9;
+        --olive: #737373; --olive-light: #e9e9e9; --blue: #111; --blue-light: #f1f1f1;
+        --shadow: none;
+      }
+      *, *::before, *::after { box-sizing: border-box; }
+      html { background: var(--bg) !important; scroll-behavior: smooth; }
+      body, body *, body *::before, body *::after {
+        font-family: var(--sans) !important; box-sizing: border-box;
+      }
+      body {
+        margin: 0 !important; min-width: 320px; min-height: 100vh;
+        color: var(--text) !important; background: var(--bg) !important;
+        background-image: none !important; font-size: 13px !important; line-height: 1.55 !important;
+      }
+      button, input, textarea, select { color: inherit; font: inherit; }
+      button { cursor: pointer; }
+      button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, a:focus-visible {
+        outline: 2px solid #111 !important; outline-offset: 2px !important;
+      }
+      ::selection { color: #fff !important; background: #333 !important; }
+
+      /* The same fixed desktop rail used in the reference app. */
+      .bs-main {
+        display: block !important; position: relative !important;
+        width: calc(100% - 202px) !important; min-height: 100vh !important;
+        margin: 0 0 0 202px !important; padding: 0 !important;
+        color: #111 !important; background: #f7f7f7 !important;
+        overflow: visible !important;
+      }
+      .bs-sidebar {
+        position: fixed !important; inset: 0 auto 0 0 !important; z-index: 30 !important;
+        display: flex !important; flex-direction: column !important; align-items: stretch !important;
+        width: 202px !important; min-width: 202px !important; height: 100vh !important; height: 100dvh !important;
+        padding: 27px 19px !important; overflow-x: hidden !important; overflow-y: auto !important;
+        color: #111 !important; background: #f1f1f1 !important;
+        border: 0 !important; border-right: 1px solid #d4d4d4 !important; border-radius: 0 !important;
+        box-shadow: none !important; transform: none; transition: transform .2s ease !important;
+      }
+      .bs-brand {
+        display: flex !important; flex-direction: column !important; align-items: flex-start !important;
+        justify-content: flex-start !important; margin: 0 6px 40px !important; padding: 0 !important;
+        border: 0 !important; background: transparent !important; box-shadow: none !important;
+      }
+      .bs-brand-title {
+        display: block !important; margin: 0 !important; padding: 0 !important;
+        color: #111 !important; background: transparent !important; border: 0 !important;
+        font-size: 31px !important; font-weight: 900 !important; letter-spacing: -.13em !important;
+        line-height: .83 !important; text-shadow: none !important;
+      }
+      .bs-brand-title br { display: block; }
+      .bs-nav { display: grid !important; gap: 5px !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+      .bs-sidebar .bs-nav button {
+        display: flex !important; width: 100% !important; min-width: 0 !important; height: 33px !important; min-height: 33px !important;
+        align-items: center !important; justify-content: space-between !important; gap: 8px !important;
+        margin: 0 !important; padding: 0 10px !important; color: #111 !important; text-align: left !important;
+        background: transparent !important; border: 1px solid transparent !important; border-radius: 2px !important;
+        box-shadow: none !important; transform: none !important; font-size: 12px !important; font-weight: 500 !important;
+        letter-spacing: 0 !important; line-height: 1.4 !important; white-space: nowrap !important;
+      }
+      .bs-sidebar .bs-nav button:hover { background: #eaeaea !important; border-color: transparent !important; }
+      .bs-sidebar .bs-nav button.bs-active {
+        color: #111 !important; background: #e5e5e5 !important; border-color: #9f9f9f !important;
+        box-shadow: none !important; font-weight: 700 !important;
+      }
+      .bs-nav-count {
+        display: grid !important; min-width: 17px !important; width: auto !important; height: 17px !important;
+        place-items: center !important; margin: 0 !important; padding: 0 3px !important;
+        color: #fff !important; background: #171717 !important; border: 0 !important;
+        font-size: 9px !important; font-weight: 500 !important; line-height: 1 !important;
+      }
+      .bs-side-spacer { display: block !important; flex: 1 0 24px !important; min-height: 24px !important; }
+      .bs-side-bottom {
+        display: flex !important; align-items: center !important; gap: 7px !important; margin: 0 !important;
+        padding: 14px 0 0 !important; border-top: 1px solid #d4d4d4 !important; color: #737373 !important;
+        background: transparent !important; font-size: 10px !important;
+      }
+      .bs-profile-settings {
+        display: flex !important; align-items: center !important; gap: 8px !important; flex: 1 1 auto !important;
+        min-width: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important;
+        color: #111 !important; box-shadow: none !important; text-align: left !important;
+      }
+      .bs-profile-name { overflow: hidden !important; min-width: 0 !important; color: #333 !important; font-size: 10px !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+      .bs-settings-icon { flex: 0 0 auto; color: #737373; }
+      .bs-logout-icon { display: grid !important; width: 26px !important; min-width: 26px !important; height: 28px !important; min-height: 28px !important; place-items: center !important; padding: 0 !important; border: 0 !important; background: transparent !important; color: #737373 !important; box-shadow: none !important; }
+      .bs-mobile-menu-toggle, .bs-mobile-drawer-launcher, .bs-mobile-drawer-backdrop { display: none !important; }
+
+      /* Page geometry and headings. */
+      .bs-content {
+        position: relative !important; width: min(940px, 100%) !important; max-width: 940px !important;
+        min-height: 100vh !important; margin: 0 !important; padding: 49px 44px 90px 49px !important;
+        background: transparent !important; color: #111 !important; box-shadow: none !important;
+      }
+      .bs-page-head {
+        display: flex !important; width: 100% !important; min-height: 54px !important;
+        align-items: flex-start !important; justify-content: space-between !important; gap: 24px !important;
+        margin: 0 0 13px !important; padding: 0 !important; border: 0 !important; background: transparent !important;
+      }
+      .bs-heading-copy { max-width: none !important; min-width: 0 !important; }
+      .bs-h1, .bs-page-head .bs-h1 {
+        margin: 0 !important; color: #111 !important; font-size: 30px !important; font-weight: 850 !important;
+        letter-spacing: -.055em !important; line-height: 1.2 !important; text-shadow: none !important;
+        overflow-wrap: break-word !important; word-break: normal !important;
+      }
+      .bs-h3 { color: #111 !important; font-size: 16px !important; font-weight: 800 !important; letter-spacing: -.035em !important; }
+      .bs-eyebrow, .bs-lead, .bs-head-mark, .bs-brand-sub, .bs-side-label { display: none !important; }
+      .bs-main > main:not(.bs-book-detail-page) {
+        width: min(940px, 100%) !important; max-width: 940px !important; min-height: 100vh !important;
+        margin: 0 !important; padding: 49px 44px 90px 49px !important; background: transparent !important;
+      }
+      .bs-book-detail-page {
+        display: block !important; width: min(940px, 100%) !important; max-width: 940px !important;
+        min-height: 100vh !important; margin: 0 !important; padding: 49px 44px 90px 49px !important;
+        background: transparent !important;
+      }
+      .bs-book-detail-shell { width: 100% !important; max-width: 100% !important; margin: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
+
+      /* Consistent buttons, fields and search bars. */
+      .bs-main button:not(.bs-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]) {
+        box-sizing: border-box !important; display: inline-flex !important; min-width: 0 !important; max-width: 100% !important;
+        min-height: 34px !important; align-items: center !important; justify-content: center !important; gap: 7px !important;
+        padding: 0 13px !important; color: #111 !important; background: #fff !important; border: 1px solid #d4d4d4 !important;
+        border-radius: 2px !important; box-shadow: none !important; transform: none !important;
+        font-family: var(--sans) !important; font-size: 11px !important; font-weight: 650 !important;
+        letter-spacing: 0 !important; line-height: 1 !important; text-decoration: none !important;
+        white-space: normal !important; word-break: keep-all !important; overflow-wrap: normal !important;
+        transition: border-color .15s ease, background-color .15s ease !important;
+      }
+      .bs-main button:not(.bs-nav button):not(.bs-personal-book-card):not(.bs-scrapbook-card):not(.bs-book-card):not(.bs-delete-x):not(.bs-rating-star-button):not(.bs-mobile-drawer-launcher):not(.bs-mobile-drawer-backdrop):not(.bs-mobile-menu-toggle):not(.bs-search-clear):not(.bs-profile-settings):not(.bs-logout-icon):not([class*="underline"]):not(.bs-btn-primary):not(.bs-filter-btn):not([aria-pressed="true"]):hover {
+        color: #111 !important; background: #f1f1f1 !important; border-color: #9f9f9f !important; box-shadow: none !important;
+      }
+      .bs-main button.bs-btn-primary, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-filter-btn) {
+        color: #fff !important; background: #171717 !important; border-color: #171717 !important;
+      }
+      .bs-main button.bs-btn-primary:hover, .bs-main button[aria-pressed="true"]:not(.bs-nav button):not(.bs-filter-btn):hover { color: #fff !important; background: #000 !important; }
+      .bs-main button[class*="underline"], .bs-main button.bs-link-button, .bs-main button.bs-row-action {
+        min-height: 28px !important; padding: 0 4px !important; background: transparent !important;
+        border-color: transparent !important; color: #737373 !important; box-shadow: none !important;
+      }
+      .bs-main button[class*="underline"]:hover, .bs-main button.bs-link-button:hover, .bs-main button.bs-row-action:hover { text-decoration: underline !important; background: transparent !important; border-color: transparent !important; }
+      .bs-main button:disabled { cursor: not-allowed !important; opacity: .45 !important; }
+      .bs-main input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+      .bs-main textarea, .bs-main select {
+        min-width: 0 !important; max-width: 100% !important; color: #111 !important; background: #fff !important;
+        border: 1px solid #d4d4d4 !important; border-radius: 0 !important; box-shadow: none !important;
+        font-family: var(--sans) !important; font-size: 11px !important; font-weight: 400 !important;
+        letter-spacing: 0 !important; line-height: 1.55 !important; outline-offset: 2px;
+      }
+      .bs-main input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), .bs-main select { min-height: 34px !important; padding: 0 10px !important; }
+      .bs-main textarea { min-height: 88px !important; padding: 10px !important; resize: vertical; }
+      .bs-main input::placeholder, .bs-main textarea::placeholder { color: #9a9a9a !important; opacity: 1 !important; }
+      .bs-main .bs-search-wrap { position: relative !important; display: flex !important; width: 100% !important; max-width: 800px !important; height: 34px !important; align-items: center !important; gap: 10px !important; margin: 14px 0 15px !important; padding: 0 11px !important; border: 1px solid #d4d4d4 !important; background: #fff !important; }
+      .bs-main .bs-search-icon { position: static !important; display: inline-block !important; transform: none !important; color: #737373 !important; font-size: 15px !important; }
+      .bs-main .bs-search-wrap .bs-search { width: auto !important; min-width: 0 !important; height: 30px !important; min-height: 30px !important; flex: 1 1 auto !important; margin: 0 !important; padding: 0 !important; border: 0 !important; outline: 0 !important; background: transparent !important; color: #111 !important; box-shadow: none !important; font-size: 11px !important; }
+      .bs-search-clear { display: grid !important; width: 24px !important; min-width: 24px !important; height: 24px !important; min-height: 24px !important; place-items: center !important; padding: 0 !important; border: 0 !important; background: transparent !important; color: #737373 !important; font-size: 16px !important; }
+
+      /* Community book archive: book rows, not floating cards. */
+      .bs-community-shelf-page .bs-page-head { margin-bottom: 13px !important; }
+      .bs-community-shelf-page .bs-record-cta { white-space: nowrap !important; }
+      .bs-shelf-toolbar {
+        display: flex !important; align-items: center !important; justify-content: space-between !important; flex-wrap: wrap !important;
+        gap: 14px !important; margin: 28px 0 20px !important; padding: 0 0 10px !important;
+        background: transparent !important; border: 0 !important; border-bottom: 1px solid #d4d4d4 !important; border-radius: 0 !important; box-shadow: none !important;
+      }
+      .bs-filter-group { display: flex !important; flex-wrap: wrap !important; gap: 5px !important; width: auto !important; }
+      .bs-filter-btn {
+        display: inline-flex !important; min-height: 30px !important; align-items: center !important; gap: 6px !important;
+        padding: 0 8px !important; color: #737373 !important; background: transparent !important;
+        border: 1px solid transparent !important; border-radius: 2px !important; font-size: 10px !important; font-weight: 500 !important;
+      }
+      .bs-filter-btn.bs-active { color: #111 !important; background: #e5e5e5 !important; border-color: #9f9f9f !important; font-weight: 700 !important; }
+      .bs-filter-btn:hover { background: #eaeaea !important; border-color: #d4d4d4 !important; }
+      .bs-shelf-count, .bs-scrapbook-count { color: #737373 !important; font-size: 11px !important; white-space: nowrap !important; }
+      .bs-books-grid, .bs-personal-book-list, .bs-records, .bs-scrapbook-list {
+        display: block !important; width: 100% !important; margin: 14px 0 0 !important; padding: 0 !important;
+        border: 0 !important; border-top: 1px solid #d4d4d4 !important; background: transparent !important;
+      }
+      .bs-book-card {
+        display: block !important; position: relative !important; width: 100% !important; min-width: 0 !important; min-height: 142px !important;
+        margin: 0 !important; padding: 15px 1px !important; background: transparent !important; border: 0 !important;
+        border-bottom: 1px solid #d4d4d4 !important; border-radius: 0 !important; box-shadow: none !important;
+        transform: none !important; cursor: pointer !important; transition: background-color .15s ease !important;
+      }
+      .bs-book-card:hover { background: #f3f3f3 !important; box-shadow: none !important; }
+      .bs-book-card::before { display: none !important; content: none !important; }
+      .bs-book-card-main { display: grid !important; grid-template-columns: 75px minmax(0,1fr) !important; gap: 18px !important; align-items: center !important; min-width: 0 !important; }
+      .bs-book-card-cover { display: flex !important; width: 75px !important; min-width: 75px !important; align-items: center !important; justify-content: center !important; }
+      .bs-book-cover, .bs-cover-img {
+        display: block !important; width: 75px !important; height: 112px !important; max-width: none !important;
+        flex: 0 0 auto !important; object-fit: cover !important; overflow: hidden !important;
+        color: #111 !important; background: #ddd !important; border: 1px solid #777 !important;
+        border-radius: 0 !important; box-shadow: none !important; filter: none !important;
+      }
+      .bs-cover-img { height: auto !important; }
+      .bs-cover-inner { display: flex !important; height: 100% !important; flex-direction: column !important; justify-content: space-between !important; align-items: stretch !important; padding: 10px 7px 8px !important; }
+      .bs-cover-title {
+        max-height: 70% !important; overflow: hidden !important; color: inherit !important; font-size: 12px !important;
+        font-weight: 800 !important; line-height: 1.35 !important; letter-spacing: -.02em !important;
+        text-align: left !important; writing-mode: horizontal-tb !important; text-orientation: mixed !important;
+        overflow-wrap: break-word !important; word-break: normal !important;
+      }
+      .bs-cover-author { margin: 4px 0 0 !important; color: inherit !important; font-size: 8px !important; font-weight: 500 !important; letter-spacing: 0 !important; text-align: left !important; }
+      .bs-book-card-info { display: flex !important; min-width: 0 !important; min-height: 112px !important; flex-direction: column !important; align-items: stretch !important; justify-content: center !important; padding: 0 !important; }
+      .bs-book-card h3.bs-book-title, .bs-book-card h3.bs-book-title:hover, .bs-record-title, .bs-personal-book-title, .bs-scrapbook-title {
+        display: block !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important;
+        color: #111 !important; font-size: 16px !important; font-weight: 800 !important; letter-spacing: -.035em !important;
+        line-height: 1.45 !important; text-align: left !important; text-shadow: none !important;
+        overflow-wrap: break-word !important; word-break: normal !important;
+      }
+      .bs-book-card .bs-book-author, .bs-personal-book-author { margin: 5px 0 0 !important; color: #737373 !important; font-size: 10px !important; font-weight: 400 !important; line-height: 1.55 !important; text-align: left !important; }
+      .bs-book-card-quote { display: -webkit-box !important; overflow: hidden !important; margin: 12px 0 0 !important; color: #333 !important; font-size: 11px !important; font-style: normal !important; font-weight: 400 !important; line-height: 1.7 !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; }
+      .bs-book-rating { display: flex !important; align-items: center !important; gap: 7px !important; margin-top: 8px !important; color: #737373 !important; font-size: 10px !important; }
+      .bs-rating-stars { color: #111 !important; letter-spacing: .03em !important; }
+      .bs-rating-meta { color: #737373 !important; font-size: 9px !important; }
+      .bs-book-card-readers, .bs-book-readers { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; margin-top: 10px !important; padding: 0 !important; border: 0 !important; }
+      .bs-book-reader { display: inline-flex !important; align-items: center !important; gap: 5px !important; color: #737373 !important; font-size: 10px !important; }
+      .bs-reader-name { max-width: 110px !important; overflow: hidden !important; color: #737373 !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+      .bs-record-row {
+        display: grid !important; width: 100% !important; min-height: 142px !important;
+        grid-template-columns: 75px minmax(0,1fr) !important; gap: 18px !important; align-items: center !important;
+        margin: 0 !important; padding: 15px 1px !important; color: #111 !important; background: transparent !important;
+        border: 0 !important; border-bottom: 1px solid #d4d4d4 !important; border-radius: 0 !important; box-shadow: none !important;
+        cursor: pointer !important; transform: none !important;
+      }
+      .bs-record-row:hover { background: #f3f3f3 !important; box-shadow: none !important; }
+      .bs-record-row .bs-cover-img, .bs-record-row .bs-book-cover { width: 75px !important; height: 112px !important; }
+      .bs-record-title { font-size: 16px !important; }
+      .bs-record-excerpt { display: -webkit-box !important; overflow: hidden !important; margin: 12px 0 !important; color: #333 !important; font-size: 11px !important; line-height: 1.7 !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; }
+      .bs-record-meta { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 8px !important; color: #737373 !important; font-size: 9px !important; }
+      .bs-meta-dot { display: inline-block !important; width: 3px !important; height: 3px !important; border-radius: 50% !important; background: #9a9a9a !important; }
+
+      /* Personal shelf and saved clippings use the same quiet list pattern. */
+      .bs-personal-book-card {
+        display: grid !important; width: 100% !important; min-width: 0 !important; min-height: 142px !important;
+        grid-template-columns: 75px minmax(0,1fr) 118px 16px !important; gap: 18px !important; align-items: center !important;
+        margin: 0 !important; padding: 15px 1px !important; color: #111 !important; background: transparent !important;
+        border: 0 !important; border-bottom: 1px solid #d4d4d4 !important; border-radius: 0 !important; box-shadow: none !important;
+        text-align: left !important; transform: none !important; transition: background-color .15s ease !important;
+      }
+      .bs-personal-book-card:hover { background: #f3f3f3 !important; }
+      .bs-personal-book-cover { display: flex !important; width: 75px !important; min-width: 75px !important; align-items: center !important; justify-content: center !important; }
+      .bs-personal-book-cover .bs-book-cover, .bs-personal-book-cover .bs-cover-img { width: 75px !important; height: 112px !important; }
+      .bs-personal-book-info { display: flex !important; min-width: 0 !important; flex-direction: column !important; align-items: flex-start !important; justify-content: center !important; gap: 0 !important; }
+      .bs-personal-book-meta { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 6px !important; margin-top: 8px !important; }
+      .bs-personal-status { display: inline-flex !important; min-height: 19px !important; align-items: center !important; padding: 0 5px !important; color: #555 !important; background: #e7e7e7 !important; border: 0 !important; font-size: 9px !important; font-weight: 500 !important; white-space: nowrap !important; }
+      .bs-status-reading { color: #fff !important; background: #444 !important; }
+      .bs-status-wishlist { color: #555 !important; background: transparent !important; border: 1px solid #c7c7c7 !important; }
+      .bs-personal-rating { display: inline-flex !important; align-items: center !important; gap: 4px !important; color: #737373 !important; font-size: 9px !important; }
+      .bs-personal-book-date { margin-top: 7px !important; color: #737373 !important; font-size: 9px !important; }
+      .bs-personal-book-side { display: flex !important; height: 100% !important; align-items: flex-end !important; justify-content: space-between !important; flex-direction: column !important; padding: 7px 0 !important; gap: 8px !important; }
+      .bs-personal-book-arrow, .bs-scrapbook-arrow { color: #737373 !important; font-size: 14px !important; }
+      .bs-scrapbook-toolbar { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 30px !important; margin: 0 0 15px !important; padding: 0 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+      .bs-scrapbook-toolbar .bs-search-wrap { max-width: 380px !important; margin: 0 !important; }
+      .bs-scrapbook-card {
+        display: flex !important; width: 100% !important; min-height: 0 !important; align-items: flex-start !important; justify-content: space-between !important;
+        gap: 20px !important; margin: 0 !important; padding: 23px 0 21px !important; color: #111 !important;
+        background: transparent !important; border: 0 !important; border-bottom: 1px solid #d4d4d4 !important;
+        border-radius: 0 !important; box-shadow: none !important; text-align: left !important; transform: none !important;
+      }
+      .bs-scrapbook-card:hover { background: #f3f3f3 !important; }
+      .bs-scrapbook-card-main { min-width: 0 !important; flex: 1 1 auto !important; overflow-wrap: break-word !important; }
+      .bs-scrapbook-title { font-size: 16px !important; font-weight: 800 !important; letter-spacing: -.025em !important; }
+      .bs-scrapbook-card:hover .bs-scrapbook-title { text-decoration: underline !important; text-underline-offset: 3px !important; }
+      .bs-scrapbook-source { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 7px !important; margin: 7px 0 0 !important; color: #737373 !important; font-size: 9px !important; }
+      .bs-scrapbook-source i { font-style: normal !important; }
+      .bs-scrapbook-excerpt { display: -webkit-box !important; overflow: hidden !important; margin: 13px 0 !important; color: #444 !important; font-size: 11px !important; line-height: 1.7 !important; text-overflow: ellipsis !important; -webkit-box-orient: vertical !important; -webkit-line-clamp: 2 !important; }
+      .bs-scrapbook-meta { display: flex !important; align-items: center !important; gap: 12px !important; color: #737373 !important; font-size: 9px !important; }
+      .bs-scrapbook-arrow { flex: 0 0 auto !important; }
+      .bs-empty-state { padding: 70px 0 !important; color: #737373 !important; border: 0 !important; border-top: 1px solid #d4d4d4 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; text-align: center !important; }
+      .bs-empty-state strong { display: block !important; margin: 0 0 8px !important; color: #111 !important; font-size: 15px !important; font-weight: 700 !important; }
+      .bs-empty-state span { color: #737373 !important; font-size: 11px !important; }
+
+      /* Book details: cover/title, a simple rating ledger, quotation and review sections. */
+      .bs-book-detail-hero {
+        display: block !important; margin: 0 !important; padding: 26px 0 34px !important;
+        background: transparent !important; border: 0 !important; border-bottom: 1px solid #9f9f9f !important;
+        border-radius: 0 !important; box-shadow: none !important;
+      }
+      .bs-book-detail-hero > div:first-child { display: grid !important; grid-template-columns: 112px minmax(0,1fr) !important; gap: 28px !important; align-items: center !important; min-width: 0 !important; }
+      .bs-book-detail-cover { display: block !important; width: 112px !important; height: 158px !important; min-width: 0 !important; object-fit: cover !important; border: 1px solid #777 !important; background: #ddd !important; box-shadow: none !important; }
+      .bs-book-detail-hero > div:first-child > div { min-width: 0 !important; }
+      .bs-book-detail-hero h2 { max-width: 720px !important; margin: 8px 0 5px !important; color: #111 !important; font-size: 31px !important; font-weight: 850 !important; letter-spacing: -.055em !important; line-height: 1.25 !important; overflow-wrap: break-word !important; word-break: normal !important; }
+      .bs-book-detail-hero p { margin: 0 !important; color: #737373 !important; font-size: 11px !important; line-height: 1.6 !important; }
+      .bs-series-volume-tabs { display: flex !important; flex-wrap: wrap !important; gap: 5px !important; margin-top: 12px !important; }
+      .bs-series-volume-button { min-height: 30px !important; padding: 0 9px !important; font-size: 10px !important; }
+      .bs-book-rating-section { display: block !important; margin: 48px 0 0 !important; padding: 0 0 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
+      .bs-book-rating-heading { display: block !important; margin: 0 0 0 !important; padding: 0 0 10px !important; color: #111 !important; border-bottom: 1px solid #9f9f9f !important; font-size: 17px !important; font-weight: 800 !important; letter-spacing: -.03em !important; }
+      .bs-book-rating-content { display: block !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important; }
+      .bs-book-rating-row { display: grid !important; grid-template-columns: minmax(0,1fr) auto 100px !important; gap: 10px !important; align-items: center !important; min-height: 46px !important; margin: 0 !important; padding: 0 !important; color: #111 !important; border-bottom: 1px solid #d4d4d4 !important; background: transparent !important; }
+      .bs-book-rating-name { min-width: 0 !important; overflow: hidden !important; color: #111 !important; font-size: 11px !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+      .bs-book-rating-row strong { color: #111 !important; font-size: 11px !important; font-weight: 700 !important; text-align: right !important; }
+      .bs-book-rating-empty { margin: 0 !important; padding: 16px 0 !important; color: #737373 !important; border-bottom: 1px solid #d4d4d4 !important; font-size: 11px !important; }
+      .bs-book-detail-sections { display: block !important; margin: 0 !important; padding: 0 !important; }
+      .bs-book-detail-sections > div { display: block !important; min-width: 0 !important; }
+      .bs-book-detail-section { display: block !important; min-width: 0 !important; margin: 48px 0 0 !important; padding: 0 0 22px !important; background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+      .bs-book-detail-section h3, .bs-book-community-panel h3 { display: flex !important; align-items: baseline !important; justify-content: space-between !important; gap: 10px !important; margin: 0 !important; padding: 0 0 10px !important; color: #111 !important; border-bottom: 1px solid #9f9f9f !important; font-size: 17px !important; font-weight: 800 !important; letter-spacing: -.03em !important; line-height: 1.35 !important; }
+      .bs-book-detail-section h3 span, .bs-book-community-panel h3 span { color: #737373 !important; font-size: 10px !important; font-weight: 500 !important; letter-spacing: 0 !important; }
+      .bs-book-detail-section > p { color: #737373 !important; font-size: 10px !important; }
+      .bs-book-detail-section form { display: flex !important; align-items: flex-end !important; gap: 12px !important; margin: 20px 0 0 !important; padding: 16px 0 0 !important; border-top: 1px solid #d4d4d4 !important; }
+      .bs-book-detail-section form > div { min-width: 0 !important; flex: 1 1 auto !important; }
+      .bs-book-community-panel { display: block !important; margin: 48px 0 0 !important; padding: 0 0 22px !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+      .bs-book-community-panel h3 { margin: 0 !important; }
+      .bs-book-community-panel > div { border-color: #d4d4d4 !important; }
+      .bs-book-detail-shell > .flex.justify-between { margin-top: 35px !important; padding: 16px 0 0 !important; border-top: 1px solid #d4d4d4 !important; }
+      .bs-quote-list { display: block !important; margin-top: 14px !important; padding: 0 !important; border-top: 1px solid #d4d4d4 !important; }
+      .bs-quote-row { display: block !important; min-width: 0 !important; margin: 0 !important; padding: 22px 2px !important; background: transparent !important; border: 0 !important; border-bottom: 1px solid #d4d4d4 !important; border-radius: 0 !important; box-shadow: none !important; }
+      .bs-quote-row-main { display: flex !important; align-items: flex-start !important; justify-content: space-between !important; gap: 12px !important; min-width: 0 !important; }
+      .bs-quote-text { flex: 1 1 auto !important; min-width: 0 !important; margin: 0 !important; color: #111 !important; font-size: 14px !important; font-weight: 600 !important; line-height: 1.85 !important; overflow-wrap: break-word !important; word-break: normal !important; }
+      .bs-quote-text p { margin: 0 0 8px !important; }
+      .bs-quote-editable { cursor: pointer !important; }
+      .bs-delete-x { display: inline-flex !important; width: 20px !important; min-width: 20px !important; height: 24px !important; min-height: 24px !important; align-items: center !important; justify-content: center !important; margin: 0 !important; padding: 0 !important; color: #cfa5a5 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; font-size: 16px !important; font-weight: 400 !important; line-height: 1 !important; }
+      .bs-delete-x:hover { color: #b98484 !important; background: transparent !important; }
+      .bs-quote-comments { display: grid !important; gap: 9px !important; margin: 15px 0 0 24px !important; padding-left: 12px !important; border-left: 1px solid #d4d4d4 !important; }
+      .bs-quote-comment-row { display: flex !important; align-items: flex-start !important; gap: 8px !important; min-width: 0 !important; color: #444 !important; font-size: 10px !important; line-height: 1.65 !important; }
+      .bs-quote-comment-row > span, .bs-quote-comment-row > div { min-width: 0 !important; }
+      .bs-quote-comment-form { display: flex !important; align-items: center !important; gap: 8px !important; margin: 7px 0 0 12px !important; padding: 0 !important; border: 0 !important; background: transparent !important; }
+      .bs-quote-comment-form input { min-width: 0 !important; flex: 1 1 auto !important; }
+      .bs-prose .ProseMirror { min-height: 0 !important; outline: none !important; color: #111 !important; font-size: 14px !important; line-height: 2.05 !important; }
+      .bs-prose .ProseMirror > *:first-child { margin-top: 0 !important; }
+      .bs-prose .ProseMirror p { margin: 0 0 18px !important; }
+      .bs-prose .ProseMirror h2 { margin: 1.3em 0 .5em !important; font-size: 22px !important; font-weight: 800 !important; letter-spacing: -.03em !important; }
+      .bs-prose .ProseMirror h3 { margin: 1.2em 0 .45em !important; font-size: 17px !important; font-weight: 800 !important; }
+      .bs-prose .ProseMirror blockquote { margin: 1em 0 !important; padding: 2px 0 2px 14px !important; color: #444 !important; border: 0 !important; border-left: 1px solid #9f9f9f !important; background: transparent !important; box-shadow: none !important; }
+      .bs-prose .ProseMirror ul { list-style: disc !important; padding-left: 1.4em !important; margin: 0 0 .9em !important; }
+      .bs-prose .ProseMirror ol { list-style: decimal !important; padding-left: 1.5em !important; margin: 0 0 .9em !important; }
+      .bs-prose .ProseMirror li p { margin: 0 0 .3em !important; }
+
+      /* Scrap article typography and annotation tools. */
+      .bs-scrap-detail-page > main { width: min(940px,100%) !important; max-width: 940px !important; margin: 0 !important; padding: 49px 44px 90px 49px !important; }
+      .scrap-detail-article { width: 100% !important; min-width: 0 !important; border: 0 !important; background: transparent !important; box-shadow: none !important; }
+      .scrap-detail-header { margin: 0 !important; padding: 15px 0 28px !important; border: 0 !important; border-bottom: 1px solid #9f9f9f !important; background: transparent !important; }
+      .scrap-detail-header h2 { max-width: 720px !important; margin: 11px 0 12px !important; color: #111 !important; font-size: 29px !important; font-weight: 850 !important; letter-spacing: -.045em !important; line-height: 1.35 !important; overflow-wrap: break-word !important; word-break: normal !important; }
+      .scrap-detail-header p { display: flex !important; flex-wrap: wrap !important; gap: 3px 12px !important; color: #737373 !important; font-size: 10px !important; }
+      .scrap-detail-header a, .scrap-detail-content a { color: #111 !important; text-decoration: underline !important; text-decoration-color: #9f9f9f !important; text-underline-offset: 3px !important; text-decoration-thickness: 1px !important; overflow-wrap: anywhere !important; }
+      .scrap-detail-content { width: min(720px,100%) !important; min-width: 0 !important; margin: 0 auto !important; padding: 36px 0 !important; overflow-wrap: break-word !important; color: #111 !important; background: transparent !important; border: 0 !important; font-size: 14px !important; line-height: 2.05 !important; }
+      .scrap-detail-content > div:first-child { color: #111 !important; font-size: 14px !important; line-height: 2.05 !important; white-space: pre-wrap !important; overflow-wrap: break-word !important; }
+      .scrap-detail-content sup { display: inline-grid !important; width: 15px !important; height: 15px !important; place-items: center !important; margin-left: 4px !important; color: #fff !important; background: #333 !important; border-radius: 50% !important; font-size: 8px !important; line-height: 1 !important; }
+      .bs-highlight-records { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 22px 0 0 !important; border: 0 !important; border-top: 1px solid #d4d4d4 !important; }
+      .bs-highlight-records h3, .scrap-detail-content h3 { margin: 0 !important; color: #111 !important; font-size: 17px !important; font-weight: 800 !important; letter-spacing: -.03em !important; }
+      .bs-highlight-record { display: flex !important; gap: 13px !important; padding: 17px 0 !important; border-bottom: 1px solid #d4d4d4 !important; }
+      .bs-highlight-color { width: 8px !important; height: 8px !important; margin-top: 7px !important; border: 0 !important; border-radius: 0 !important; }
+      .bs-scrap-detail-page > main > div > aside { border: 0 !important; background: transparent !important; box-shadow: none !important; }
+      .bs-scrap-detail-page > main > div > aside > div { border: 1px solid #d4d4d4 !important; background: #fff !important; }
+      .bs-scrap-detail-page > main > div > aside > div > div:first-child { color: #737373 !important; background: #e9e9e9 !important; border-bottom: 1px solid #d4d4d4 !important; font-size: 10px !important; letter-spacing: .12em !important; }
+      .bs-modal-backdrop { position: fixed !important; inset: 0 !important; z-index: 100 !important; display: flex !important; align-items: center !important; justify-content: center !important; overflow-y: auto !important; padding: 20px !important; background: rgba(0,0,0,.38) !important; }
+      .bs-modal-panel { width: min(560px,100%) !important; max-height: min(720px,90vh) !important; overflow: auto !important; margin: auto !important; padding: 24px !important; color: #111 !important; background: #f7f7f7 !important; border: 1px solid #777 !important; border-radius: 0 !important; box-shadow: 0 12px 40px rgba(0,0,0,.18) !important; }
+      .bs-modal-head { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 16px !important; margin-bottom: 22px !important; padding-bottom: 14px !important; border-bottom: 1px solid #d4d4d4 !important; }
+      .bs-modal-head h2 { margin: 0 !important; color: #111 !important; font-size: 21px !important; font-weight: 850 !important; letter-spacing: -.03em !important; }
+      .bs-modal-eyebrow { margin: 0 0 5px !important; color: #737373 !important; font-size: 9px !important; letter-spacing: .08em !important; }
+      .bs-book-search-form { margin-bottom: 22px !important; }
+      .bs-book-search-results { margin-top: 18px !important; border-top: 1px solid #d4d4d4 !important; }
+      .bs-book-search-result { display: grid !important; grid-template-columns: 42px minmax(0,1fr) auto !important; gap: 12px !important; align-items: center !important; padding: 11px 2px !important; border-bottom: 1px solid #d4d4d4 !important; }
+      .bs-book-search-result img, .bs-selected-book img { display: block !important; width: 42px !important; height: 58px !important; object-fit: cover !important; background: #e4e4e4 !important; border: 1px solid #d4d4d4 !important; }
+      .bs-selected-book { margin-top: 18px !important; padding-top: 18px !important; border-top: 1px solid #d4d4d4 !important; }
+      .bs-selected-book img { width: 56px !important; height: 80px !important; }
+
+      /* Persistent page height and the responsive left drawer. */
+      .bs-main > .bs-content, .bs-main > .bs-book-detail-page, .bs-main > main { min-height: 100vh !important; }
+      .bs-mobile-bottom-nav { display: none !important; }
+      @media (max-width: 1200px) {
+        .bs-content, .bs-main > main:not(.bs-book-detail-page), .bs-book-detail-page, .bs-scrap-detail-page > main { padding-left: 36px !important; padding-right: 30px !important; }
+      }
+      @media (max-width: 900px) {
+        .bs-sidebar { width: 202px !important; min-width: 202px !important; padding-left: 19px !important; padding-right: 19px !important; }
+        .bs-main { width: calc(100% - 202px) !important; margin-left: 202px !important; }
+        .bs-content, .bs-main > main:not(.bs-book-detail-page), .bs-book-detail-page, .bs-scrap-detail-page > main { padding: 32px 24px 70px !important; }
+        .bs-book-card-main { grid-template-columns: 75px minmax(0,1fr) !important; }
+      }
+      @media (max-width: 720px) {
+        .bs-mobile-drawer-launcher {
+          position: fixed !important; top: 9px !important; right: 13px !important; z-index: 45 !important;
+          display: inline-flex !important; width: 34px !important; min-width: 34px !important; height: 34px !important; min-height: 34px !important;
+          align-items: center !important; justify-content: center !important; padding: 0 !important;
+          color: #111 !important; background: #f1f1f1 !important; border: 1px solid #d4d4d4 !important; border-radius: 2px !important; box-shadow: none !important;
+        }
+        .bs-mobile-drawer-launcher.is-open { display: none !important; }
+        .bs-mobile-drawer-backdrop { position: fixed !important; inset: 0 !important; z-index: 25 !important; display: block !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: rgba(0,0,0,.3) !important; }
+        .bs-sidebar {
+          position: fixed !important; inset: 0 auto 0 0 !important; z-index: 40 !important; width: min(250px,82vw) !important; min-width: 0 !important;
+          height: 100vh !important; height: 100dvh !important; min-height: 100vh !important; padding: 27px 19px !important;
+          overflow-y: auto !important; background: #f1f1f1 !important; border-right: 1px solid #d4d4d4 !important;
+          transform: translateX(-105%) !important; transition: transform .2s ease !important;
+        }
+        .bs-sidebar.bs-mobile-nav-open { transform: translateX(0) !important; }
+        .bs-brand { position: relative !important; margin-bottom: 40px !important; padding: 0 32px 0 6px !important; }
+        .bs-brand-title { font-size: 31px !important; line-height: .83 !important; }
+        .bs-mobile-menu-toggle { position: absolute !important; top: 0 !important; right: 0 !important; display: inline-flex !important; width: 30px !important; min-width: 30px !important; height: 30px !important; min-height: 30px !important; align-items: center !important; justify-content: center !important; padding: 0 !important; color: #111 !important; background: transparent !important; border: 1px solid #d4d4d4 !important; border-radius: 2px !important; box-shadow: none !important; }
+        .bs-nav { display: grid !important; gap: 5px !important; margin-top: 0 !important; }
+        .bs-sidebar .bs-nav button { width: 100% !important; min-height: 33px !important; height: 33px !important; justify-content: space-between !important; padding: 0 10px !important; font-size: 12px !important; }
+        .bs-side-spacer { display: block !important; flex: 1 0 24px !important; }
+        .bs-side-bottom { display: flex !important; margin-top: 20px !important; }
+        .bs-main { width: 100% !important; margin-left: 0 !important; padding: 0 !important; overflow: clip !important; }
+        .bs-content, .bs-main > main:not(.bs-book-detail-page), .bs-book-detail-page, .bs-scrap-detail-page > main {
+          width: 100% !important; max-width: none !important; min-height: 100vh !important; margin: 0 !important; padding: 49px 16px 70px !important;
+        }
+        .bs-page-head { min-height: 54px !important; align-items: flex-start !important; justify-content: space-between !important; gap: 12px !important; flex-wrap: wrap !important; margin-bottom: 13px !important; }
+        .bs-h1, .bs-page-head .bs-h1 { font-size: 27px !important; line-height: 1.2 !important; }
+        .bs-search-wrap { max-width: none !important; }
+        .bs-shelf-toolbar { align-items: flex-start !important; gap: 8px !important; margin-top: 24px !important; }
+        .bs-filter-group { width: 100% !important; }
+        .bs-filter-btn { min-height: 30px !important; padding: 0 7px !important; }
+        .bs-books-grid, .bs-personal-book-list, .bs-records, .bs-scrapbook-list { margin-top: 14px !important; }
+        .bs-book-card { min-height: 124px !important; padding: 15px 1px !important; }
+        .bs-book-card-main { grid-template-columns: 61px minmax(0,1fr) !important; gap: 12px !important; }
+        .bs-book-card-cover, .bs-book-card .bs-book-cover, .bs-book-card .bs-cover-img { width: 61px !important; min-width: 61px !important; height: 92px !important; }
+        .bs-book-card-info { min-height: 92px !important; }
+        .bs-book-card h3.bs-book-title, .bs-book-card h3.bs-book-title:hover, .bs-record-title, .bs-personal-book-title, .bs-scrapbook-title { font-size: 15px !important; }
+        .bs-book-card-quote, .bs-record-excerpt, .bs-scrapbook-excerpt { margin-top: 8px !important; font-size: 10px !important; -webkit-line-clamp: 1 !important; }
+        .bs-book-card-readers, .bs-book-readers { gap: 7px !important; margin-top: 8px !important; }
+        .bs-record-row { min-height: 124px !important; grid-template-columns: 61px minmax(0,1fr) !important; gap: 12px !important; padding: 15px 1px !important; }
+        .bs-record-row .bs-cover-img, .bs-record-row .bs-book-cover { width: 61px !important; height: 92px !important; }
+        .bs-personal-book-card { min-height: 124px !important; grid-template-columns: 61px minmax(0,1fr) auto !important; gap: 12px !important; padding: 15px 1px !important; }
+        .bs-personal-book-arrow { display: none !important; }
+        .bs-personal-book-side { align-items: flex-end !important; padding: 6px 0 !important; gap: 8px !important; }
+        .bs-personal-book-date { white-space: nowrap !important; }
+        .bs-personal-book-cover, .bs-personal-book-cover .bs-cover-img, .bs-personal-book-cover .bs-book-cover { width: 61px !important; min-width: 61px !important; height: 92px !important; }
+        .bs-personal-book-date { font-size: 9px !important; }
+        .bs-scrapbook-toolbar { align-items: stretch !important; flex-direction: column !important; gap: 10px !important; margin-bottom: 15px !important; }
+        .bs-scrapbook-toolbar .bs-search-wrap { max-width: none !important; }
+        .bs-scrapbook-count { align-self: flex-end !important; }
+        .bs-scrapbook-card { gap: 12px !important; padding: 23px 0 21px !important; }
+        .bs-book-detail-hero { padding: 22px 0 28px !important; }
+        .bs-book-detail-hero > div:first-child { grid-template-columns: 88px minmax(0,1fr) !important; gap: 18px !important; }
+        .bs-book-detail-cover { width: 88px !important; height: 124px !important; }
+        .bs-book-detail-hero h2 { font-size: 24px !important; letter-spacing: -.04em !important; }
+        .bs-book-rating-section, .bs-book-detail-section, .bs-book-community-panel { margin-top: 35px !important; }
+        .bs-book-rating-row { grid-template-columns: minmax(0,1fr) auto 32px !important; gap: 7px !important; }
+        .bs-book-detail-section form { align-items: stretch !important; flex-direction: column !important; }
+        .bs-quote-row { padding: 18px 0 !important; }
+        .bs-quote-text { font-size: 14px !important; }
+        .bs-quote-comments { margin-left: 8px !important; padding-left: 8px !important; }
+        .bs-quote-comment-form { margin-left: 0 !important; flex-wrap: wrap !important; }
+        .bs-scrap-detail-page > main { padding-top: 49px !important; }
+        .scrap-detail-header { padding: 15px 0 24px !important; }
+        .scrap-detail-header h2 { font-size: 25px !important; }
+        .scrap-detail-content { padding: 28px 0 !important; font-size: 14px !important; }
+        .scrap-detail-article > aside { display: none !important; }
+        .bs-modal-panel { padding: 18px !important; }
+        .bs-main > main > div { grid-template-columns: minmax(0,1fr) !important; }
+      }
+    `}</style>
+  );
+}
+
 const STAR_PATH =
   'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z';
 
 function Star({ fill, size = 20 }: { fill: number; size?: number }) {
-  const clipId = useId().replace(/:/g, '');
-  const fillWidth = 24 * Math.min(1, Math.max(0, fill));
-
   return (
-    <svg viewBox="0 0 24 24" width={size} height={size} role="img" aria-label={`${Math.round(fill * 100)}% 별점`}>
-      <path d={STAR_PATH} fill="none" stroke="currentColor" strokeWidth="1.5" />
-      <defs>
-        <clipPath id={clipId}>
-          <rect x="0" y="0" width={fillWidth} height="24" />
-        </clipPath>
-      </defs>
-      <path d={STAR_PATH} fill="currentColor" clipPath={`url(#${clipId})`} />
-    </svg>
+    <span className="relative inline-block shrink-0" style={{ width: size, height: size }}>
+      <svg
+        viewBox="0 0 24 24"
+        width={size}
+        height={size}
+        className="absolute inset-0 text-[#e4e6e9]"
+        fill="currentColor"
+      >
+        <path d={STAR_PATH} />
+      </svg>
+      <span
+        className="absolute left-0 top-0 h-full overflow-hidden text-[#202328]"
+        style={{ width: `${fill * 100}%` }}
+      >
+        <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor">
+          <path d={STAR_PATH} />
+        </svg>
+      </span>
+    </span>
   );
 }
 
 function RatingDisplay({ value, size = 14 }: { value: number; size?: number }) {
   return (
-    <span>
+    <span className="inline-flex items-center gap-0.5">
       {[0, 1, 2, 3, 4].map((i) => (
         <Star key={i} fill={Math.min(1, Math.max(0, value - i))} size={size} />
       ))}
@@ -127,12 +601,14 @@ function RatingInput({
   const shown = hover || value;
 
   return (
-    <div aria-label="별점 선택">
-      <div onMouseLeave={() => setHover(0)}>
+    <div className="bs-rating-input flex items-center gap-3" aria-label="별점 선택">
+      <div className="bs-rating-stars-input" onMouseLeave={() => setHover(0)}>
         {[1, 2, 3, 4, 5].map((score) => (
           <button
             key={score}
             type="button"
+            className="bs-rating-star-button"
+            style={{ width: size, height: size }}
             aria-label={`${score}점`}
             aria-pressed={value === score}
             onMouseEnter={() => setHover(score)}
@@ -144,7 +620,7 @@ function RatingInput({
           </button>
         ))}
       </div>
-      <span>
+      <span className="bs-rating-value text-sm font-semibold">
         {value > 0 ? `${value.toFixed(1)}점` : '별점 선택'}
       </span>
     </div>
@@ -155,17 +631,19 @@ function ToggleButton({
   pressed,
   onClick,
   children,
+  className = '',
 }: {
   pressed: boolean;
   onClick: () => void;
   children: React.ReactNode;
-  
+  className?: string;
 }) {
   return (
     <button
       type="button"
       aria-pressed={pressed}
       onClick={onClick}
+      className={`${pressed ? BTN_ACTIVE : BTN_OUTLINE} ${className}`}
     >
       {children}
     </button>
@@ -174,7 +652,7 @@ function ToggleButton({
 
 function ReadingBadge() {
   return (
-    <span>
+    <span className="inline-block bg-[#26292e] px-2 py-0.5 text-[11px] font-semibold tracking-widest text-white">
       읽는 중
     </span>
   );
@@ -186,6 +664,7 @@ function ReplyIcon() {
       viewBox="0 0 24 24"
       width={14}
       height={14}
+      className="mt-1 shrink-0 text-[#969ba2]"
       fill="none"
       stroke="currentColor"
       strokeWidth={2}
@@ -202,21 +681,13 @@ function Spoiler({ children }: { children: React.ReactNode }) {
   const [shown, setShown] = useState(false);
   return (
     <span
-      role="button"
-      tabIndex={0}
-      aria-label={shown ? '스포일러 내용' : '스포일러 보기'}
       onClick={(e) => {
         e.stopPropagation();
         setShown(true);
       }}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          setShown(true);
-        }
-      }}
+      className={`px-0.5 ${shown ? 'bg-[#e4e6e9]' : 'bg-[#34373d] cursor-pointer select-none'}`}
     >
-      {shown ? children : '[스포일러: 클릭하여 보기]'}
+      <span className={shown ? '' : 'invisible'}>{children}</span>
     </span>
   );
 }
@@ -236,6 +707,7 @@ const INLINE: InlinePattern[] = [
     render: (m, key) => (
       <code
         key={key}
+        className="px-1 py-0.5 bg-[#e4e6e9] text-[0.85em] font-normal not-italic text-[#202328]"
       >
         {m[2]}
       </code>
@@ -284,6 +756,7 @@ const INLINE: InlinePattern[] = [
         target="_blank"
         rel="noopener noreferrer nofollow"
         onClick={(e) => e.stopPropagation()}
+        className="underline decoration-2 decoration-[#26292e] underline-offset-4"
       >
         {m[1]}
       </a>
@@ -298,6 +771,7 @@ const INLINE: InlinePattern[] = [
         target="_blank"
         rel="noopener noreferrer nofollow"
         onClick={(e) => e.stopPropagation()}
+        className="underline decoration-2 decoration-[#26292e] underline-offset-4 break-all"
       >
         {m[0]}
       </a>
@@ -375,6 +849,7 @@ function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
         out.push(
           <pre
             key={key()}
+            className="my-1 p-3 border border-[#d5d7da] bg-[#e4e6e9] text-xs font-normal not-italic text-[#202328] whitespace-pre overflow-x-auto"
           >
             <code>{body.join('\n')}</code>
           </pre>
@@ -388,7 +863,7 @@ function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
       flush();
       const restText = [trimmed.replace(/^>>>\s?/, ''), ...lines.slice(i + 1)].join('\n');
       out.push(
-        <blockquote key={key()}>
+        <blockquote key={key()} className="my-1 border-l border-[#d5d7da] pl-3 text-[#555a62]">
           {renderBlocks(restText, key())}
         </blockquote>
       );
@@ -404,7 +879,7 @@ function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
         i++;
       }
       out.push(
-        <blockquote key={key()}>
+        <blockquote key={key()} className="my-1 border-l border-[#d5d7da] pl-3 text-[#555a62]">
           {renderBlocks(q.join('\n'), key())}
         </blockquote>
       );
@@ -414,13 +889,13 @@ function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
     const h = trimmed.match(/^(#{1,3})\s+(.+)$/);
     if (h) {
       flush();
+      const size =
+        h[1].length === 1 ? 'text-[1.5em]' : h[1].length === 2 ? 'text-[1.25em]' : 'text-[1.1em]';
       const kk = key();
-      const headingLevel = h[1].length;
-      const Heading = headingLevel === 1 ? 'h1' : headingLevel === 2 ? 'h2' : 'h3';
       out.push(
-        <Heading key={kk}>
+        <p key={kk} className={`${size} font-black tracking-tight leading-snug mt-1`}>
           {parseInline(h[2], kk)}
-        </Heading>
+        </p>
       );
       i++;
       continue;
@@ -431,7 +906,7 @@ function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
       flush();
       const kk = key();
       out.push(
-        <p key={kk}>
+        <p key={kk} className="text-xs text-[#666b73]">
           {parseInline(sub[1], kk)}
         </p>
       );
@@ -448,7 +923,7 @@ function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
       }
       const kk = key();
       out.push(
-        <ul key={kk}>
+        <ul key={kk} className="list-disc pl-5 my-1">
           {items.map((it, idx) => (
             <li key={idx}>{parseInline(it, `${kk}-${idx}`)}</li>
           ))}
@@ -466,7 +941,7 @@ function renderBlocks(text: string, keyBase = 'b'): React.ReactNode[] {
       }
       const kk = key();
       out.push(
-        <ol key={kk}>
+        <ol key={kk} className="list-decimal pl-5 my-1">
           {items.map((it, idx) => (
             <li key={idx}>{parseInline(it, `${kk}-${idx}`)}</li>
           ))}
@@ -487,14 +962,15 @@ const BLOCK_SYNTAX = /^\s*(#{1,3}\s|-#\s|>|[-*]\s|\d+[.)]\s)|```/m;
 
 function DiscordText({
   text,
+  className = '',
   wrapQuotes = false,
 }: {
   text: string;
-  
+  className?: string;
   wrapQuotes?: boolean;
 }) {
   const src = wrapQuotes && !BLOCK_SYNTAX.test(text) ? `"${text}"` : text;
-  return <div>{renderBlocks(src)}</div>;
+  return <div className={`whitespace-pre-line break-words ${className}`}>{renderBlocks(src)}</div>;
 }
 
 function QuoteList({
@@ -527,12 +1003,13 @@ function QuoteList({
   };
 
   return (
-    <div>
+    <div className="bs-quote-list">
       {quotes.map((q) => (
-        <div key={q.id}>
-          <div>
+        <div key={q.id} className="bs-quote-row">
+          <div className="bs-quote-row-main">
             <div
               onClick={isOwner ? () => toggle(q.id) : undefined}
+              className={`bs-quote-text ${isOwner ? 'bs-quote-editable' : ''}`}
             >
               <DiscordText text={q.content} wrapQuotes />
             </div>
@@ -540,6 +1017,7 @@ function QuoteList({
               <button
                 type="button"
                 onClick={() => onDeleteQuote(q.id)}
+                className="bs-delete-x shrink-0"
                 aria-label="인용문 삭제"
                 title="인용문 삭제"
               >
@@ -549,15 +1027,16 @@ function QuoteList({
           </div>
 
           {q.quote_comments.length > 0 && (
-            <div>
+            <div className="bs-quote-comments">
               {q.quote_comments.map((c) => (
-                <div key={c.id}>
+                <div key={c.id} className="bs-quote-comment-row">
                   <ReplyIcon />
-                  <DiscordText text={c.content} />
+                  <DiscordText text={c.content} className="flex-1 min-w-0 leading-relaxed" />
                   {isOwner && onDeleteComment && (
                     <button
                       type="button"
                       onClick={() => onDeleteComment(c.id)}
+                      className="bs-delete-x shrink-0"
                       aria-label="댓글 삭제"
                       title="댓글 삭제"
                     >
@@ -570,15 +1049,16 @@ function QuoteList({
           )}
 
           {isOwner && openId === q.id && (
-            <form onSubmit={(e) => submit(e, q.id)}>
+            <form onSubmit={(e) => submit(e, q.id)} className="bs-quote-comment-form">
               <input
                 type="text"
                 autoFocus
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 placeholder="코멘트를 입력하세요"
+                className={`${INPUT} flex-1`}
               />
-              <button type="submit">
+              <button type="submit" className={BTN_SM}>
                 등록
               </button>
             </form>
@@ -616,16 +1096,58 @@ function Seal({
   image?: string | null;
   onImageError?: () => void;
 }) {
+  const hex = (SEAL_COLORS[color] ?? SEAL_COLORS.ink).hex;
+  const w = Math.max(1, Math.round(size / 28));
+
   if (image) {
     return (
-      <span aria-hidden="true" data-seal-color={color} data-seal-style={styleType} data-seal-size={size}>
-        <img src={image} alt="" onError={onImageError} />
+      <span
+        aria-hidden="true"
+        className="inline-block shrink-0 overflow-hidden bg-[#e7e9ec]"
+        style={{ width: size, height: size, border: `${w}px solid ${hex}`, transform: 'rotate(-4deg)' }}
+      >
+        <img
+          src={image}
+          alt=""
+          onError={onImageError}
+          className="block w-full h-full object-cover"
+        />
       </span>
     );
   }
   const chars = Array.from(text || '').slice(0, 2).join('');
+  const len = Array.from(chars).length;
+
+  const common: React.CSSProperties = {
+    width: size,
+    height: size,
+    fontSize: len > 1 ? size * 0.42 : size * 0.6,
+    lineHeight: 1,
+    fontWeight: 900,
+    letterSpacing: len > 1 ? '-0.04em' : '0',
+    transform: 'rotate(-4deg)',
+  };
+
+  let extra: React.CSSProperties;
+  if (styleType === 'outline') {
+    extra = { color: hex, border: `${w}px solid ${hex}`, background: 'transparent' };
+  } else if (styleType === 'double') {
+    extra = {
+      color: hex,
+      border: `${w}px solid ${hex}`,
+      background: 'transparent',
+      boxShadow: `inset 0 0 0 ${w}px #fafafa, inset 0 0 0 ${w * 2}px ${hex}`,
+    };
+  } else {
+    extra = { color: '#fafafa', background: hex, border: `${w}px solid ${hex}` };
+  }
+
   return (
-    <span aria-hidden="true" data-seal-color={color} data-seal-style={styleType} data-seal-size={size}>
+    <span
+      aria-hidden="true"
+      className="inline-flex shrink-0 items-center justify-center select-none"
+      style={{ ...common, ...extra }}
+    >
       {chars}
     </span>
   );
@@ -633,7 +1155,7 @@ function Seal({
 
 function WishBadge() {
   return (
-    <span>
+    <span className="inline-block border border-[#d5d7da] px-2 py-0.5 text-[11px] font-semibold tracking-widest">
       읽고 싶음
     </span>
   );
@@ -782,6 +1304,11 @@ interface Clipping {
   clip_notes: ClipNote[];
 }
 
+const HL_COLORS: Record<string, string> = {
+  red: 'rgba(230, 45, 70, 0.24)',
+  blue: 'rgba(45, 125, 235, 0.23)',
+};
+
 const sortNotes = (notes: ClipNote[]) =>
   [...notes].sort((a, b) => a.end_offset - b.end_offset || byCreated(a, b));
 
@@ -838,14 +1365,16 @@ const ClipArticle = memo(function ClipArticle({
       }
       const noted = notes.some((n) => n.start_offset <= a && n.end_offset >= b);
 
-      const segment = content.slice(a, b);
-      if (color) {
-        out.push(<mark key={`s${a}`} data-highlight-color={color}>{segment}</mark>);
-      } else if (noted) {
-        out.push(<u key={`s${a}`} data-has-note="true">{segment}</u>);
-      } else {
-        out.push(<span key={`s${a}`} data-start={a}>{segment}</span>);
-      }
+      out.push(
+        <span
+          key={`s${a}`}
+          data-start={a}
+          style={color ? { backgroundColor: HL_COLORS[color] } : undefined}
+          className={noted ? 'underline decoration-[#d9364f] decoration-2 underline-offset-4' : undefined}
+        >
+          {content.slice(a, b)}
+        </span>
+      );
 
       sorted
         .filter((n) => clamp(n.end_offset) === b)
@@ -855,6 +1384,8 @@ const ClipArticle = memo(function ClipArticle({
               key={`f${n.id}`}
               data-fn={numberOf.get(n.id)}
               onClick={() => scrollToNote(n.id)}
+              style={{ userSelect: 'none' }}
+              className="ml-0.5 cursor-pointer text-[11px] font-black hover:text-[#26292e]"
             >
               {numberOf.get(n.id)})
             </sup>
@@ -865,7 +1396,7 @@ const ClipArticle = memo(function ClipArticle({
   }, [content, highlights, notes]);
 
   return (
-    <div ref={containerRef}>
+    <div ref={containerRef} className="whitespace-pre-wrap break-words text-base sm:text-[17px] leading-8">
       {nodes}
     </div>
   );
@@ -1026,14 +1557,17 @@ function SealCropper({
   const s = (CROP_VIEW / Math.min(natW, natH)) * zoom;
   const dispW = natW * s;
   const dispH = natH * s;
+  const guide = 'rgba(255, 255, 255, 0.55)';
+  const thirds = `linear-gradient(to right, transparent calc(33.33% - 0.5px), ${guide} calc(33.33% - 0.5px), ${guide} calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px), transparent calc(66.66% - 0.5px), ${guide} calc(66.66% - 0.5px), ${guide} calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px)), linear-gradient(to bottom, transparent calc(33.33% - 0.5px), ${guide} calc(33.33% - 0.5px), ${guide} calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px), transparent calc(66.66% - 0.5px), ${guide} calc(66.66% - 0.5px), ${guide} calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px))`;
 
   return (
-    <div>
-      <p>사진 자르기</p>
+    <div className="mt-3 border border-[#d5d7da] p-3 space-y-3">
+      <p className={LABEL}>사진 자르기</p>
 
-      <div>
+      <div className="flex flex-wrap items-start gap-4">
         <div
           ref={viewRef}
+          className="relative shrink-0 overflow-hidden border border-[#d5d7da] bg-[#e7e9ec] cursor-grab active:cursor-grabbing select-none"
           style={{ width: CROP_VIEW, height: CROP_VIEW, touchAction: 'none' }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
@@ -1054,26 +1588,28 @@ function SealCropper({
               pointerEvents: 'none',
             }}
           />
+          <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: thirds }} />
         </div>
 
-        <div>
-          <p>미리보기</p>
-          <div>
+        <div className="min-w-0 space-y-2">
+          <p className={LABEL}>미리보기</p>
+          <div className="flex items-end gap-3">
             <Seal text="" color={sealColor} image={previewUrl} size={88} />
             <Seal text="" color={sealColor} image={previewUrl} size={48} />
             <Seal text="" color={sealColor} image={previewUrl} size={26} />
           </div>
-          <p>실제로 이렇게 기울어진 도장으로 보여요.</p>
+          <p className="text-xs text-[#666b73]">실제로 이렇게 기울어진 도장으로 보여요.</p>
         </div>
       </div>
 
       <div>
-        <label>확대</label>
-        <div>
+        <label className={LABEL}>확대</label>
+        <div className="mt-1 flex items-center gap-2">
           <button
             type="button"
             aria-label="축소"
             onClick={() => setZoom((z) => Math.max(1, +(z - 0.25).toFixed(2)))}
+            className={`${BTN_OUTLINE} !min-w-[36px] !px-0 shrink-0`}
           >
             -
           </button>
@@ -1085,27 +1621,29 @@ function SealCropper({
             value={zoom}
             onChange={(e) => setZoom(Number(e.target.value))}
             aria-label="확대 비율"
+            className="flex-1 min-w-0 accent-[#202328]"
           />
           <button
             type="button"
             aria-label="확대"
             onClick={() => setZoom((z) => Math.min(4, +(z + 0.25).toFixed(2)))}
+            className={`${BTN_OUTLINE} !min-w-[36px] !px-0 shrink-0`}
           >
             +
           </button>
-          <span>{Math.round(zoom * 100)}%</span>
+          <span className="w-11 shrink-0 text-right text-xs font-semibold">{Math.round(zoom * 100)}%</span>
         </div>
       </div>
 
-      <p>
+      <p className="text-xs text-[#666b73]">
         사진을 드래그해서 위치를 맞추고, 슬라이더나 마우스 휠(휴대폰은 두 손가락)로 확대해요.
       </p>
 
-      <div>
-        <button type="button" onClick={onCancel}>
+      <div className="flex justify-end gap-2">
+        <button type="button" onClick={onCancel} className={BTN_OUTLINE}>
           취소
         </button>
-        <button type="button" onClick={confirm}>
+        <button type="button" onClick={confirm} className={BTN}>
           적용
         </button>
       </div>
@@ -1121,24 +1659,58 @@ function sealPathFromUrl(url: string, uid: string): string | null {
   return path.startsWith(`${uid}/`) ? path : null;
 }
 
+const COVER_COLORS = ['#717171', '#676767', '#666666', '#545454', '#8a8a8a', '#d2d5d9', '#636363'];
+
 function BookCover({
   title,
   author,
   src,
+  width = 58,
 }: {
   title: string;
   author?: string;
   src?: string | null;
+  width?: number;
 }) {
   const [broken, setBroken] = useState(false);
+  const height = Math.round(width * 1.36);
+
   if (src && !broken) {
-    return <img src={src} alt={title} onError={() => setBroken(true)} />;
+    return (
+      <img
+        src={src}
+        alt={title}
+        onError={() => setBroken(true)}
+        className="bs-cover-img"
+        style={{ width, height }}
+      />
+    );
   }
+
+  let hash = 0;
+  for (const ch of title) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+  const bg = COVER_COLORS[hash % COVER_COLORS.length];
+  const light = bg === '#d2d5d9';
+
   return (
-    <span>
-      {title}
-      {author && <span>{author}</span>}
-    </span>
+    <div
+      className="bs-book-cover"
+      style={{ width, height, background: bg, color: light ? '#434343' : '#eaeaea' }}
+    >
+      <div className="bs-cover-inner">
+        <div
+          className="bs-cover-title"
+          style={{ fontSize: Math.max(8, Math.round(width * 0.17)), maxHeight: Math.round(height * 0.62) }}
+        >
+          {title}
+        </div>
+        {author && (
+          <div className="bs-cover-author" style={{ fontSize: Math.max(5, Math.round(width * 0.08)) }}>
+            {author}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -1233,12 +1805,12 @@ function RichView({ json }: { json: JSONContent }) {
     { extensions: TIPTAP_EXTENSIONS, content: json, editable: false, immediatelyRender: false },
     [JSON.stringify(json)]
   );
-  return <EditorContent editor={editor} />;
+  return <EditorContent editor={editor} className="bs-prose" />;
 }
 
 function ReviewBody({ review }: { review: Review }) {
   if (review.content_json) return <RichView json={review.content_json} />;
-  return <DiscordText text={review.content} />;
+  return <DiscordText text={review.content} className="text-sm leading-relaxed text-[#454545]" />;
 }
 
 type SaveState = 'saved' | 'dirty' | 'saving' | 'error';
@@ -1411,10 +1983,10 @@ function ReviewEditorPanel({
     <button
       type="button"
       key={label}
-      aria-pressed={on}
       disabled={disabled || !editor}
       onMouseDown={(e) => e.preventDefault()}
       onClick={run}
+      className={`${on ? BTN_ACTIVE : BTN_OUTLINE} !min-h-[30px] !px-2.5 disabled:opacity-40`}
     >
       {label}
     </button>
@@ -1432,14 +2004,14 @@ function ReviewEditorPanel({
             : '아직 저장하지 않았어요';
 
   return (
-    <div>
+    <div className="space-y-3">
       {review.content && (
-        <p>
+        <p className="text-xs text-[#666b73]">
           발행된 글을 고치는 중이에요. 발행하기 전까지는 다른 멤버에게 이전에 발행한 글이 보여요.
         </p>
       )}
 
-      <div>
+      <div className="flex flex-wrap gap-1.5">
         {tool(active.h2, '제목', () => editor?.chain().focus().toggleHeading({ level: 2 }).run())}
         {tool(active.h3, '소제목', () => editor?.chain().focus().toggleHeading({ level: 3 }).run())}
         {tool(active.bold, '굵게', () => editor?.chain().focus().toggleBold().run())}
@@ -1451,42 +2023,43 @@ function ReviewEditorPanel({
         {tool(false, '다시 하기', () => editor?.chain().focus().redo().run(), !active.canRedo)}
       </div>
 
-      <div>
+      <div className={preview ? 'hidden' : 'bs-prose bs-editor-box'}>
         <EditorContent editor={editor} />
       </div>
       {preview && (
-        <div>
+        <div className="bs-prose border border-[#d5d7da] p-4 min-h-[240px]">
           <RichView json={previewDoc} />
         </div>
       )}
 
-      <div>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <span
+          className={`text-xs ${saveState === 'error' ? 'font-semibold text-[#26292e]' : 'text-[#666b73]'}`}
           role="status"
         >
           {statusText}
           {saveState === 'error' && (
-            <button type="button" onClick={saveNow}>
+            <button type="button" onClick={saveNow} className={`${LINK_BTN} ml-2`}>
               다시 시도
             </button>
           )}
         </span>
-        <div>
+        <div className="ml-auto flex flex-wrap gap-2">
           {draft && (
-            <button type="button" onClick={discard}>
+            <button type="button" onClick={discard} className={DANGER_BTN}>
               임시 저장 삭제
             </button>
           )}
-          <button type="button" onClick={togglePreview}>
+          <button type="button" onClick={togglePreview} className={BTN_OUTLINE}>
             {preview ? '편집으로' : '미리보기'}
           </button>
-          <button type="button" onClick={saveNow} disabled={saveState === 'saving'}>
+          <button type="button" onClick={saveNow} disabled={saveState === 'saving'} className={BTN_OUTLINE}>
             임시 저장
           </button>
-          <button type="button" onClick={close}>
+          <button type="button" onClick={close} className={BTN_OUTLINE}>
             닫기
           </button>
-          <button type="button" onClick={publish} disabled={busy}>
+          <button type="button" onClick={publish} disabled={busy} className={BTN}>
             {busy ? '발행 중…' : '발행'}
           </button>
         </div>
@@ -2290,48 +2863,50 @@ export default function Home() {
 
   if (!user) {
     return (
-      <main>
-        
-        <div>
-          <h1>
+      <main className="min-h-screen flex items-center justify-center p-4 text-[#202328]">
+        <GlobalStyle />
+        <div className="w-full max-w-md border border-[#d5d7da] bg-[#fafafa] p-8">
+          <h1 className="text-center text-5xl font-black tracking-tighter leading-none border-b border-[#d5d7da] pb-4">
             독-서팟
           </h1>
           {isSignUp && (
-            <p>
+            <p className="text-center text-sm text-[#555a62] mt-4 mb-8">
               새로운 계정 생성하기
             </p>
           )}
 
-          <form onSubmit={handleAuth}>
+          <form onSubmit={handleAuth} className="space-y-5">
             <div>
-              <label>이메일</label>
+              <label className={LABEL}>이메일</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="example@email.com"
+                className={INPUT}
                 required
               />
             </div>
 
             <div>
-              <label>비밀번호</label>
+              <label className={LABEL}>비밀번호</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="6자리 이상 비밀번호"
+                className={INPUT}
                 required
               />
             </div>
 
-            <button type="submit" disabled={authLoading}>
+            <button type="submit" disabled={authLoading} className={`${BTN} w-full`}>
               {authLoading ? '처리 중...' : isSignUp ? '회원가입' : '로그인'}
             </button>
           </form>
 
-          <div>
-            <button onClick={() => setIsSignUp(!isSignUp)}>
+          <div className="mt-6 text-center">
+            <button onClick={() => setIsSignUp(!isSignUp)} className={LINK_BTN}>
               {isSignUp ? '이미 계정이 있으신가요? 로그인' : '계정이 없으신가요? 회원가입'}
             </button>
           </div>
@@ -2340,12 +2915,12 @@ export default function Home() {
     );
   }
 
-  const renderByline = (userId: string, size = 18) => {
+  const renderByline = (userId: string, size = 18, className = '') => {
     const p = profileOf(userId);
     return (
-      <span>
+      <span className={`inline-flex items-center gap-1.5 min-w-0 ${className}`}>
         <Seal text={p.seal_text} color={p.seal_color} styleType={p.seal_style} image={p.seal_image} size={size} />
-        <span>{p.nickname}</span>
+        <span className="truncate">{p.nickname}</span>
       </span>
     );
   };
@@ -2357,19 +2932,21 @@ export default function Home() {
     <button
       key={t}
       type="button"
+      className={tab === t ? 'bs-active' : ''}
       onClick={() => { goTab(t); setMobileNavOpen(false); }}
       aria-current={tab === t ? 'page' : undefined}
     >
       <span>{label}</span>
-      {count !== undefined && tab === t && <span>{count}</span>}
+      {count !== undefined && tab === t && <span className="bs-nav-count">{count}</span>}
     </button>
   );
 
   const boardSearch = (
-    <div>
-      <span aria-hidden="true">⌕</span>
+    <div className="bs-search-wrap bs-main-search">
+      <span className="bs-search-icon" aria-hidden="true">⌕</span>
       <input
         id="archive-search"
+        className="bs-search"
         type="search"
         value={boardFilter}
         onChange={(e) => setBoardFilter(e.target.value)}
@@ -2379,6 +2956,7 @@ export default function Home() {
       {boardFilter && (
         <button
           type="button"
+          className="bs-search-clear"
           onClick={() => setBoardFilter('')}
           aria-label="검색어 지우기"
           title="검색어 지우기"
@@ -2391,6 +2969,7 @@ export default function Home() {
     <>
       <button
         type="button"
+        className={`bs-mobile-drawer-launcher${mobileNavOpen ? ' is-open' : ''}`}
         aria-label="메뉴 열기"
         aria-expanded={mobileNavOpen}
         onClick={() => setMobileNavOpen(true)}
@@ -2402,15 +2981,17 @@ export default function Home() {
       {mobileNavOpen && (
         <button
           type="button"
+          className="bs-mobile-drawer-backdrop"
           aria-label="메뉴 닫기"
           onClick={() => setMobileNavOpen(false)}
         />
       )}
-      <aside>
-        <div>
-          <div>독-<br />서팟</div>
+      <aside className={`bs-sidebar${mobileNavOpen ? ' bs-mobile-nav-open' : ''}`}>
+        <div className="bs-brand">
+          <div className="bs-brand-title">독-<br />서팟</div>
           <button
             type="button"
+            className="bs-mobile-menu-toggle"
             aria-label="메뉴 닫기"
             aria-expanded={mobileNavOpen}
             onClick={() => setMobileNavOpen(false)}
@@ -2420,15 +3001,16 @@ export default function Home() {
             </svg>
           </button>
         </div>
-        <nav aria-label="주 메뉴">
+        <nav className="bs-nav" aria-label="주 메뉴">
           {navItem('shelf', '서고', shelfEntries.length)}
           {navItem('mine', '책장')}
           {navItem('scraps', '스크랩북')}
         </nav>
-        <div />
-        <div>
+        <div className="bs-side-spacer" />
+        <div className="bs-side-bottom">
           <button
             type="button"
+            className="bs-profile-settings"
             onClick={() => { goTab('profile'); setMobileNavOpen(false); }}
             aria-label="프로필 설정"
             title="프로필 설정"
@@ -2440,14 +3022,15 @@ export default function Home() {
               image={profileOf(user.id).seal_image}
               size={31}
             />
-            <span>{profileOf(user.id).nickname}</span>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <span className="bs-profile-name">{profileOf(user.id).nickname}</span>
+            <svg className="bs-settings-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="3" />
               <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.8 1.8-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1 1.55V20h-2.55v-.11a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06-1.8-1.8.06-.06A1.7 1.7 0 0 0 8.17 15a1.7 1.7 0 0 0-1.55-1H6.5v-2.55h.12a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.8-1.8.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1-1.55V5.5h2.55v.12a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.8 1.8-.06.06A1.7 1.7 0 0 0 19.4 10a1.7 1.7 0 0 0 1.55 1h.12v2.55h-.12a1.7 1.7 0 0 0-1.55 1Z" />
             </svg>
           </button>
           <button
             type="button"
+            className="bs-logout-icon"
             onClick={handleLogout}
             aria-label="로그아웃"
             title="로그아웃"
@@ -2462,6 +3045,8 @@ export default function Home() {
     </>
   );
 
+  const asRows = (list: Review[]): CommunityEntry[] =>
+    list.map((review) => ({ type: 'review', review }));
 
   const pickReview = (v: SeriesVolume) => v.reviews.find((r) => r.user_id === user.id) ?? v.reviews[0];
 
@@ -2476,10 +3061,109 @@ export default function Home() {
     window.scrollTo({ top: 0 });
   };
 
+  const renderBoard = (rows: CommunityEntry[], showAuthor: boolean) => {
+    const col = showAuthor
+      ? { title: 'sm:col-span-4', author: 'sm:col-span-2', nick: 'sm:col-span-2', status: 'sm:col-span-3', date: 'sm:col-span-1' }
+      : { title: 'sm:col-span-6', author: 'sm:col-span-3', nick: '', status: 'sm:col-span-2', date: 'sm:col-span-1' };
+    const rowClass =
+      'grid grid-cols-12 gap-3 items-center px-5 py-3 border-b border-[#d5d7da] last:border-b-0 hover:bg-[#e9ebee] cursor-pointer transition-colors duration-200 group';
+    const coverClass =
+      'w-9 h-12 object-cover border border-[#d5d7da] bg-[#e7e9ec] transition duration-200 shrink-0';
+    const titleClass =
+      'font-bold text-sm truncate underline-offset-4 decoration-2 decoration-[#26292e] group-hover:underline';
+
+    return (
+      <>
+        <div className="hidden sm:grid grid-cols-12 gap-3 px-5 py-2 bg-[#eceef0] text-[#666b73] text-[11px] font-semibold uppercase tracking-widest">
+          <span className={col.title}>책 제목</span>
+          <span className={col.author}>저자</span>
+          {showAuthor && <span className={col.nick}>읽은이</span>}
+          <span className={`${col.status} text-center`}>상태 / 별점</span>
+          <span className={`${col.date} text-right`}>날짜</span>
+        </div>
+
+        <ul>
+          {rows.map((row) => {
+            if (row.type === 'series') {
+              const userIds = Array.from(new Set(row.reviews.map((r) => r.user_id)));
+              return (
+                <li key={`series-${row.key}`} onClick={() => openSeries(row)} className={rowClass}>
+                  <div className={`col-span-12 ${col.title} flex items-center gap-3 min-w-0`}>
+                    <img
+                      src={row.cover || undefined}
+                      alt={row.base}
+                      className={coverClass}
+                    />
+                    <span className="min-w-0">
+                      <span className={`block ${titleClass}`}>{row.base}</span>
+                      <span className="block text-[11px] text-[#666b73]">
+                        시리즈 &middot; 기록된 {row.volumes.length}권
+                      </span>
+                    </span>
+                  </div>
+                  <span className={`col-span-6 ${col.author} text-xs text-[#555a62] truncate`}>
+                    {row.author}
+                  </span>
+                  {showAuthor && (
+                    <span className={`col-span-6 ${col.nick} text-xs font-semibold min-w-0 flex items-center gap-1`}>
+                      {renderByline(userIds[0], 18)}
+                      {userIds.length > 1 && (
+                        <span className="shrink-0 text-[#666b73]">외 {userIds.length - 1}명</span>
+                      )}
+                    </span>
+                  )}
+                  <div className={`col-span-6 ${col.status} flex sm:justify-center`}>
+                    <span className="inline-block bg-[#34373d] px-2 py-0.5 text-[11px] font-semibold tracking-widest text-[#fafafa]">
+                      시리즈
+                    </span>
+                  </div>
+                  <span className={`hidden sm:block ${col.date} text-right text-[11px] text-[#666b73]`}>
+                    {new Date(row.latest).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })}
+                  </span>
+                </li>
+              );
+            }
+
+            const rev = row.review;
+            return (
+              <li key={rev.id} onClick={() => openReview(rev)} className={rowClass}>
+                <div className={`col-span-12 ${col.title} flex items-center gap-3 min-w-0`}>
+                  <img
+                    src={rev.books.cover_url || undefined}
+                    alt={rev.books.title}
+                    className={coverClass}
+                  />
+                  <span className={titleClass}>{rev.books.title}</span>
+                </div>
+                <span className={`col-span-6 ${col.author} text-xs text-[#555a62] truncate`}>
+                  {rev.books.author}
+                </span>
+                {showAuthor && (
+                  <span className={`col-span-6 ${col.nick} text-xs font-semibold min-w-0`}>
+                    {renderByline(rev.user_id, 18)}
+                  </span>
+                )}
+                <div className={`col-span-6 ${col.status} flex sm:justify-center`}>
+                  <StatusCell review={rev} size={13} />
+                </div>
+                <span className={`hidden sm:block ${col.date} text-right text-[11px] text-[#666b73]`}>
+                  {new Date(rev.created_at).toLocaleDateString('ko-KR', {
+                    month: 'numeric',
+                    day: 'numeric',
+                  })}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </>
+    );
+  };
 
   if (activeReview) {
     const hasQuotes = (activeReview.quotes?.length || 0) > 0;
-      const showQuotes = isOwner || hasQuotes;
+    const showReview = (isEditingContent && isOwner) || !!activeReview.content || (isOwner && !!drafts[activeReview.id]);
+    const showQuotes = isOwner || hasQuotes;
     const sameBookReviews = allReviews.filter((r) => r.book_isbn === activeReview.book_isbn);
     const myBookReview = sameBookReviews.find((r) => r.user_id === user.id) ?? null;
     const ratingReviews = sameBookReviews.filter(
@@ -2494,46 +3178,48 @@ export default function Home() {
       : undefined;
 
     return (
-      <div>
-        
+      <div className="bs-main">
+        <GlobalStyle />
         {header}
-        <main>
-          <article>
-            <section>
-              <div>
+        <main className="bs-book-detail-page max-w-[900px] mx-auto px-4 py-6 md:py-8">
+          <article className="bs-book-detail-shell">
+            <section className="bs-book-detail-hero p-5 md:p-6 border-b border-[#d5d7da]">
+              <div className="flex gap-4 sm:gap-5">
                 <img
                   src={activeReview.books.cover_url || undefined}
                   alt={activeReview.books.title}
+                  className="bs-book-detail-cover w-20 h-28 sm:w-24 sm:h-36 object-cover border border-[#d5d7da] bg-[#e7e9ec] transition duration-200 shrink-0"
                 />
-                <div>
-                  <div>
-                    <div>
-                      <p>
-                        {renderByline(activeReview.user_id, 20)}
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-[#666b73]">
+                        {renderByline(activeReview.user_id, 20, 'font-semibold text-[#202328]')}
                         <span>&middot; {new Date(activeReview.created_at).toLocaleDateString('ko-KR')}</span>
                       </p>
-                      <h2>
+                      <h2 className="mt-1 text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight break-words">
                         {activeReview.books.title}
                       </h2>
-                      <p>{activeReview.books.author}</p>
+                      <p className="mt-1 text-sm text-[#555a62]">{activeReview.books.author}</p>
                       {seriesEntry && (
-                        <div aria-label="시리즈 권 선택">
+                        <div className="bs-series-volume-tabs" aria-label="시리즈 권 선택">
                           {seriesEntry.volumes.map((v) => (
                             <ToggleButton
                               key={v.volume}
                               pressed={v.reviews.some((r) => r.id === activeReview.id)}
                               onClick={() => openVolume(v)}
+                              className="bs-series-volume-button"
                             >
                               {v.label}
                             </ToggleButton>
                           ))}
                         </div>
                       )}
-                      {!isOwner && <div><StatusCell review={activeReview} /></div>}
+                      {!isOwner && <div className="mt-3"><StatusCell review={activeReview} /></div>}
                     </div>
 
                     {isOwner && (
-                      <div>
+                      <div className="flex flex-wrap gap-2 max-w-full">
                         <ToggleButton
                           pressed={activeReview.status === 'reading'}
                           onClick={() =>
@@ -2546,7 +3232,7 @@ export default function Home() {
                           읽는 중
                         </ToggleButton>
                         {!activeReview.content && !isEditingContent && (
-                          <button onClick={startWritingReview}>
+                          <button onClick={startWritingReview} className={BTN_OUTLINE}>
                             {drafts[activeReview.id] ? '이어서 쓰기' : '독후감 추가'}
                           </button>
                         )}
@@ -2558,13 +3244,13 @@ export default function Home() {
               </div>
             </section>
 
-            <section>
-              <h3>별점</h3>
-              <div>
+            <section className="bs-book-rating-section">
+              <h3 className="bs-book-rating-heading">별점</h3>
+              <div className="bs-book-rating-content">
                 {ratingReviews.length > 0 ? (
                   ratingReviews.map((r) => (
-                    <div key={r.id}>
-                      <span>{profileOf(r.user_id).nickname}</span>
+                    <div className="bs-book-rating-row" key={r.id}>
+                      <span className="bs-book-rating-name">{profileOf(r.user_id).nickname}</span>
                       {r.id === myBookReview?.id && r.status === 'completed' ? (
                         <RatingInput
                           value={r.rating}
@@ -2578,26 +3264,26 @@ export default function Home() {
                     </div>
                   ))
                 ) : (
-                  <p>아직 등록된 별점이 없어요.</p>
+                  <p className="bs-book-rating-empty">아직 등록된 별점이 없어요.</p>
                 )}
               </div>
             </section>
 
-            <div>
+            <div className="bs-book-detail-sections">
               <div>
                 {showQuotes && (
-                  <section>
-                    <h3>
+                  <section className={`bs-book-detail-section ${showReview ? 'border-b border-[#d5d7da]' : ''}`}>
+                    <h3 className="text-xl font-black tracking-tight">
                       인용문{' '}
-                      <span>
+                      <span className="text-sm font-semibold text-[#666b73]">
                         ({activeReview.quotes?.length || 0})
                       </span>
                     </h3>
                     {isOwner && hasQuotes && (
-                      <p>인용문을 누르면 코멘트를 달 수 있어요.</p>
+                      <p className="mt-1 text-xs text-[#666b73]">인용문을 누르면 코멘트를 달 수 있어요.</p>
                     )}
 
-                    <div>
+                    <div className="mt-4">
                       {hasQuotes ? (
                         <QuoteList
                           quotes={activeReview.quotes!}
@@ -2607,24 +3293,26 @@ export default function Home() {
                           onDeleteComment={isOwner ? handleDeleteComment : undefined}
                         />
                       ) : (
-                        <p>아직 추가된 인용문이 없습니다.</p>
+                        <p className="text-sm text-[#666b73]">아직 추가된 인용문이 없습니다.</p>
                       )}
                     </div>
 
                     {isOwner && (
                       <form
                         onSubmit={handleAddQuote}
+                        className="mt-5 pt-5 border-t border-[#d5d7da] flex gap-3 items-end"
                       >
-                        <div>
-                          <label>새 인용문</label>
+                        <div className="flex-1">
+                          <label className={LABEL}>새 인용문</label>
                           <textarea
                             rows={2}
                             value={newQuoteInput}
                             onChange={(e) => setNewQuoteInput(e.target.value)}
                             placeholder="마음에 남은 문장을 적어 보세요"
+                            className={`${INPUT} leading-relaxed`}
                           />
                         </div>
-                        <button type="submit">
+                        <button type="submit" className={BTN}>
                           추가
                         </button>
                       </form>
@@ -2633,8 +3321,8 @@ export default function Home() {
                 )}
 
                 {isEditingContent && isOwner ? (
-                  <section id="review-editor">
-                    <h3>독후감</h3>
+                  <section id="review-editor" className="bs-book-detail-section space-y-3">
+                    <h3 className="text-xl font-black tracking-tight">독후감</h3>
                     <ReviewEditorPanel
                       key={activeReview.id}
                       review={activeReview}
@@ -2648,13 +3336,13 @@ export default function Home() {
                     />
                   </section>
                 ) : activeReview.content ? (
-                  <section>
-                    <div>
-                      <h3>독후감</h3>
+                  <section className="bs-book-detail-section space-y-3">
+                    <div className="flex flex-wrap justify-between items-center gap-2">
+                      <h3 className="text-xl font-black tracking-tight">독후감</h3>
                       {isOwner && (
-                        <div>
-                          {drafts[activeReview.id] && <span>임시 저장본 있음</span>}
-                          <button onClick={() => setIsEditingContent(true)}>
+                        <div className="flex items-center gap-3">
+                          {drafts[activeReview.id] && <span className="bs-tag bs-green">임시 저장본 있음</span>}
+                          <button onClick={() => setIsEditingContent(true)} className={LINK_BTN}>
                             {drafts[activeReview.id] ? '이어서 쓰기' : '수정하기'}
                           </button>
                         </div>
@@ -2663,15 +3351,15 @@ export default function Home() {
                     <ReviewBody review={activeReview} />
                   </section>
                 ) : isOwner && drafts[activeReview.id] ? (
-                  <section>
-                    <div>
-                      <h3>독후감</h3>
-                      <span>임시 저장</span>
+                  <section className="bs-book-detail-section space-y-3">
+                    <div className="flex flex-wrap justify-between items-center gap-2">
+                      <h3 className="text-xl font-black tracking-tight">독후감</h3>
+                      <span className="bs-tag bs-green">임시 저장</span>
                     </div>
-                    <p>
+                    <p className="text-sm text-[#666b73]">
                       아직 발행하지 않은 글이 임시 저장되어 있어요. 나만 볼 수 있어요.
                     </p>
-                    <button onClick={() => setIsEditingContent(true)}>
+                    <button onClick={() => setIsEditingContent(true)} className={BTN}>
                       이어서 쓰기
                     </button>
                   </section>
@@ -2679,11 +3367,11 @@ export default function Home() {
               </div>
 
               {hasSidebar && (
-                <aside>
-                  <div>
-                    <h3>
+                <aside className="bs-book-community-panel border-t border-[#d5d7da] p-5 md:p-6 space-y-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-xl font-black tracking-tight">
                       같은 책을 읽은 사람{' '}
-                      <span>({readers.length})</span>
+                      <span className="text-sm font-semibold text-[#666b73]">({readers.length})</span>
                     </h3>
                     <ToggleButton pressed={showOthers} onClick={() => setShowOthers(!showOthers)}>
                       함께 보기
@@ -2692,23 +3380,23 @@ export default function Home() {
 
                   {showOthers &&
                     readers.map((o) => (
-                      <div key={o.id}>
-                        <div>
-                          <span>{renderByline(o.user_id, 22)}</span>
+                      <div key={o.id} className="border-t border-[#d5d7da] pt-4 space-y-3">
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-sm min-w-0">{renderByline(o.user_id, 22)}</span>
                           <StatusCell review={o} size={14} />
                         </div>
 
                         {o.quotes && o.quotes.length > 0 && <QuoteList quotes={o.quotes} />}
 
                         {o.content && (
-                          <div>
-                            <p>독후감</p>
+                          <div className="space-y-1">
+                            <p className={LABEL}>독후감</p>
                             <ReviewBody review={o} />
                           </div>
                         )}
 
                         {(!o.quotes || o.quotes.length === 0) && !o.content && (
-                          <p>아직 남긴 기록이 없어요.</p>
+                          <p className="text-xs text-[#666b73]">아직 남긴 기록이 없어요.</p>
                         )}
                       </div>
                     ))}
@@ -2716,15 +3404,15 @@ export default function Home() {
               )}
             </div>
 
-            <div>
+            <div className="flex justify-between items-center gap-3 p-4 border-t border-[#d5d7da]">
               {isOwner ? (
-                <button onClick={() => handleDeleteReview(activeReview.id)}>
+                <button onClick={() => handleDeleteReview(activeReview.id)} className={DANGER_BTN}>
                   이 책 서재에서 삭제
                 </button>
               ) : (
                 <span />
               )}
-              <button onClick={goBack}>
+              <button onClick={goBack} className={BTN_OUTLINE}>
                 목록으로
               </button>
             </div>
@@ -2744,14 +3432,21 @@ export default function Home() {
     ];
     const keepSelection = (e: React.MouseEvent) => e.preventDefault();
 
+    const sideBtn = `flex w-full items-center gap-2 min-h-[34px] px-3 border border-[#d5d7da] text-xs font-semibold tracking-widest transition-all duration-200 hover:bg-[#34373d] hover:text-[#fafafa] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
+    const barBtn = `flex flex-col items-center justify-center gap-1 min-h-[44px] min-w-0 border border-[#d5d7da] text-[11px] font-semibold transition-all duration-200 active:bg-[#34373d] active:text-[#fafafa] disabled:opacity-40 disabled:pointer-events-none ${FOCUS}`;
 
     const noteForm = (variant: 'side' | 'bar') =>
       selection && notePanelOpen ? (
         <form
           onSubmit={handleAddNote}
+          className={
+            variant === 'side'
+              ? 'space-y-2 border-t border-[#d5d7da] pt-3'
+              : 'px-3 py-3 space-y-2 border-b border-[#d5d7da]'
+          }
         >
           {variant === 'bar' && (
-            <p>
+            <p className="text-xs font-bold italic max-h-[2.6em] overflow-hidden break-words">
               &quot;{selection.text}&quot;
             </p>
           )}
@@ -2762,6 +3457,7 @@ export default function Home() {
               value={noteDraftText}
               onChange={(e) => setNoteDraftText(e.target.value)}
               placeholder="이 문장에 대한 의견을 적어 보세요"
+              className={`${INPUT} leading-relaxed`}
             />
           ) : (
             <input
@@ -2770,15 +3466,17 @@ export default function Home() {
               value={noteDraftText}
               onChange={(e) => setNoteDraftText(e.target.value)}
               placeholder="이 문장에 대한 의견"
+              className={INPUT}
             />
           )}
-          <div>
-            <button type="submit">
+          <div className="flex gap-2">
+            <button type="submit" className={`${BTN_SM} flex-1`}>
               등록
             </button>
             <button
               type="button"
               onClick={() => setNotePanelOpen(false)}
+              className={`${BTN_OUTLINE} !min-h-[28px] !px-3 flex-1`}
             >
               취소
             </button>
@@ -2787,45 +3485,40 @@ export default function Home() {
       ) : null;
 
     return (
-      <div>
-        
+      <div className="bs-main bs-scrap-detail-page">
+        <GlobalStyle />
         {header}
-        <main>
-          <button
-            onClick={goBack}
-          >
-            &larr; 스크랩북으로 돌아가기
-          </button>
-
-          <div>
-            <article>
-              <section>
-                <h2>
+        <main className="mx-auto max-w-3xl lg:max-w-[66rem] px-4 py-6 md:py-8 pb-56 lg:pb-8">
+          <div className="mt-2 lg:grid lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-6">
+            <article className="scrap-detail-article min-w-0 border border-[#d5d7da] bg-[#fafafa]">
+              <section className="scrap-detail-header p-5 md:p-8 border-b border-[#d5d7da] space-y-3">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight leading-tight break-words">
                   {activeClip.title}
                 </h2>
-                <p>
+                <p className="text-xs text-[#666b73] flex flex-wrap gap-x-3 gap-y-1">
                   {activeClip.source &&
                     (isUrl ? (
                       <a
                         href={activeClip.source}
                         target="_blank"
                         rel="noopener noreferrer nofollow"
+                        className="underline decoration-2 decoration-[#26292e] underline-offset-4 break-all"
                       >
                         {activeClip.source}
                       </a>
                     ) : (
-                      <span>{activeClip.source}</span>
+                      <span className="break-words">{activeClip.source}</span>
                     ))}
                   <span>{new Date(activeClip.created_at).toLocaleDateString('ko-KR')}</span>
                 </p>
-                <div>
-                  <button onClick={handleDeleteClipping}>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1">
+                  <button onClick={handleDeleteClipping} className={`${DANGER_BTN} min-h-[28px]`}>
                     스크랩 삭제
                   </button>
                 </div>
               </section>
 
-              <section>
+              <section className="scrap-detail-content p-5 md:p-8">
                 <ClipArticle
                   content={activeClip.content}
                   highlights={activeClip.clip_highlights}
@@ -2835,19 +3528,20 @@ export default function Home() {
               </section>
 
               {activeClip.clip_highlights.length > 0 && (
-                <section>
-                  <div>
-                    <h3>
-                      형광펜 <span>({activeClip.clip_highlights.length})</span>
+                <section className="scrap-detail-content bs-highlight-records p-5 md:p-8 border-t border-[#d5d7da]">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-base font-semibold">
+                      형광펜 <span className="text-xs font-normal text-[#777777]">({activeClip.clip_highlights.length})</span>
                     </h3>
                   </div>
-                  <div>
+                  <div className="mt-3 divide-y divide-[#e5e5e5]">
                     {[...activeClip.clip_highlights].sort(byCreated).map((h) => {
                       const excerpt = activeClip.content.slice(h.start_offset, h.end_offset).trim() || '선택한 문장';
+                      const markerColor = h.color === 'red' ? '#d9364f' : h.color === 'blue' ? '#2d7deb' : '#999999';
                       return (
-                        <div key={h.id}>
-                          <span aria-hidden="true" />
-                          <p>{excerpt}</p>
+                        <div key={h.id} className="bs-highlight-record flex items-start gap-3 py-3">
+                          <span className="bs-highlight-color shrink-0 mt-1" style={{ backgroundColor: markerColor }} aria-hidden="true" />
+                          <p className="min-w-0 flex-1 text-sm leading-relaxed break-words">{excerpt}</p>
                         </div>
                       );
                     })}
@@ -2856,31 +3550,32 @@ export default function Home() {
               )}
 
               {notes.length > 0 && (
-                <section>
-                  <h3>
+                <section className="scrap-detail-content p-5 md:p-8 border-t border-[#d5d7da]">
+                  <h3 className="text-xl font-black tracking-tight">
                     각주{' '}
-                    <span>({notes.length})</span>
+                    <span className="text-sm font-semibold text-[#666b73]">({notes.length})</span>
                   </h3>
-                  <div>
+                  <div className="mt-4 divide-y divide-[#e4e6e9]">
                     {notes.map((n, i) => (
-                      <div key={n.id} id={`note-${n.id}`}>
-                        <div>
-                          <div>
-                            <span>{i + 1})</span>
+                      <div key={n.id} id={`note-${n.id}`} className="py-4 first:pt-0">
+                        <div className="flex justify-between items-start gap-3">
+                          <div className="min-w-0 text-base font-bold italic leading-relaxed whitespace-pre-line break-words">
+                            <span className="not-italic mr-1.5 text-xs font-black">{i + 1})</span>
                             &quot;{n.quote_text}&quot;
                           </div>
                           <button
                             type="button"
                             onClick={() => handleDeleteNote(n.id)}
+                            className="bs-delete-x shrink-0"
                             aria-label="각주 삭제"
                             title="각주 삭제"
                           >
                             ×
                           </button>
                         </div>
-                        <div>
+                        <div className="mt-2 ml-2 flex items-start gap-1.5 text-sm text-[#555a62]">
                           <ReplyIcon />
-                          <DiscordText text={n.content} />
+                          <DiscordText text={n.content} className="flex-1 min-w-0 leading-relaxed" />
                         </div>
                       </div>
                     ))}
@@ -2889,15 +3584,15 @@ export default function Home() {
               )}
             </article>
 
-            <aside>
-              <div>
-                <div>
+            <aside className="hidden lg:block lg:self-start lg:sticky lg:top-6">
+              <div className="border border-[#d5d7da] bg-[#fafafa]">
+                <div className="px-4 py-2 bg-[#34373d] text-[#fafafa] text-[11px] font-semibold uppercase tracking-widest">
                   도구
                 </div>
-                <div>
+                <div className="p-4 space-y-4">
                   <div>
-                    <p>형광펜</p>
-                    <div>
+                    <p className={LABEL}>형광펜</p>
+                    <div className="mt-2 grid gap-2">
                       {swatches.map((b) => (
                         <button
                           key={b.key}
@@ -2905,8 +3600,11 @@ export default function Home() {
                           disabled={!selection}
                           onMouseDown={keepSelection}
                           onClick={() => applyHighlight(b.key)}
+                          className={sideBtn}
                         >
                           <span
+                            className="inline-block w-4 h-4 border border-[#d5d7da]"
+                            style={{ background: b.color }}
                           />
                           {b.label}
                         </button>
@@ -2914,13 +3612,13 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div>
-                    <p>선택한 문장</p>
-                    <p>
+                  <div className="border-t border-[#d5d7da] pt-4 space-y-3">
+                    <p className={LABEL}>선택한 문장</p>
+                    <p className="text-xs text-[#555a62] break-words max-h-32 overflow-y-auto">
                       {selection ? `"${selection.text}"` : '문장을 드래그해서 선택하세요'}
                     </p>
                     {selection && (
-                      <button type="button" onClick={clearSelection}>
+                      <button type="button" onClick={clearSelection} className={LINK_BTN}>
                         선택 해제
                       </button>
                     )}
@@ -2929,6 +3627,7 @@ export default function Home() {
                       disabled={!selection}
                       onMouseDown={keepSelection}
                       onClick={() => setNotePanelOpen(true)}
+                      className={`${BTN} w-full`}
                     >
                       코멘트 달기
                     </button>
@@ -2940,19 +3639,19 @@ export default function Home() {
           </div>
         </main>
 
-        <div>
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 min-[621px]:left-[206px] z-40 bg-[#fafafa] border-t border-[#d5d7da] pb-[env(safe-area-inset-bottom)]">
           {noteForm('bar')}
-          <div>
-            <span>
+          <div className="px-3 pt-2 flex items-center gap-3 text-xs">
+            <span className="flex-1 min-w-0 truncate text-[#666b73]">
               {selection ? `선택: "${selection.text}"` : '문장을 드래그해서 선택하세요'}
             </span>
             {selection && (
-              <button type="button" onClick={clearSelection}>
+              <button type="button" onClick={clearSelection} className={`${LINK_BTN} shrink-0`}>
                 해제
               </button>
             )}
           </div>
-          <div>
+          <div className="px-3 pb-2 pt-1.5 grid grid-cols-4 gap-1.5">
             {swatches.map((b) => (
               <button
                 key={b.key}
@@ -2960,8 +3659,9 @@ export default function Home() {
                 disabled={!selection}
                 onMouseDown={keepSelection}
                 onClick={() => applyHighlight(b.key)}
+                className={barBtn}
               >
-                <span />
+                <span className="inline-block w-4 h-4 border border-[#d5d7da]" style={{ background: b.color }} />
                 <span>{b.label}</span>
               </button>
             ))}
@@ -2970,8 +3670,9 @@ export default function Home() {
               disabled={!selection}
               onMouseDown={keepSelection}
               onClick={() => setNotePanelOpen(true)}
+              className={`${barBtn} bg-[#34373d] text-[#fafafa]`}
             >
-              <span>+</span>
+              <span className="text-base font-black leading-none">+</span>
               <span>코멘트</span>
             </button>
           </div>
@@ -2986,19 +3687,19 @@ export default function Home() {
       Array.from(draft.sealText.trim()).slice(0, 2).join('') || Array.from(previewNick)[0] || '?';
 
     return (
-      <div>
-        
+      <div className="bs-main">
+        <GlobalStyle />
         {header}
-        <main>
-          <div>
-            <section>
-              <div>
-                <p>Profile</p>
-                <h2>닉네임과 인장</h2>
+        <main className="max-w-screen-xl mx-auto px-4 py-8">
+          <div className="border border-[#d5d7da] bg-[#fafafa] grid grid-cols-1 lg:grid-cols-12">
+            <section className="lg:col-span-5 p-5 md:p-6 border-b lg:border-b-0 lg:border-r border-[#d5d7da] space-y-6">
+              <div className="border-b border-[#d5d7da] pb-2">
+                <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Profile</p>
+                <h2 className="text-xl font-black tracking-tight">닉네임과 인장</h2>
               </div>
 
               <div>
-                <label>닉네임</label>
+                <label className={LABEL}>닉네임</label>
                 <input
                   type="text"
                   value={draft.nickname}
@@ -3006,15 +3707,16 @@ export default function Home() {
                     setDraft({ ...draft, nickname: Array.from(e.target.value).slice(0, 16).join('') })
                   }
                   placeholder="다른 사람에게 보이는 이름"
+                  className={INPUT}
                 />
-                <p>
+                <p className="mt-1 text-xs text-[#666b73]">
                   {Array.from(draft.nickname).length}/16 &middot; 다른 사람과 겹치면 쓸 수 없어요.
                 </p>
               </div>
 
               <div>
-                <label>인장 사진 (선택)</label>
-                <div>
+                <label className={LABEL}>인장 사진 (선택)</label>
+                <div className="mt-2 flex items-center gap-4">
                   <Seal
                     text={previewSeal}
                     color={draft.sealColor}
@@ -3023,18 +3725,20 @@ export default function Home() {
                     size={64}
                     onImageError={() => setSealImageBroken(true)}
                   />
-                  <div>
+                  <div className="flex flex-wrap gap-2 min-w-0">
                     <label
+                      className={`${BTN_OUTLINE} cursor-pointer focus-within:ring-2 focus-within:ring-neutral-950 focus-within:ring-offset-2`}
                     >
                       {draft.sealImage ? '사진 바꾸기' : '사진 올리기'}
                       <input
                         type="file"
                         accept="image/*"
                         onChange={handlePickSealImage}
+                        className="sr-only"
                       />
                     </label>
                     {draft.sealImage && (
-                      <button type="button" onClick={handleRemoveSealImage}>
+                      <button type="button" onClick={handleRemoveSealImage} className={DANGER_BTN}>
                         사진 빼기
                       </button>
                     )}
@@ -3049,7 +3753,7 @@ export default function Home() {
                   />
                 )}
                 {sealImageBroken && draft.sealImage.startsWith('http') && (
-                  <p>
+                  <p className="mt-2 text-xs font-semibold text-[#26292e] break-words">
                     저장된 사진을 불러오지 못했어요. Supabase Storage의 seals 버킷이 Public(공개)인지 확인해 주세요.
                   </p>
                 )}
@@ -3058,11 +3762,12 @@ export default function Home() {
                     href={draft.sealImage}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className={`${LINK_BTN} mt-2 inline-block break-all`}
                   >
                     저장된 사진 주소 열어보기
                   </a>
                 )}
-                <p>
+                <p className="mt-2 text-xs text-[#666b73]">
                   사진을 고르면 드래그하고 확대해서 보여줄 부분을 정할 수 있어요. 사진은 원래 색 그대로, 기울어진
                   도장 모양으로 보여요. 사진을 쓰면 인장 글자와 모양은 쓰이지 않고, 색은 테두리에만 쓰여요. 저장해야
                   올라가요.
@@ -3070,7 +3775,7 @@ export default function Home() {
               </div>
 
               <div>
-                <label>인장 글자</label>
+                <label className={LABEL}>인장 글자</label>
                 <input
                   type="text"
                   value={draft.sealText}
@@ -3078,21 +3783,27 @@ export default function Home() {
                     setDraft({ ...draft, sealText: Array.from(e.target.value).slice(0, 2).join('') })
                   }
                   placeholder="비우면 닉네임 첫 글자"
+                  className={INPUT}
                 />
-                <p>1~2글자까지 새길 수 있어요.</p>
+                <p className="mt-1 text-xs text-[#666b73]">1~2글자까지 새길 수 있어요.</p>
               </div>
 
               <div>
-                <label>인장 색</label>
-                <div>
+                <label className={LABEL}>인장 색</label>
+                <div className="mt-2 flex flex-wrap gap-2">
                   {Object.entries(SEAL_COLORS).map(([key, c]) => (
                     <button
                       key={key}
                       type="button"
                       aria-pressed={draft.sealColor === key}
                       onClick={() => setDraft({ ...draft, sealColor: key })}
+                      className={`inline-flex items-center gap-2 min-h-[34px] px-4 border border-[#d5d7da] text-xs font-semibold tracking-widest transition-colors duration-200 ${FOCUS} ${
+                        draft.sealColor === key ? 'bg-[#34373d] text-[#fafafa]' : 'hover:bg-[#e9ebee]'
+                      }`}
                     >
                       <span
+                        className="inline-block w-4 h-4 border border-[#969ba2]"
+                        style={{ background: c.hex }}
                       />
                       {c.label}
                     </button>
@@ -3101,8 +3812,8 @@ export default function Home() {
               </div>
 
               <div>
-                <label>인장 모양</label>
-                <div>
+                <label className={LABEL}>인장 모양</label>
+                <div className="mt-2 flex flex-wrap gap-2">
                   {SEAL_STYLES.map(([key, label]) => (
                     <ToggleButton
                       key={key}
@@ -3115,25 +3826,25 @@ export default function Home() {
                 </div>
               </div>
 
-              <div>
-                <button onClick={handleSaveProfile} disabled={profileSaving}>
+              <div className="flex items-center gap-4 pt-2 border-t border-[#d5d7da]">
+                <button onClick={handleSaveProfile} disabled={profileSaving} className={`${BTN} mt-4`}>
                   {profileSaving ? '저장 중...' : '저장'}
                 </button>
-                {profileMsg && <span>{profileMsg}</span>}
-                <button onClick={handleLogout}>
+                {profileMsg && <span className="mt-4 text-xs font-semibold">{profileMsg}</span>}
+                <button onClick={handleLogout} className={`${BTN_OUTLINE} mt-4 ml-auto`}>
                   로그아웃
                 </button>
               </div>
             </section>
 
-            <section>
-              <div>
-                <p>Preview</p>
-                <h2>미리보기</h2>
+            <section className="lg:col-span-7">
+              <div className="px-5 py-4 border-b border-[#d5d7da]">
+                <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Preview</p>
+                <h2 className="text-3xl font-black tracking-tight">미리보기</h2>
               </div>
 
-              <div>
-                <div>
+              <div className="p-5 md:p-6 space-y-6">
+                <div className="flex items-center gap-5">
                   <Seal
                     text={previewSeal}
                     color={draft.sealColor}
@@ -3141,16 +3852,16 @@ export default function Home() {
                     image={draft.sealImage}
                     size={88}
                   />
-                  <div>
-                    <p>Reader</p>
-                    <p>{previewNick}</p>
+                  <div className="min-w-0">
+                    <p className="text-[11px] uppercase tracking-widest text-[#666b73]">Reader</p>
+                    <p className="text-3xl font-black tracking-tight truncate">{previewNick}</p>
                   </div>
                 </div>
 
-                <div>
-                  <p>이렇게 보여요</p>
-                  <div>
-                    <span>
+                <div className="border-t border-[#d5d7da] pt-4 space-y-2">
+                  <p className={LABEL}>이렇게 보여요</p>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+                    <span className="inline-flex items-center gap-1.5 font-semibold">
                       <Seal
                         text={previewSeal}
                         color={draft.sealColor}
@@ -3160,7 +3871,7 @@ export default function Home() {
                       />
                       {previewNick}
                     </span>
-                    <span>
+                    <span className="inline-flex items-center gap-2 text-xs uppercase tracking-widest text-[#666b73]">
                       <Seal
                         text={previewSeal}
                         color={draft.sealColor}
@@ -3173,7 +3884,7 @@ export default function Home() {
                       </span>
                     </span>
                   </div>
-                  <p>
+                  <p className="text-xs text-[#666b73]">
                     인장은 전체 서재 목록, 글 상세 화면, 같은 책을 읽은 사람 목록에서 닉네임 옆에 찍혀요.
                   </p>
                 </div>
@@ -3187,18 +3898,18 @@ export default function Home() {
   }
 
   const renderEntryRow = (r: Review) => (
-    <article key={r.id} onClick={() => openReview(r)}>
-      <BookCover title={r.books.title} author={r.books.author} src={r.books.cover_url} />
-      <div>
-        <div>{r.books.title}</div>
-        <div>{excerptOf(r.content)}</div>
-        <div>
+    <article key={r.id} className="bs-record-row" onClick={() => openReview(r)}>
+      <BookCover title={r.books.title} author={r.books.author} src={r.books.cover_url} width={58} />
+      <div className="min-w-0">
+        <div className="bs-record-title">{r.books.title}</div>
+        <div className="bs-record-excerpt">{excerptOf(r.content)}</div>
+        <div className="bs-record-meta">
           {renderByline(r.user_id, 16)}
-          <i />
+          <i className="bs-meta-dot" />
           <span>{fmtMD(r.created_at)}</span>
           {r.status === 'completed' && r.rating > 0 && (
             <>
-              <i />
+              <i className="bs-meta-dot" />
               <RatingDisplay value={r.rating} size={11} />
             </>
           )}
@@ -3236,37 +3947,38 @@ export default function Home() {
     ];
 
     return (
-      <div>
-        
+      <div className="bs-main bs-community-shelf-page">
+        <GlobalStyle />
         {header}
-        <div>
-          <div>
-            <div>
-              <h1>서고</h1>
+        <div className="bs-content">
+          <div className="bs-page-head">
+            <div className="bs-heading-copy">
+              <h1 className="bs-h1">서고</h1>
             </div>
-            <button onClick={goWrite} aria-label="기록 남기기">
+            <button className="bs-btn bs-btn-primary bs-record-cta" onClick={goWrite} aria-label="기록 남기기">
               <span aria-hidden="true">＋</span><span>기록 남기기</span>
             </button>
           </div>
           {boardSearch}
 
-          <div>
-            <div>
+          <div className="bs-shelf-toolbar">
+            <div className="bs-filter-group">
               {filters.map(([key, label, n]) => (
                 <button
                   key={key}
+                  className={`bs-filter-btn${filterKey === key ? ' bs-active' : ''}`}
                   onClick={() => setShelfFilter(key)}
                 >
                   {label} <span>{n}</span>
                 </button>
               ))}
             </div>
-            <div>{visible.length}권의 책</div>
+            <div className="bs-shelf-count">{visible.length}권의 책</div>
           </div>
 
-          <div>
+          <div className="bs-books-grid">
             {visible.length === 0 ? (
-              <div>
+              <div className="bs-empty-state">
                 <strong>이 서가에는 아직 책이 없어요.</strong>
                 <span>다른 분류를 선택하거나 검색어를 바꿔 보세요.</span>
               </div>
@@ -3286,38 +3998,38 @@ export default function Home() {
                   ? ratedReviews.reduce((sum, review) => sum + review.rating, 0) / ratedReviews.length
                   : 0;
                 return (
-                  <article key={e.type === 'series' ? e.key : e.isbn} onClick={() => openBook(e)}>
-                    <div>
-                      <div>
-                        <BookCover title={title} author={author} src={cover} />
+                  <article key={e.type === 'series' ? e.key : e.isbn} className="bs-book-card" onClick={() => openBook(e)}>
+                    <div className="bs-book-card-main">
+                      <div className="bs-book-card-cover">
+                        <BookCover title={title} author={author} src={cover} width={82} />
                       </div>
-                      <div>
-                        <h3>{title}</h3>
-                        <div>{author}</div>
+                      <div className="bs-book-card-info">
+                        <h3 className="bs-h3 bs-book-title">{title}</h3>
+                        <div className="bs-book-author">{author}</div>
                         {e.type === 'series' && (
-                          <p>시리즈 · 전 {e.volumes.length}권</p>
+                          <p className="bs-series-count">시리즈 · 전 {e.volumes.length}권</p>
                         )}
                         {ratedReviews.length > 0 && (
-                          <div aria-label={`평점 ${averageRating.toFixed(1)}점`}>
-                            <span aria-hidden="true">
+                          <div className="bs-book-rating" aria-label={`평점 ${averageRating.toFixed(1)}점`}>
+                            <span className="bs-rating-stars" aria-hidden="true">
                               {Array.from({ length: 5 }, (_, i) => (
                                 <span key={i}>{i < Math.round(averageRating) ? '★' : '☆'}</span>
                               ))}
                             </span>
-                            <span>
+                            <span className="bs-rating-meta">
                               {averageRating.toFixed(1)} · {ratedReviews.length}명
                             </span>
                           </div>
                         )}
                         {latestQuote && (
-                          <p>
+                          <p className="bs-book-card-quote">
                             “{plainText(latestQuote.quote.content)}”
                           </p>
                         )}
                         {readingUsers.length > 0 && (
-                          <div aria-label="현재 읽는 사람">
+                          <div className="bs-book-readers bs-book-card-readers" aria-label="현재 읽는 사람">
                             {readingUsers.map((uid) => (
-                              <span key={uid} title={nameOf(uid)}>
+                              <span key={uid} className="bs-book-reader" title={nameOf(uid)}>
                                 <Seal
                                   text={profileOf(uid).seal_text}
                                   color={profileOf(uid).seal_color}
@@ -3325,7 +4037,7 @@ export default function Home() {
                                   image={profileOf(uid).seal_image}
                                   size={22}
                                 />
-                                <span>{nameOf(uid)}</span>
+                                <span className="bs-reader-name">{nameOf(uid)}</span>
                               </span>
                             ))}
                           </div>
@@ -3345,33 +4057,33 @@ export default function Home() {
   if (tab === 'reviews') {
     const list = writtenAll.filter(matchesFilter);
     return (
-      <div>
-        
+      <div className="bs-main">
+        <GlobalStyle />
         {header}
-        <div>
-          <div>
-            <div>
-              <div>INDEX OF REFLECTIONS</div>
-              <h1>독후감 기록</h1>
-              <p>
+        <div className="bs-content">
+          <div className="bs-page-head">
+            <div className="bs-heading-copy">
+              <div className="bs-eyebrow">INDEX OF REFLECTIONS</div>
+              <h1 className="bs-h1">독후감 기록</h1>
+              <p className="bs-lead">
                 책을 읽은 뒤 남겨 둔 생각들의 색인입니다.
                 <br />
                 책 이름이나 저자로 오래전에 적어 둔 문장을 찾아보세요.
               </p>
             </div>
-            <button onClick={goWrite}>
+            <button className="bs-btn bs-btn-primary" onClick={goWrite}>
               ✎ &nbsp; 독후감 쓰기
             </button>
           </div>
-          <div>
-            <div>
-              <span>전체 기록 {pad2(writtenAll.length)}</span>
-              <span>최신 기록부터 정리합니다.</span>
+          <div className="bs-shelf-toolbar">
+            <div className="bs-filter-group">
+              <span className="bs-tag">전체 기록 {pad2(writtenAll.length)}</span>
+              <span style={{ fontSize: 11, color: '#828282', marginLeft: 7 }}>최신 기록부터 정리합니다.</span>
             </div>
           </div>
-          <div>
+          <div className="bs-records">
             {list.length === 0 ? (
-              <div>
+              <div className="bs-empty-state">
                 <strong>{writtenAll.length === 0 ? '아직 남긴 독후감이 없어요.' : '찾는 기록이 없어요.'}</strong>
                 <span>{writtenAll.length === 0 ? '책 상세에서 “독후감 추가”를 눌러 시작해 보세요.' : '검색어를 바꿔 보세요.'}</span>
               </div>
@@ -3391,26 +4103,28 @@ export default function Home() {
     );
 
     return (
-      <div>
-        
+      <div className="bs-main bs-scrapbook-page">
+        <GlobalStyle />
         {header}
-        <div>
-          <div>
-            <div>
-              <h1>스크랩북</h1>
+        <div className="bs-content">
+          <div className="bs-page-head">
+            <div className="bs-heading-copy">
+              <h1 className="bs-h1">스크랩북</h1>
             </div>
             <button
               type="button"
+              className="bs-btn bs-btn-primary bs-add-scrap"
               onClick={() => setClipModalOpen(true)}
             >
               <span aria-hidden="true">＋</span><span>스크랩 추가</span>
             </button>
           </div>
 
-          <div>
-            <div>
-              <span aria-hidden="true">⌕</span>
+          <div className="bs-scrapbook-toolbar">
+            <div className="bs-search-wrap bs-main-search">
+              <span className="bs-search-icon" aria-hidden="true">⌕</span>
               <input
+                className="bs-search"
                 type="search"
                 value={boardFilter}
                 onChange={(e) => setBoardFilter(e.target.value)}
@@ -3420,19 +4134,20 @@ export default function Home() {
               {boardFilter && (
                 <button
                   type="button"
+                  className="bs-search-clear"
                   onClick={() => setBoardFilter('')}
                   aria-label="검색어 지우기"
                 >×</button>
               )}
             </div>
-            <div>
+            <div className="bs-scrapbook-count">
               <strong>{clipList.length}</strong> / {clippings.length}개
             </div>
           </div>
 
-          <div>
+          <div className="bs-scrapbook-list">
             {clipList.length === 0 ? (
-              <div>
+              <div className="bs-empty-state">
                 <strong>{clippings.length === 0 ? '아직 스크랩이 없어요.' : '찾는 스크랩이 없어요.'}</strong>
                 <span>{clippings.length === 0 ? '기사나 칼럼을 추가해 나만의 스크랩북을 만들어 보세요.' : '검색어를 바꿔 보세요.'}</span>
               </div>
@@ -3441,21 +4156,22 @@ export default function Home() {
                 <button
                   key={c.id}
                   type="button"
+                  className="bs-scrapbook-card"
                   onClick={() => openClip(c.id)}
                 >
-                  <div>
-                    <h2>{c.title}</h2>
-                    <p>
+                  <div className="bs-scrapbook-card-main">
+                    <h2 className="bs-scrapbook-title">{c.title}</h2>
+                    <p className="bs-scrapbook-source">
                       {c.source && <><span>{c.source}</span><i>·</i></>}
                       <span>{new Date(c.created_at).toLocaleDateString('ko-KR')}</span>
                     </p>
-                    <p>{excerptOf(c.content, 150)}</p>
-                    <div>
+                    <p className="bs-scrapbook-excerpt">{excerptOf(c.content, 150)}</p>
+                    <div className="bs-scrapbook-meta">
                       <span>형광펜 {c.clip_highlights.filter((h) => h.color !== 'erase').length}</span>
                       <span>각주 {c.clip_notes.length}</span>
                     </div>
                   </div>
-                  <span aria-hidden="true">↗</span>
+                  <span className="bs-scrapbook-arrow" aria-hidden="true">↗</span>
                 </button>
               ))
             )}
@@ -3468,21 +4184,22 @@ export default function Home() {
             aria-modal="true"
             aria-labelledby="new-clipping-title"
             onClick={() => setClipModalOpen(false)}
+            className="bs-modal-backdrop"
           >
-            <div onClick={(e) => e.stopPropagation()}>
-              <div>
+            <div onClick={(e) => e.stopPropagation()} className="bs-modal-panel">
+              <div className="bs-modal-head">
                 <div>
                   <h2 id="new-clipping-title">스크랩 추가</h2>
                 </div>
-                <button type="button" onClick={() => setClipModalOpen(false)}>
+                <button type="button" onClick={() => setClipModalOpen(false)} className={LINK_BTN}>
                   닫기
                 </button>
               </div>
 
-              <form onSubmit={handleSaveClipping}>
+              <form onSubmit={handleSaveClipping} className="space-y-5">
                 <div>
-                  <label>기사 링크 (선택)</label>
-                  <div>
+                  <label className={LABEL}>기사 링크 (선택)</label>
+                  <div className="flex gap-2 items-end">
                     <input
                       type="text"
                       inputMode="url"
@@ -3490,51 +4207,55 @@ export default function Home() {
                       onChange={(e) => setClipSource(e.target.value)}
                       onPaste={handleClipLinkPaste}
                       placeholder="링크를 붙여넣으면 본문을 불러와요"
+                      className={`${INPUT} flex-1`}
                     />
                     <button
                       type="button"
                       onClick={() => fetchArticle(clipSource)}
                       disabled={clipFetching || !clipSource.trim()}
+                      className={`${BTN_OUTLINE} shrink-0`}
                     >
                       {clipFetching ? '불러오는 중' : '불러오기'}
                     </button>
                   </div>
                   {clipFetchError && (
-                    <p>{clipFetchError}</p>
+                    <p className="mt-1 text-xs font-semibold text-[#26292e] break-words">{clipFetchError}</p>
                   )}
-                  <p>
+                  <p className="mt-1 text-xs text-[#666b73]">
                     링크 대신 매체 이름을 적어도 돼요. 일부 사이트는 불러오지 못할 수 있어요.
                   </p>
                 </div>
 
                 <div>
-                  <label>제목</label>
+                  <label className={LABEL}>제목</label>
                   <input
                     type="text"
                     value={clipTitle}
                     onChange={(e) => setClipTitle(e.target.value)}
                     placeholder="비우면 본문 첫 줄을 제목으로 써요"
+                    className={INPUT}
                   />
                 </div>
 
                 <div>
-                  <label>본문</label>
+                  <label className={LABEL}>본문</label>
                   <textarea
                     rows={12}
                     value={clipContent}
                     onChange={(e) => setClipContent(e.target.value)}
                     placeholder="기사나 칼럼을 복사해서 붙여넣어도 돼요"
+                    className={`${TEXTAREA_BOX} mt-2`}
                   />
-                  <p>
+                  <p className="mt-1 text-xs text-[#666b73]">
                     저장한 뒤에는 본문을 고칠 수 없어요. 형광펜과 각주 위치가 어긋나기 때문이에요. 불필요한 부분은 저장 전에 지워 주세요.
                   </p>
                 </div>
 
-                <div>
-                  <button type="button" onClick={() => setClipModalOpen(false)}>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => setClipModalOpen(false)} className={`${BTN_OUTLINE} flex-1`}>
                     취소
                   </button>
-                  <button type="submit" disabled={clipSaving}>
+                  <button type="submit" disabled={clipSaving} className={`${BTN} flex-1`}>
                     {clipSaving ? '저장 중...' : '스크랩 저장'}
                   </button>
                 </div>
@@ -3569,62 +4290,63 @@ export default function Home() {
   };
 
   return (
-    <div>
-      
+    <div className="bs-main bs-bookshelf-page">
+      <GlobalStyle />
       {header}
-      <div>
-        <div>
-          <div>
-            <h1>책장</h1>
+      <div className="bs-content">
+        <div className="bs-page-head">
+          <div className="bs-heading-copy">
+            <h1 className="bs-h1">책장</h1>
           </div>
-          <button type="button" onClick={() => setBookModalOpen(true)}>
+          <button type="button" className="bs-btn bs-btn-primary bs-book-add-button" onClick={() => setBookModalOpen(true)}>
             <span aria-hidden="true">＋</span><span>책 추가</span>
           </button>
         </div>
         {boardSearch}
 
-        <div>
-          <div>
+        <div className="bs-shelf-toolbar">
+          <div className="bs-filter-group">
             {personalFilters.map(([key, label, count]) => (
               <button
                 key={key}
                 type="button"
+                className={`bs-filter-btn${personalShelfFilter === key ? ' bs-active' : ''}`}
                 onClick={() => setPersonalShelfFilter(key)}
               >
                 {label} <span>{count}</span>
               </button>
             ))}
           </div>
-          <div>{myBooks.length}권</div>
+          <div className="bs-shelf-count">{myBooks.length}권</div>
         </div>
 
-        <div>
+        <div className="bs-personal-book-list">
           {myBooks.length === 0 ? (
-            <div>
+            <div className="bs-empty-state">
               <strong>{myReviews.length === 0 ? '책장에 아직 책이 없어요.' : '찾는 책이 없어요.'}</strong>
               <span>{myReviews.length === 0 ? '책 추가를 눌러 첫 책을 등록해 보세요.' : '검색어나 분류를 바꿔 보세요.'}</span>
             </div>
           ) : (
             myBooks.map((r) => (
-              <button key={r.id} type="button" onClick={() => openReview(r)}>
-                <div>
-                  <BookCover title={r.books.title} author={r.books.author} src={r.books.cover_url} />
+              <button key={r.id} type="button" className="bs-personal-book-card" onClick={() => openReview(r)}>
+                <div className="bs-personal-book-cover">
+                  <BookCover title={r.books.title} author={r.books.author} src={r.books.cover_url} width={88} />
                 </div>
-                <div>
-                  <h2>{r.books.title}</h2>
-                  <p>{r.books.author}</p>
-                  <div>
-                    <span>{STATUS_LABEL[r.status]}</span>
-                    {r.status === 'completed' && r.rating > 0 && (
-                      <span>
-                        <RatingDisplay value={r.rating} size={13} />
-                        <strong>{r.rating.toFixed(1)}</strong>
-                      </span>
-                    )}
-                  </div>
-                  <span>등록 {new Date(r.created_at).toLocaleDateString('ko-KR')}</span>
+                <div className="bs-personal-book-info">
+                  <h2 className="bs-personal-book-title">{r.books.title}</h2>
+                  <p className="bs-personal-book-author">{r.books.author}</p>
+                  {r.status === 'completed' && r.rating > 0 && (
+                    <span className="bs-personal-rating">
+                      <RatingDisplay value={r.rating} size={13} />
+                      <strong>{r.rating.toFixed(1)}</strong>
+                    </span>
+                  )}
                 </div>
-                <span aria-hidden="true">↗</span>
+                <div className="bs-personal-book-side">
+                  <span className={`bs-personal-status bs-status-${r.status}`}>{STATUS_LABEL[r.status]}</span>
+                  <span className="bs-personal-book-date">등록 {new Date(r.created_at).toLocaleDateString('ko-KR')}</span>
+                </div>
+                <span className="bs-personal-book-arrow" aria-hidden="true">›</span>
               </button>
             ))
           )}
@@ -3637,46 +4359,48 @@ export default function Home() {
           aria-modal="true"
           aria-labelledby="new-book-title"
           onClick={closeBookModal}
+          className="bs-modal-backdrop"
         >
-          <div onClick={(e) => e.stopPropagation()}>
-            <div>
+          <div onClick={(e) => e.stopPropagation()} className="bs-modal-panel">
+            <div className="bs-modal-head">
               <div>
-                <p>NEW BOOK</p>
+                <p className="bs-modal-eyebrow">NEW BOOK</p>
                 <h2 id="new-book-title">책 추가</h2>
               </div>
-              <button type="button" onClick={closeBookModal}>닫기</button>
+              <button type="button" onClick={closeBookModal} className={LINK_BTN}>닫기</button>
             </div>
 
-            <form onSubmit={handleSearch}>
-              <label>책 제목 또는 저자</label>
-              <div>
+            <form onSubmit={handleSearch} className="bs-book-search-form">
+              <label className={LABEL}>책 제목 또는 저자</label>
+              <div className="flex gap-2 items-end">
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="책 제목 또는 저자 검색..."
+                  className={`${INPUT} flex-1`}
                   autoFocus
                 />
-                <button type="submit" disabled={searchLoading}>
+                <button type="submit" disabled={searchLoading} className={`${BTN} shrink-0`}>
                   {searchLoading ? '검색 중' : '검색'}
                 </button>
               </div>
             </form>
 
             {searchResults.length > 0 && !selectedBook && (
-              <div>
-                <div>
-                  <span>검색 결과 {searchResults.length}건</span>
-                  <button type="button" onClick={clearSearch}>결과 지우기</button>
+              <div className="bs-book-search-results">
+                <div className="flex items-center justify-between gap-3">
+                  <span className={LABEL}>검색 결과 {searchResults.length}건</span>
+                  <button type="button" onClick={clearSearch} className={DANGER_BTN}>결과 지우기</button>
                 </div>
                 {searchResults.map((book, idx) => (
-                  <div key={`${book.isbn}-${idx}`}>
+                  <div key={`${book.isbn}-${idx}`} className="bs-book-search-result">
                     <img src={book.thumbnail || undefined} alt={book.title} />
-                    <div>
-                      <p>{book.title}</p>
-                      <p>{book.authors.join(', ')}</p>
+                    <div className="min-w-0">
+                      <p className="font-bold text-sm break-words">{book.title}</p>
+                      <p className="text-xs text-[#666b73]">{book.authors.join(', ')}</p>
                     </div>
-                    <button type="button" onClick={() => setSelectedBook(book)}>
+                    <button type="button" onClick={() => setSelectedBook(book)} className={`${BTN_OUTLINE} !min-h-[34px] !px-3 shrink-0`}>
                       선택
                     </button>
                   </div>
@@ -3685,27 +4409,29 @@ export default function Home() {
             )}
 
             {selectedBook && (
-              <div>
-                <div>
-                  <div>
+              <div className="bs-selected-book">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     <img src={selectedBook.thumbnail || undefined} alt={selectedBook.title} />
-                    <div>
-                      <p>{selectedBook.title}</p>
-                      <p>{selectedBook.authors.join(', ')}</p>
+                    <div className="min-w-0">
+                      <p className="font-bold text-sm break-words">{selectedBook.title}</p>
+                      <p className="text-xs text-[#666b73]">{selectedBook.authors.join(', ')}</p>
                     </div>
                   </div>
-                  <button type="button" onClick={() => setSelectedBook(null)}>다시 선택</button>
+                  <button type="button" onClick={() => setSelectedBook(null)} className={DANGER_BTN}>다시 선택</button>
                 </div>
 
-                <form onSubmit={handleSubmitReview}>
-                  <div>
+                <form onSubmit={handleSubmitReview} className="space-y-5 mt-5">
+                  <div className="grid grid-cols-2 gap-2">
                     <ToggleButton
+                      className="w-full"
                       pressed={regStatus === 'wishlist'}
                       onClick={() => setRegStatus(regStatus === 'wishlist' ? 'completed' : 'wishlist')}
                     >
                       읽고 싶은 책
                     </ToggleButton>
                     <ToggleButton
+                      className="w-full"
                       pressed={regStatus === 'reading'}
                       onClick={() => setRegStatus(regStatus === 'reading' ? 'completed' : 'reading')}
                     >
@@ -3715,14 +4441,14 @@ export default function Home() {
 
                   {regStatus === 'completed' && (
                     <div>
-                      <label>별점</label>
-                      <div><RatingInput value={rating} onChange={setRating} size={26} /></div>
+                      <label className={LABEL}>별점</label>
+                      <div className="mt-2"><RatingInput value={rating} onChange={setRating} size={26} /></div>
                     </div>
                   )}
 
-                  <div>
-                    <button type="button" onClick={closeBookModal}>취소</button>
-                    <button type="submit">
+                  <div className="flex gap-2">
+                    <button type="button" onClick={closeBookModal} className={`${BTN_OUTLINE} flex-1`}>취소</button>
+                    <button type="submit" className={`${BTN} flex-1`}>
                       {regStatus === 'wishlist' ? '읽고 싶은 책에 담기' : '내 서재에 등록하기'}
                     </button>
                   </div>
